@@ -8,13 +8,31 @@ class CrawlingUtil:
     def __init__(self, driver):
         self.driver = driver
 
-    def extract_content_text(self, html_content:str):
+    def extract_content_text(self, html_content: str):
         soup = BeautifulSoup(html_content, 'html.parser')
 
-        content_div = soup.find('div', id='content')
+        content_div = None
+
+        content_div = soup.find('div', id=['content', 'contents'])
+
+        if not content_div:
+            content_div = soup.find('div', class_=['content', 'contents', 'main-content', 'page-content'])
+
+        if not content_div:
+            content_div = soup.find('main')
+
+        if not content_div:
+            content_div = soup.find('body')
+
+        if not content_div:
+            content_div = soup
+
+        for element in content_div.find_all(['script', 'style', 'nav', 'header', 'footer']):
+            element.decompose()
+
         text = content_div.get_text(separator=' ', strip=True)
         text = re.sub(r'\s+', ' ', text)
-        text = text + self.driver.current_url
+        text = text + " " + self.driver.current_url
         return text
 
     def get_last_page(self):
