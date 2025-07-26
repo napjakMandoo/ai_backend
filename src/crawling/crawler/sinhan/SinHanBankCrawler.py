@@ -146,6 +146,7 @@ class SinHanBankCrawler:
             "tac_상품상세_tab_tab_상품안내3",
             "tac_상품상세_tab_tab_금리안내",
         ]
+
         for tab_id in tab_ids:
             try:
                 tab = self.driver.find_element(By.ID, tab_id)
