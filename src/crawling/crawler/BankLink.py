@@ -1,0 +1,5 @@
+from enum import Enum
+
+class BankLink(Enum):
+    KYONGNAM_BANK_DEPOSIT_LINK = "https://www.knbank.co.kr/ib20/mnu/FPMDPT020104000?ib20_wc=FPMDPT100MIXV00M:FPMDPT110LSTV00M&ib20_cur_mnu=FPMDPT020000000&ib20_cur_wgt=FPMDPT100MIXV00M&fnc_prd_no="
+    KYONGNAM_BANK_SAVING_LINK = "https://www.knbank.co.kr/ib20/mnu/FPMDPT020103000?ib20_wc=FPMDPT100MIXV00M:FPMDPT110LSTV00M&ib20_cur_mnu=FPMDPT020000000&ib20_cur_wgt=FPMDPT100MIXV00M&fnc_prd_no="
