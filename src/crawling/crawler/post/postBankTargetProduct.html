@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body><html lang="ko"><head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="format-detection" content="telephone=no">
+    <title>
+
+
+
+        상품상세보기 | 우체국 금융상품몰
+
+
+    </title>
+    <!-- 공통 js  -->
+    <!-- // INZI WEBFORM VIEWER -->
+    <link rel="stylesheet" href="/resources/webform/css/sform/sform.viewer.2.0.0.min.css" type="text/css">
+
+    <!-- uxui -->
+    <link rel="stylesheet" href="/resources/css/style.css">
+    <script async="" charset="utf-8" src="https://wlog.epostbank.go.kr/static/72585/ntm.js?ver=1753574400000"></script><script async="" charset="utf-8" src="https://wlog.epostbank.go.kr/static/72585/install.js?ver=1753574400000"></script><script type="text/javascript" src="/component/js/ND_massageConfig.do"></script>
+    <script type="text/javascript" src="/resources/js/jquery-3.3.1.js"></script>
+
+    <script type="text/javascript" src="/resources/js/jquery.print.js"></script>
+    <script type="text/javascript" src="/resources/js/jquery-ui.js"></script>
+    <script type="text/javascript" src="/resources/js/slick.js"></script>
+    <script type="text/javascript" src="/resources/js/datepicker.js"></script>
+    <script type="text/javascript" src="/resources/js/ui_global.js"></script>
+    <script type="text/javascript" src="/resources/js/ui_layout_set.js"></script>
+    <script type="text/javascript" src="/resources/js/openworks4/js/validate/openworks.validate.js"></script>
+
+    <script type="text/javascript" src="/resources/js/jquery.mCustomScrollbar.js"></script>
+
+    <script type="text/javascript" src="/resources/js/libs/js-cookie-1.5.1/js.cookie.js"></script>
+    <script type="text/javascript" src="/component/popup/ND_popupConfig.do"></script>
+    <!-- /uxui -->
+    <script type="text/javascript" src="/resources/js/xpert-sys.js"></script>
+    <script type="text/javascript" src="/resources/js/xpert-biz.js"></script>
+    <!-- 채널 공통 -->
+    <script type="text/javascript" src="/resources/js/common/CEutil.js"></script>
+    <script type="text/javascript" src="/resources/js/common/CEcomm.js"></script>
+    <script type="text/javascript" src="/resources/js/common/CEfn.js"></script>
+    <script type="text/javascript" src="/resources/js/common/CEAcomm.js"></script>
+    <!-- /채널 공통 -->
+    <!-- eCRM 로그 수집 -->
+    <script type="text/javascript" charset="utf-8" src="/resources/js/ecrm.js"></script>
+    <!-- /eCRM 로그 수집 -->
+
+    <!-- // INZI WEBFORM VIEWER -->
+    <script type="text/javascript" src="/resources/webform/js/sform/sform.viewer.2.0.0.min.js"></script>
+    <!-- // INZI WEBFORM VIEWER -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+  var CHANNEL_ID		= "cea";
+  var RUNNING_MODE		= "P";
+  var CONTEXT_PATH		= "";
+  var MAIN_MENU_ID 		= "/IPDMDM0000.do";
+  var LOGIN_MENU_ID		= "/IPDMDM00DM.do";
+  var LOGOUT_MENU_ID 	= "/CECMLN0001.do";
+  var LOGIN_YN			= "N";
+  var ROOT_PATH			= "D";
+  var SESSION_GDS_CD	= "200105700101";
+  var STR_URL			= "/WEB-INF/views/biz/ip/dg/di/IPDGDI0000.jsp";
+  var CHANNEL_CODE		= "null";
+  var CSNO				= "";
+  var entFlag			= "N";
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				<!-- 챗봇 보험-->
+
+
+
+
+
+
+<script>
+    var CEA_URL = "https://mall.epostbank.go.kr";
+    var CEB_URL = "https://epostbank.go.kr";
+    var CEC_URL = "https://epostlife.go.kr";
+    var CED_URL = "https://m.epostbank.go.kr";
+    var CEE_URL = "https://m.epostlife.go.kr";
+    var CEG_URL = "https://bot.epostbank.go.kr";
+    var CEGC_URL = "https://bot.epostlife.go.kr:22443";
+
+    var DDM_URL = "http://pddmmt.pobis.kr:20080";
+
+    var isLocal = "N";
+
+    // 2022.11.25 모바일용 추가
+    var IS_MOBILE_APP = "N";
+
+    if(sessionStorage.getItem('LOGIN_SESSION') == null && LOGIN_YN == 'Y'){
+        sessionStorage.removeItem("LOGIN_YN");
+        sessionStorage.removeItem('LOGIN_SESSION');
+        //location.href = "/LNLNDM01DM.do";
+        var strDomain = window.location.search;
+        console.log('로그아웃 처리');
+
+
+        //CEcomm.ajax(CEB_URL+'/LNLNDM01DM.do', '', '', '');
+        if( strDomain.indexOf('IMDMDM0000') == -1 ){
+        	location.href='/cebLogoutMove.do';
+        }
+       }
+
+</script>
+
+	<script type="text/javascript" src="/resources/js/libs/highchart/highcharts.js"></script>
+	<script type="text/javascript" src="/resources/js/libs/highchart/common_util.js"></script>
+    <script type="text/javascript" src="/resources/js/biz/ip/dg/di/IPDGDI0000.js?version=20230810"></script>
+
+  </head>
+  <body style="zoom: 0.7216;">
+    <div class="wrapper">
+      <a href="#content" class="skip_nav">본문 바로가기</a>
+      <header class="header mall_header">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="header_menuId" style="display: none;">ipdgdi0000</div>
+<div class="container">
+	<!-- util menu -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="header_top">
+	<div class="logo mr_1">
+		<h1><a href="/IPDMDM0000.do"><img src="/cms/image/i-ch-main/main-logo/mall_logo.png" onerror="this.src='/resources/img/common/mall_logo.png'" alt="우체국 금융상품"></a></h1>
+	</div>
+	<div class="util_menu">
+		<div class="l">
+
+
+
+					<!-- s: 로그인전 노출영역 -->
+					<div class="util_btn bg_type1">
+						<a href="javascript:void(0);" id="loginfocus" onclick="CEcomm.popup.layerOpen({'modalType':400,'id':'ipdmdm00bp'},$('#loginfocus'),'/IPDMDM00BP.do','');" title="로그인 새창열림"><span>로그인</span></a>
+						<!-- 예금/보험 구분값으로 각각 예금/보험 인증센터를 구분해야함 -->
+
+
+
+
+
+
+
+
+
+
+					</div>
+					<!-- e: 로그인전 노출영역 -->
+
+
+		</div>
+		<div class="r">
+		<div class="util_btn bg_type2">
+			<a href="/cebMove.do?url=IBDMDM0000.do" title="우체국예금 예금홈으로 이동"><span>예금</span></a>
+			<a href="/cebMove.do?url=CDDMDM0000.do" title="우체국예금 카드홈으로 이동"><span>카드</span></a>
+			<a href="/cebMove.do?url=FDDMDM0000.do" title="우체국예금 펀드홈으로 이동"><span>펀드</span></a>
+			<a href="/insuMove.do" title="우체국보험으로 이동"><span>보험</span></a>
+		</div>
+	    <div class="util_btn bg_type1 box_single">
+	    	<a href="/" class="on"><span>금융상품몰</span></a>
+    	</div>
+	    <div class="util_btn bg_type1 box_single">
+			<!-- 예금/보험 구분값으로 각각 예금/보험 고객센터를 구분해야함 -->
+
+
+
+					<a href="/cebMove.do?url=CCDMDM0000.do" title="고객센터"><span>고객센터</span></a>
+
+
+
+		</div>
+	  	</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	function open_pop(url){
+		CEcomm.popup.windowOpen(url,'약관', screen.width/1.2, screen.height/1.2, null);
+	};
+</script>
+	<!-- gnb -->
+
+
+
+<div id="gnb" class="gnb">
+	<ul>
+
+
+
+
+				<li>
+
+
+
+
+							<a href="/IPMPLP0000.do" class="">MY상품</a>
+
+
+
+				</li>
+
+
+
+				<li>
+
+
+
+
+							<a href="/IPINDM0000.do" class="">가입진행중</a>
+
+
+
+				</li>
+
+
+
+				<li>
+
+
+
+
+							<a href="/IPDGDM0000.do" class="current curmenu">예금상품</a>
+
+
+
+				</li>
+
+
+
+				<li>
+
+
+
+
+							<a href="/IPIPDM0000.do" class="">보험상품</a>
+
+
+
+				</li>
+
+
+
+				<li>
+
+
+
+
+							<a href="/IPCDDM0000.do" class="">카드상품</a>
+
+
+
+				</li>
+
+
+
+				<li>
+
+
+
+
+							<a href="/IPFDFL0000.do" class="">펀드상품</a>
+
+
+
+				</li>
+
+
+
+				<li>
+
+
+
+							<a href="/IPPSKE0000.do" class="">상품찾기</a>
+
+
+
+
+
+						<div class="layer_memu_box">
+							<div class="menu_wrap">
+
+
+										<div class="menu_list">
+											<h4><a href="/IPPSKE0000.do">키워드로 찾기</a></h4>
+
+										</div>
+
+
+
+										<div class="menu_list">
+											<h4><a href="/IPPSTG0000.do">상품태그로 찾기</a></h4>
+
+										</div>
+
+
+
+										<div class="menu_list">
+											<h4><a href="/IPPSTS0000.do">테마로 찾기</a></h4>
+
+												<ul>
+
+
+
+
+
+
+
+												</ul>
+
+										</div>
+
+
+
+										<div class="menu_list">
+											<h4><a href="/IPPSPR0000.do">우체국랭킹</a></h4>
+
+										</div>
+
+
+
+										<div class="menu_list">
+											<h4><a href="/IPPSCP0000.do">판매종료상품</a></h4>
+
+										</div>
+
+
+							</div>
+						</div>
+
+				</li>
+
+
+	</ul>
+</div>
+
+	<!-- 퀵메뉴 -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" src="/resources/js/common/internet_quick.js"></script>
+
+<div id="internet_quick" class="quick_menu_wrap">
+	<input type="hidden" id="cur_page" name="cur_page" value="ipdgdi0000">
+	<button type="button" class="btn_quick_open"><span class="sr_only">퀵메뉴 열기</span></button>
+	<div class="quick_menu_inner open">
+
+<!-- 		<h2 class="sr_only">QUICK MENU</h2> -->
+		<h2 class="sr_only">우체국 소개</h2>
+		<div class="quick_tit">
+<!-- 			<a href="javascript:void(0)" class="btn_security"> -->
+			<a href="javascript:void(0)" class="btn_security">
+				<i class="ico_security"></i>
+				<span>우체국 소개</span>
+			</a>
+		</div>
+		<div class="quick_menu">
+			<div class="quick_more">
+				<div class="more_top pb_0">
+					<span class="tit_prod">최근 본 상품</span>
+					<span class="count">2</span>
+				</div>
+				<div class="more_body rev pt_2">
+					<div class="more_inner">
+
+						<!-- s: case01 조회 상품 없음 -->
+						<div class="more_msg view_prod_x" style="display: none;">조회한 상품이 없습니다.</div>
+						<!-- e: case01 조회 상품 없음 -->
+
+						<!-- s: case02 조회 상품 있음 -->
+						<div class="more_msg view_prod_o">
+							<span class="prod_name">우체국럭키신한정기예금</span>
+							<button type="button" class="btn_card_more" title="조회 상품 더보기">
+								더보기 <i class="ico ico_chevron_right_xs ml_2"></i>
+							</button>
+						</div>
+						<!-- e: case02 조회 상품 있음 -->
+					</div>
+
+				</div>
+			</div>
+			<div class="quick_menu_box">
+				<ul class="quick_menu_list">
+
+
+					<li>
+						<a href="javascript:void(0)" title="새 창 열림" class="ico_glossary">
+							<img src="/resources/img/common/ico_quick303.png" alt="금융용어사전">
+							<span>금융용어사전</span>
+						</a>
+					</li>
+					<li>
+						<a href="javascript:void(0)" title="새 창 열림" class="ico_inq">
+							<img src="/resources/img/common/ico_quick006.png" alt="계산기">
+							<span>계산기</span>
+						</a>
+					</li>
+				</ul>
+				<!-- 펀드메뉴 -->
+
+				<!-- 펀드메뉴 -->
+				<ul class="quick_link">
+					<!-- <li><a href="javascript:void(0)" onclick="CEcomm.popup.windowOpen('/cBotMove.do','cbot',null,null,'0');">챗봇(우정톡톡)상담</a></li>  -->
+					<li><a href="javascript:void(0);" onclick="CEcomm.popup.layerOpen({'id':'ipcmdm00fp','modalType':400}, $(this), '/IPCMDM00FP.do', '');">챗봇(우정톡톡)상담</a></li>
+					<li><a href="/cebMove.do" title="우체국예금으로 이동" class="lightyellow txt_default">우체국예금으로 이동</a></li>
+					<li><a href="/insuMove.do" title="우체국보험으로 이동" class="lightpink txt_default">우체국보험으로 이동</a></li>
+				</ul>
+			</div>
+			<button type="button" class="btn_quick_close"><span class="sr_only">퀵메뉴 닫기</span></button>
+		</div>
+	</div>
+</div>
+	<script>
+		var menuId	= ($('#header_menuId').text()).toLowerCase();
+
+		var input	= {
+			'scanId' : menuId
+		};
+		CEcomm.ajax('/IPCMDM00JPR01.do', input , function(result){
+			console.log('IPCMDM00JPR01 :: ' + JSON.stringify(result));
+
+			if (result) {
+				var date		= CEutil.date.getTodayDate();
+				var time		= CEutil.date.getTime();
+				var now			= date + time;
+// 				var param		= result[0];
+				var popupNtcNo	= result.popupNtcNo;
+				var hideCheck	= Number(localStorage.getItem(popupNtcNo + "thPopUpHideTime"));
+
+				if (hideCheck < now) {
+					var option	= {
+						'modalClass': 'main_event_popup',
+						'modalType'	: result.popupArea,
+						'id'		: 'ipcmdm00jp',
+						'bizParam'	: result
+					};
+					CEcomm.popup.layerOpen(option, null, '/IPCMDM00JP.do', '');
+				}
+			}
+
+		}, function(xhr, textStatus, errorThrow){
+    		console.log(xhr.status + ' | ' + textStatus + ' | ' + errorThrow);
+    	});
+	</script>
+</div>
+      </header>
+      <aside class="breadcrumb">
+
+
+
+<div class="container">
+	<ul class="breadcrumb_list">
+
+
+
+					<li>
+						<a href="/" title="펼치기">
+							<i class="ico ico_home"></i>
+							<span class="sr_only">Home</span>
+						</a>
+					</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+						<li><a href="/IPDMDM0000.do" title="펼치기">금융상품몰</a>
+							<div class="sub_list_wrap" style="z-index: 100;">
+								<ul>
+
+
+											<li><a href="/IPDMDM0000.do">금융상품몰</a></li>
+
+
+
+
+								</ul>
+							</div>
+						</li>
+
+
+
+
+
+
+
+
+
+						<li><a href="/IPDGDM0000.do" title="펼치기">예금상품</a>
+							<div class="sub_list_wrap" style="z-index: 100;">
+								<ul>
+
+
+											<li><a href="/IPMPLP0000.do">MY상품</a></li>
+
+
+
+											<li><a href="/IPINDM0000.do">가입진행중</a></li>
+
+
+
+											<li><a href="/IPDGDM0000.do">예금상품</a></li>
+
+
+
+											<li><a href="/IPIPDM0000.do">보험상품</a></li>
+
+
+
+											<li><a href="/IPCDDM0000.do">카드상품</a></li>
+
+
+
+											<li><a href="/IPFDFL0000.do">펀드상품</a></li>
+
+
+
+											<li><a href="">상품찾기</a></li>
+
+
+								</ul>
+							</div>
+						</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+	</ul>
+</div>
+      </aside>
+      <article id="content">
+
+<!-- S: content -->
+<div id="IPDGDI0000" class="cont_body">
+	<form id="contentForm" name="contentForm" method="post">
+		<input type="hidden" name="share_url" id="share_url" value="https://epostbank.go.kr">
+		<input type="hidden" name="gdsCd" id="gdsCd" value="200105700101">
+		<input type="hidden" name="gdsKornNm" id="gdsKornNm" value="우체국럭키신한정기예금">
+		<input type="hidden" name="gdsItmsCd" id="gdsItmsCd" value="200">
+		<input type="hidden" name="joinCustDvsnCdCn" id="joinCustDvsnCdCn" value="E^^개인">
+		<input type="hidden" name="dscsnNo" id="dscsnNo" value="">
+		<input type="hidden" name="dscsnPrgrSn" id="dscsnPrgrSn" value="">
+		<input type="hidden" name="chnlJoinPrgrStagCd" id="chnlJoinPrgrStagCd" value="">
+
+		<div class="product_detail_wrap">
+			<!-- 적금/예금 -->
+			<div class="prd_detail_head">
+				<div class="p_overview_container">
+					<div class="p_overview_item left">
+						<div class="p_name_area">
+							<h3 class="p_name">우체국럭키신한정기예금</h3>
+<!-- 							<div class="label_group"> -->
+<!-- 								<span class="p_label bg_red">NEW</span> -->
+<!-- 								<span class="p_label bg_yellow">추천</span> -->
+<!-- 							</div> -->
+						</div>
+						<div class="p_stat_area">
+							<div class="stat_group">
+
+
+
+										<strong class="p_stat">예금</strong>
+
+
+
+
+
+
+
+
+											<span class="p_stat">일반과세</span>
+
+
+
+
+
+
+
+											<span class="p_stat">비과세</span>
+
+
+
+
+
+							</div>
+
+								<div class="stat_group round_box">
+
+										<span class="p_stat">스마트뱅킹</span>
+
+
+										<span class="p_stat">인터넷뱅킹</span>
+
+
+										<span class="p_stat">우체국창구</span>
+
+								</div>
+
+
+<!-- 							<div class="p_grade" role="text"> -->
+<!-- 								<i class="ico ico_grade" aria-hidden="true"></i> -->
+<!-- 								<span class="sr_only">평점 5점 중</span> -->
+<!-- 								<span>5</span> -->
+<!-- 								<span class="sr_only">점</span> -->
+<!-- 							</div> -->
+						</div>
+					</div>
+				</div>
+				<div class="p_summary">
+					<div class="data_inpuiry_time">
+						조회시간 <em class="time">2025.07.27. 09:21:34</em>
+<!-- 						<button type="button" class="btn_refresh"><span class="sr_only">새로고침</span></button> -->
+					</div>
+					<div class="p_desc_container">
+						<div class="p_desc_item left">
+							<p class="p_explain">카드사와 연계하여 높은 우대혜택을 제공하는 제휴 정기예금</p>
+
+
+								<div class="hashtag_group">
+
+										<span class="hashtag">#신한제휴</span>
+
+										<span class="hashtag">#신한카드특별리워드 연 1.1%</span>
+
+								</div>
+
+						</div>
+						<div class="p_desc_item right">
+
+								<!-- 기본 연이율 -->
+
+
+
+
+
+
+
+								<!-- 상품별 특별우대이율 -->
+
+
+
+
+
+
+
+
+							<p class="note">(12개월 기준, 연이율, 이율기준일 2025.07.10.)</p>
+							<div class="desc_group lg">
+
+									<div class="desc_item">
+										<span class="tit">기본</span>
+										<strong class="desc">2.15%</strong>
+									</div>
+
+
+									<div class="desc_item">
+										<span class="tit">상품별 특별우대</span>
+										<strong class="desc">1.55%</strong>
+									</div>
+
+
+							</div>
+							<div class="rate_cond">
+								<div class="desc_item hori">
+									<span class="tit">우대 이율조건</span>
+
+
+										<div class="desc keyword_group">
+
+												<span class="keyword">예금 첫거래</span>
+
+												<span class="keyword">적금 잔액 실적</span>
+
+												<span class="keyword">신한카드 결제계좌</span>
+
+										</div>
+
+								</div>
+							</div>
+							<!-- e: 우대 조건 ui변경 -->
+						</div>
+					</div>
+					<div class="simple_explain">
+						<dl class="desc_item vertical ico_prd_age">
+							<dt class="tit">가입자격</dt>
+
+
+
+
+
+
+
+
+
+
+
+
+											<dd class="desc">실명의 개인</dd>
+
+
+
+
+
+
+
+
+						</dl>
+						<dl class="desc_item vertical ico_prd_join">
+							<dt class="tit">가입기간</dt>
+							<dd class="desc">최소 12개월 이상 ~ 최대 12개월 이하(월일수)</dd>
+						</dl>
+						<dl class="desc_item vertical ico_prd_limit">
+
+
+
+									<dt class="tit">가입금액</dt>
+									<dd class="desc">최소 1,000,000원 이상 ~ 최대 10,000,000원 이하</dd>
+
+
+						</dl>
+					</div>
+					<div class="p_action_container">
+						<div class="p_action_item">
+							<div class="btn_group">
+<!-- 								<a href="javascript:void(0);" class="btn btn_outline_round" title="다운로드"> -->
+<!-- 									<span>핵심설명서</span> -->
+<!-- 									<i class="ico ico_download" aria-hidden="true"></i> -->
+<!-- 								</a> -->
+
+
+
+
+
+
+
+									<!-- 상품산출물종류코드 : 154 - 예금 상품설명서  -->
+										<a href="javascript:void(0);" class="btn btn_outline_round btn_manual_view" data-eldoc_file_id="30250401133734by" title="상품설명서 새창열림">
+											<span>상품설명서 보기</span>
+<!-- 											<i class="ico ico_download" aria-hidden="true"></i> -->
+										</a>
+
+
+								<!-- 상품코드 : 신한우정적금 이벤트페이지보기 팝업추가 23.07.25. -->
+								<!---->
+							</div>
+						</div>
+						<div class="p_action_item right">
+							<div class="btn_group">
+								<a href="javascript:void(0);" class="btn_icon btn_like" title="관심상품 해제됨">
+									<i class="ico ico_prd_like" aria-hidden="true"></i>
+									<span class="sr_only">좋아요</span>
+								</a>
+								<a href="javascript:void(0);" class="btn_icon btn_cart" title="장바구니 해제됨">
+									<i class="ico ico_prd_cart" aria-hidden="true"></i>
+									<span class="sr_only">장바구니</span>
+								</a>
+								<a href="javascript:void(0);" class="btn_icon btn_url" title="공유하기">
+									<i class="ico ico_prd_share" aria-hidden="true"></i>
+									<span class="sr_only">공유하기</span>
+								</a>
+							</div>
+
+
+									<a href="javascript:void(0);" class="btn btn_xl btn_primary ml_2 btnCMGYFP01AS">가입하기</a>
+
+
+
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- //적금/예금 -->
+
+			<div class="section">
+				<div class="join_stats">
+					<div class="l">
+						<h4>연령대별 가입 현황</h4>
+						<div>
+							<div class="box_cont" style="display:flex; justify-content:center; align-items:center; font-size: 25pt;">
+								<div class="graph_area" id="graphArea01">
+									<div id="graph01" data-highcharts-chart="0"><div class="highcharts-container" id="highcharts-0" style="position: relative; overflow: hidden; width: 1000px; height: 400px; text-align: left; line-height: normal; z-index: 0; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);"><svg version="1.1" style="font-family:&quot;Lucida Grande&quot;, &quot;Lucida Sans Unicode&quot;, Arial, Helvetica, sans-serif;font-size:12px;" xmlns="http://www.w3.org/2000/svg" width="1000" height="400"><desc>Created with Highcharts 4.2.1</desc><defs><clipPath id="highcharts-1"><rect x="0" y="0" width="946" height="355"></rect></clipPath></defs><rect x="0" y="0" width="1000" height="400" strokeWidth="0" fill="#FFFFFF" class=" highcharts-background"></rect><g class="highcharts-grid" zIndex="1"></g><g class="highcharts-grid" zIndex="1"></g><g class="highcharts-axis" zIndex="2"><path fill="none" d="M 178.5 365 L 178.5 375" stroke="#C0D0E0" stroke-width="1" opacity="1"></path><path fill="none" d="M 313.5 365 L 313.5 375" stroke="#C0D0E0" stroke-width="1" opacity="1"></path><path fill="none" d="M 448.5 365 L 448.5 375" stroke="#C0D0E0" stroke-width="1" opacity="1"></path><path fill="none" d="M 584.5 365 L 584.5 375" stroke="#C0D0E0" stroke-width="1" opacity="1"></path><path fill="none" d="M 719.5 365 L 719.5 375" stroke="#C0D0E0" stroke-width="1" opacity="1"></path><path fill="none" d="M 854.5 365 L 854.5 375" stroke="#C0D0E0" stroke-width="1" opacity="1"></path><path fill="none" d="M 990.5 365 L 990.5 375" stroke="#C0D0E0" stroke-width="1" opacity="1"></path><path fill="none" d="M 43.5 365 L 43.5 375" stroke="#C0D0E0" stroke-width="1" opacity="1"></path><path fill="none" d="M 44 365.5 L 990 365.5" stroke="#C0D0E0" stroke-width="1" zIndex="7"></path></g><g class="highcharts-axis" zIndex="2"></g><g class="highcharts-series-group" zIndex="3"><g class="highcharts-series highcharts-series-0 highcharts-tracker" zIndex="0.1" transform="translate(44,10) scale(1 1)" style="" clip-path="url(#highcharts-1)"><rect x="35" y="356" width="65" height="0" fill="#FF0000" rx="0" ry="0"></rect><rect x="170" y="295" width="65" height="61" fill="#FF8000" rx="0" ry="0"></rect><rect x="305" y="209" width="65" height="147" fill="#FFFF00" rx="0" ry="0"></rect><rect x="441" y="49" width="65" height="307" fill="#80FF00" rx="0" ry="0"></rect><rect x="576" y="68" width="65" height="288" fill="#0000FF" rx="0" ry="0"></rect><rect x="711" y="309" width="65" height="47" fill="#000099" rx="0" ry="0"></rect><rect x="846" y="334" width="65" height="22" fill="#7F00FF" rx="0" ry="0"></rect></g><g class="highcharts-markers highcharts-series-0" zIndex="0.1" transform="translate(44,10) scale(1 1)" clip-path="none"></g></g><g class="highcharts-data-labels highcharts-series-0 highcharts-tracker" zIndex="6" visibility="visible" transform="translate(44,10) scale(1 1)" opacity="1" style=""><g zIndex="1" style="" transform="translate(53,334)"><text x="5" zIndex="1" style="font-size:11px;font-weight:bold;color:#000000;text-shadow:0 0 6px #FFFFFF, 0 0 3px #FFFFFF;fill:#000000;text-rendering:geometricPrecision;" y="16"><tspan>0 명</tspan></text></g><g zIndex="1" style="" transform="translate(185,273)"><text x="5" zIndex="1" style="font-size:11px;font-weight:bold;color:#000000;text-shadow:0 0 6px #FFFFFF, 0 0 3px #FFFFFF;fill:#000000;text-rendering:geometricPrecision;" y="16"><tspan>60 명</tspan></text></g><g zIndex="1" style="" transform="translate(317,187)"><text x="5" zIndex="1" style="font-size:11px;font-weight:bold;color:#000000;text-shadow:0 0 6px #FFFFFF, 0 0 3px #FFFFFF;fill:#000000;text-rendering:geometricPrecision;" y="16"><tspan>145 명</tspan></text></g><g zIndex="1" style="" transform="translate(453,27)"><text x="5" zIndex="1" style="font-size:11px;font-weight:bold;color:#000000;text-shadow:0 0 6px #FFFFFF, 0 0 3px #FFFFFF;fill:#000000;text-rendering:geometricPrecision;" y="16"><tspan>303 명</tspan></text></g><g zIndex="1" style="" transform="translate(588,46)"><text x="5" zIndex="1" style="font-size:11px;font-weight:bold;color:#000000;text-shadow:0 0 6px #FFFFFF, 0 0 3px #FFFFFF;fill:#000000;text-rendering:geometricPrecision;" y="16"><tspan>284 명</tspan></text></g><g zIndex="1" style="" transform="translate(726,287)"><text x="5" zIndex="1" style="font-size:11px;font-weight:bold;color:#000000;text-shadow:0 0 6px #FFFFFF, 0 0 3px #FFFFFF;fill:#000000;text-rendering:geometricPrecision;" y="16"><tspan>46 명</tspan></text></g><g zIndex="1" style="" transform="translate(861,312)"><text x="5" zIndex="1" style="font-size:11px;font-weight:bold;color:#000000;text-shadow:0 0 6px #FFFFFF, 0 0 3px #FFFFFF;fill:#000000;text-rendering:geometricPrecision;" y="16"><tspan>22 명</tspan></text></g></g><g class="highcharts-legend" zIndex="7"><g zIndex="1"><g></g></g></g><g class="highcharts-axis-labels highcharts-xaxis-labels" zIndex="7"><text x="111.57142857142857" style="color:#606060;cursor:default;font-size:11px;fill:#606060;width:130px;text-overflow:clip;" text-anchor="middle" transform="translate(0,0)" y="384" opacity="1"><tspan>10대 이하</tspan></text><text x="246.71428571428572" style="color:#606060;cursor:default;font-size:11px;fill:#606060;width:130px;text-overflow:clip;" text-anchor="middle" transform="translate(0,0)" y="384" opacity="1">20대</text><text x="381.85714285714283" style="color:#606060;cursor:default;font-size:11px;fill:#606060;width:130px;text-overflow:clip;" text-anchor="middle" transform="translate(0,0)" y="384" opacity="1">30대</text><text x="517" style="color:#606060;cursor:default;font-size:11px;fill:#606060;width:130px;text-overflow:clip;" text-anchor="middle" transform="translate(0,0)" y="384" opacity="1">40대</text><text x="652.1428571428571" style="color:#606060;cursor:default;font-size:11px;fill:#606060;width:130px;text-overflow:clip;" text-anchor="middle" transform="translate(0,0)" y="384" opacity="1">50대</text><text x="787.2857142857142" style="color:#606060;cursor:default;font-size:11px;fill:#606060;width:130px;text-overflow:clip;" text-anchor="middle" transform="translate(0,0)" y="384" opacity="1">60대</text><text x="922.4285714285714" style="color:#606060;cursor:default;font-size:11px;fill:#606060;width:130px;text-overflow:clip;" text-anchor="middle" transform="translate(0,0)" y="384" opacity="1"><tspan>70대 이상</tspan></text></g><g class="highcharts-axis-labels highcharts-yaxis-labels" zIndex="7"><text x="29" style="color:#606060;cursor:default;font-size:11px;fill:#606060;width:320px;text-overflow:clip;" text-anchor="end" transform="translate(0,0)" y="370" opacity="1">0</text><text x="29" style="color:#606060;cursor:default;font-size:11px;fill:#606060;width:320px;text-overflow:clip;" text-anchor="end" transform="translate(0,0)" y="319" opacity="1">50</text><text x="29" style="color:#606060;cursor:default;font-size:11px;fill:#606060;width:320px;text-overflow:clip;" text-anchor="end" transform="translate(0,0)" y="268" opacity="1">100</text><text x="29" style="color:#606060;cursor:default;font-size:11px;fill:#606060;width:320px;text-overflow:clip;" text-anchor="end" transform="translate(0,0)" y="218" opacity="1">150</text><text x="29" style="color:#606060;cursor:default;font-size:11px;fill:#606060;width:320px;text-overflow:clip;" text-anchor="end" transform="translate(0,0)" y="167" opacity="1">200</text><text x="29" style="color:#606060;cursor:default;font-size:11px;fill:#606060;width:320px;text-overflow:clip;" text-anchor="end" transform="translate(0,0)" y="116" opacity="1">250</text><text x="29" style="color:#606060;cursor:default;font-size:11px;fill:#606060;width:320px;text-overflow:clip;" text-anchor="end" transform="translate(0,0)" y="65" opacity="1">300</text><text x="29" style="color:#606060;cursor:default;font-size:11px;fill:#606060;width:320px;text-overflow:clip;" text-anchor="end" transform="translate(0,0)" y="15" opacity="1">350</text></g><g class="highcharts-tooltip" zIndex="8" style="cursor:default;padding:0;pointer-events:none;white-space:nowrap;" transform="translate(0,-9999)"><path fill="none" d="M 3.5 0.5 L 13.5 0.5 C 16.5 0.5 16.5 0.5 16.5 3.5 L 16.5 13.5 C 16.5 16.5 16.5 16.5 13.5 16.5 L 3.5 16.5 C 0.5 16.5 0.5 16.5 0.5 13.5 L 0.5 3.5 C 0.5 0.5 0.5 0.5 3.5 0.5" isShadow="true" stroke="black" stroke-opacity="0.049999999999999996" stroke-width="5" transform="translate(1, 1)"></path><path fill="none" d="M 3.5 0.5 L 13.5 0.5 C 16.5 0.5 16.5 0.5 16.5 3.5 L 16.5 13.5 C 16.5 16.5 16.5 16.5 13.5 16.5 L 3.5 16.5 C 0.5 16.5 0.5 16.5 0.5 13.5 L 0.5 3.5 C 0.5 0.5 0.5 0.5 3.5 0.5" isShadow="true" stroke="black" stroke-opacity="0.09999999999999999" stroke-width="3" transform="translate(1, 1)"></path><path fill="none" d="M 3.5 0.5 L 13.5 0.5 C 16.5 0.5 16.5 0.5 16.5 3.5 L 16.5 13.5 C 16.5 16.5 16.5 16.5 13.5 16.5 L 3.5 16.5 C 0.5 16.5 0.5 16.5 0.5 13.5 L 0.5 3.5 C 0.5 0.5 0.5 0.5 3.5 0.5" isShadow="true" stroke="black" stroke-opacity="0.15" stroke-width="1" transform="translate(1, 1)"></path><path fill="rgba(249, 249, 249, .85)" d="M 3.5 0.5 L 13.5 0.5 C 16.5 0.5 16.5 0.5 16.5 3.5 L 16.5 13.5 C 16.5 16.5 16.5 16.5 13.5 16.5 L 3.5 16.5 C 0.5 16.5 0.5 16.5 0.5 13.5 L 0.5 3.5 C 0.5 0.5 0.5 0.5 3.5 0.5"></path><text x="8" zIndex="1" style="font-size:12px;color:#333333;fill:#333333;" y="20"></text></g></svg></div></div>
+								</div>
+							</div>
+							<div class="sr_only">
+								<table>
+									<caption>연령대별 가입 현황 정보 제공</caption>
+									<colgroup>
+										<col>
+										<col>
+										<col>
+										<col>
+										<col>
+										<col>
+										<col>
+									</colgroup>
+									<thead>
+										<tr>
+											<th scope="col">10대이하</th>
+											<th scope="col">20대</th>
+											<th scope="col">30대</th>
+											<th scope="col">40대</th>
+											<th scope="col">50대</th>
+											<th scope="col">60대</th>
+											<th scope="col">70대이상</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>-</td>
+											<td>60명</td>
+											<td>145명</td>
+											<td>303명</td>
+											<td>284명</td>
+											<td>46명</td>
+											<td>22명</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="section">
+				<div class="tab_menu_type3">
+					<ul><li><a href="javascript:void(0);" data-cnt="1" class="current" title="상품정보 선택됨"><span>상품정보</span></a></li><li><a href="javascript:void(0);" data-cnt="2"><span>우대조건</span></a></li><li><a href="javascript:void(0);" data-cnt="3"><span>유의사항</span></a></li>
+						<li><a href="javascript:void(0);" data-cnt="8"><span>금리</span></a></li>
+						<li><a href="javascript:void(0);" data-cnt="9"><span>약관/설명서</span></a></li>
+					</ul>
+				</div>
+
+				<div class="tab_panel"><div class="tab prd_desc_wrap" id="tab1"><div class="prd_desc">
+<h3 class="tit4">상품특징</h3>
+<ul class="list list1">
+<li>우체국예금 및 신한카드 이용 고객을 위한 제휴 정기예금으로 ‘우대이율’ 및 신한카드 ‘특별리워드’ 혜택 제공</li>
+</ul>
+</div>
+<div class="prd_desc">
+<h3 class="tit4">판매기간</h3>
+<ul class="list list1">
+<li>2025.4.1. ~ 2025.10.31.</li>
+</ul>
+</div>
+<div class="prd_desc">
+<h3 class="tit4">예금종류</h3>
+<ul class="list list1">
+<li>거치식 예금</li>
+</ul>
+</div>
+<div class="prd_desc">
+<h3 class="tit4">가입대상</h3>
+<ul class="list list1">
+<li>19세 이상 실명의 개인 (1인 1계좌)</li>
+</ul>
+</div>
+<div class="prd_desc">
+<h3 class="tit4">가입기간</h3>
+<ul class="list list1">
+<li>12개월</li>
+</ul>
+</div>
+<div class="prd_desc">
+<h3 class="tit4">저축한도</h3>
+<ul class="list list1">
+<li>100만원 이상 1,000만원 이하(만원 단위)</li>
+</ul>
+</div>
+<div class="prd_desc">
+<h3 class="tit4">적용이자율</h3>
+<ul class="list list1">
+<li>기본이자율 : 신규 가입일 현재 정기예금 1년 기본이자율</li>
+<li>우대이자율 : 제공조건에 따른 차등이자율 적용(최고 연 0.4%p)</li>
+</ul>
+</div>
+<div class="prd_desc">
+<h3 class="tit4">제휴이벤트</h3>
+<ul class="list list1">
+<li>신한카드 제휴이벤트 이용조건에 따라 특별리워드 제공(신한카드사 제공)</li>
+</ul>
+</div>
+<div class="prd_desc">
+<h3 class="tit4">이자지급방식</h3>
+<ul class="list list1">
+<li>만기일시지급식</li>
+</ul>
+</div>
+<div class="prd_desc">
+<h3 class="tit4">과세구분</h3>
+<ul class="list list1">
+<li>일반과세, 비과세종합저축</li>
+</ul>
+</div>
+<div class="prd_desc">
+<h3 class="tit4">신규가입 및 해지</h3>
+<ul class="list list1">
+<li>우체국창구, 인터넷뱅킹, 스마트뱅킹</li>
+</ul>
+</div>
+<div class="prd_desc">
+<h3 class="tit4">예금자보호</h3>
+<ul class="list list1">
+<li>우체국예금보험에관한법률 제4조에 의거, 우체국예금은 국가가 전액지급 보장</li>
+</ul>
+</div>
+<div class="prd_desc">
+<h3 class="tit4">기타사항</h3>
+<ul class="list list1">
+<li>예금담보대월 가능</li>
+</ul>
+</div>
+<div class="prd_desc">
+<h3 class="tit4">휴면예금 및 국고귀속</h3>
+<ul class="list list1">
+<li>‘우체국예금·보험에 관한 법률’ 제24조에 따라 국고에 귀속될 수 있으며 원권리자는 국고귀속된 휴면예금을 같은 법 제24조의2에 따라 지급 청구할 수 있습니다.</li>
+</ul>
+</div></div><div class="tab prd_desc_wrap" id="tab2" style="display: none;"><div class="prd_desc">
+<h3 class="tit4">상품 우대이율 : 제공조건에 따른 차등이자율 적용(최고 연 0.4%p)</h3>
+<div class="tbl tbl_data tbl_row_data">
+<table style="width: 100%;"><caption class="sr_only">상품 우대이율 : 제공조건에 따른 차등이자율 적용(최고 연 0.4%p)</caption><colgroup> <col style="width: 20%;"> <col> <col style="width: 15%;"> </colgroup>
+<thead>
+<tr>
+<th style="width: 19.7271%;" scope="col">구분</th>
+<th style="width: 63.9271%;" scope="col">제공조건</th>
+<th style="width: 15.4963%;" scope="col">우대이율 (단위 : 연 %p)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th class="bg_white txt_c" style="width: 19.7271%;" scope="row">우체국 정기예금<br>첫 거래 고객</th>
+<td class="txt_l" style="width: 63.9271%;">신규 가입일 전일로부터 최근 6개월 이내 우체국 정기예금의 가입, 유지, 해지가 없는 경우로 가입 시점에 적용</td>
+<td style="width: 15.4963%;">0.2</td>
+</tr>
+<tr>
+<th class="bg_white txt_c" style="width: 19.7271%;" scope="row">적립식 예금 잔액 실적</th>
+<td class="txt_l" style="width: 63.9271%;">신규 가입일의 다음다음달 말일 기준으로 우체국 적립식 예금 잔액이 10만원 이상인 경우 적용</td>
+<td style="width: 15.4963%;">0.2</td>
+</tr>
+<tr>
+<th class="bg_white txt_c" style="width: 19.7271%;" scope="row">신한카드 결제대금<br>출금실적&nbsp;</th>
+<td class="txt_l" style="width: 63.9271%;">신한카드 결제계좌를 우체국 수시입출식 예금으로 지정하고 신규 가입일부터 만기일의 전전월 말일까지 기간 중 신한카드 결제대금 출금실적*이 있는 경우 적용
+<p class="txt_refer">*신용카드 즉시결제(선결제, 연체결제 등) 제외, 승인취소∙매입취소는 취소한 당월 실적에서 제외</p>
+</td>
+<td style="width: 15.4963%;">0.2</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="prd_desc">
+<h3 class="tit4">신한카드 특별리워드 연 1.1%</h3>
+<ul class="list list1">
+<li>신한카드 제휴이벤트 이용조건에 따라 「특별리워드」를 신한카드사에서 제공
+<p class="txt_refer">‘특별리워드’ 제공의 제휴이벤트 기간, 대상, 내용, 조건 등 자세한 사항은 신한카드사 홈페이지(제휴이벤트페이지, <a href="https://www.shinhancard.com" target="_blank" rel="noopener">https://www.shinhancard.com</a> )등을 통해 게시하며, 해당 사항이 사전에 고지된 바와 다르게 변경될 경우 신한카드사 및 우체국예금보험 홈페이지 등을 통해 사전에 안내합니다.</p>
+</li>
+</ul>
+</div></div><div class="tab prd_desc_wrap" id="tab3" style="display: none;"><h3 class="tit4">유의사항</h3>
+<ul>
+<li style="list-style-type: none;">
+<ul class="list list1">
+<ul class="list list1">
+<ul class="list list1">
+<ul class="list list1">
+<ul class="list list1">
+<li>이 설명서는「우체국금융 소비자보호 규정」에 따라 금융상품에 관한 중요한 사항을 이해하기 쉽도록 설명하기 위해 제공되는 자료입니다.</li>
+<li>이 예금 제휴이벤트의 <strong>「특별리워드」</strong>는 만기계좌에 한하여 적용되며, 자세한 사항은 <strong>신한카드사 고객센터(1544-7000)</strong>에서 안내 가능합니다.</li>
+<li>이 예금의 우대이자율은 만기해지계좌에 한하여 적용되며, 만기 전 해지할 경우 약정한 이자율보다 낮은 중도해지이자율이 적용됩니다.</li>
+<li>이 예금의 우대조건의 충족여부에 따라 이자율이 제공되며, 약정지급이자액이 원단위까지 계산될 경우 국고금관리법에 의해 10원단위 미만은 절사하여 지급합니다.</li>
+<li>압류, 사고신고, 질권설정 등 법적 지급제한 사유가 있는 계좌는 만기 자동해지가 불가합니다.</li>
+<li>상품 가입 시에는 가입일 현재 우체국창구 또는 인터넷 홈페이지 등에 게시된 상품 내용을 적용하며, 이자율ㆍ서비스 등의 상품내용은 변동될 수 있습니다.</li>
+<li>대상카드는 신한카드 Mr.Life, 신한카드 Point Plan 입니다.</li>
+<li>대상카드의 연회비(1만5천원-2만3천원) 및 서비스 등에 관한 상세사항은 홈페이지를 통해 확인하시기 바랍니다.</li>
+<li>기간 내 본인명의의 신용카드에 한해 1인 1회 참여 가능합니다.</li>
+<li>계약 체결 전, 카드 상품별 연회비, 이용조건 등 상세사항은 금융상품설명서와 약관을 확인하시기 바랍니다.</li>
+<li>금융소비자는 금융소비자보호법 제19조 제1항에 따라 해당 금융상품 또는 서비스에 대하여 설명 받을 권리가 있습니다.</li>
+<li><strong>연체이자율은 '회원별, 이용상품별 약정금리+최대 연 3%, 법정 최고금리(연 20%)이내'에서 적용됩니다.</strong> <br><strong>단, 연체 발생 시점에 약정금리가 없는 경우 아래와 같이 적용함</strong> <br><strong>- 일시불 거래 연체 시 : 거래 발생 시점의 최소기간(2개월) 유이자 할부 금리</strong><br><strong>- 무이자 할부 거래 연체 시 : 거래 발생 시점의 동일한 할부 계약기간의 유이자 할부 금리</strong><br><strong>- 그 외의 경우 : 약정금리는 상법상 상사법정이율과 상호금융 가계자금대출금리*중 높은 금리 적용</strong><br><strong>* 한국은행에서 매월 발표하는 가장 최근의 비은행 금융기관 가중평균대출금리(신규대출기준)</strong></li>
+<li>신용카드 발급이 부적정한 경우(개인신용평점 낮음, 연체(단기포함) 사유 발생 등), 카드발급이 제한될 수 있습니다.</li>
+<li>카드 이용대금과 이에 수반되는 모든 수수료는 고객님께서 지정하신 결제일에 상환하여야 합니다.</li>
+<li><strong>상환능력에 비해 신용카드 사용액이 과도할 경우, 귀하의 개인시용평점이 하락할 수 있습니다.</strong></li>
+<li><strong>개인신용평점 하락 시 금융거래와 관련된 불이익이 발생할 수 있습니다.</strong></li>
+<li><strong>일정기간 신용카드 이용대금을 연체할 경우, 결제일이 도래하지 않은 모든 신용카드 이용대금을 변제할 의무가 발생할 수 있습니다.</strong></li>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+<br>
+<ul class="list list1">
+<ul class="list list1">
+<ul class="list list1">
+<li>준법감시 심의필 제20250325-Cpi-002호(2025.03.25.~2026.03.24.)</li>
+</ul>
+</ul>
+</ul>
+</li>
+</ul>
+<div class="box box_border prd_notice">이 예금은 우정사업본부 예금사업과에서 개발한 예금상품입니다. 상품가입 후 의문사항 또는 불만(민원)이 있을 경우 우체국금융고객센터(1599-1900, 1588-1900), 인터넷홈페이지<a class="link" title="새창으로 열림" href="www.epostbank.go.kr" target="_blank" rel="noopener">(www.epostbank.go.kr)</a>에 문의할 수 있고, 과학기술정보통신부<a class="link" title="새창으로 열림" href="wwww.msit.go.kr" target="_blank" rel="noopener">(www.msit.go.kr)</a> 또는 국민신문고<a class="link" title="새창으로 열림" href="wwww.epeople.go.kr" target="_blank" rel="noopener">(www.epeople.go.kr)</a>에 전자민원을 신청할 수 있습니다.</div></div>
+
+					<!-- 금리 -->
+					<div class="prd_desc_wrap tab" id="tab8" style="display: none;">
+
+						<div class="mb_8 tbl_box_top">
+							<h4 class="tit4">금리조회 선택</h4>
+							<div class="search_box2 pstg_table">
+								<div class="selectbox_wrap" style="min-width: 500px;">
+									<dl>
+										<dt><a href="javascript:void(0);" title="상품명 선택 목록 펼치기"><span class="selected_pstg_nm">우체국럭키신한정기예금</span></a></dt>
+										<dd>
+											<ul><li><a class="pstg_select"><span style="overflow: hidden;">우체국럭키신한정기예금</span></a></li></ul>
+										</dd>
+									</dl>
+								</div>
+								<button type="button" class="btn btn_md btn_outline_default ml_2 pl_7 pr_7 btnIrrtSubmit">검색</button>
+							</div>
+						</div>
+
+						<div class="rint_table"><div class="prd_desc"><h4 class="tit4">기본금리</h4><div class="tbl_pdt"><table><caption class="sr_only">기본금리 상세정보이며 기간/금액, 기본 이율 (%), 특별우대이율(%) 정보를 제공하고 있습니다.</caption><colgroup><col style="width: 10%"><col style="width: 12%"><col><col style="width: 15%"><col style="width: 15%"><col style="width: 20%"></colgroup><thead><tr><th scope="col" colspan="2">구분</th><th scope="col">기간/금액</th><th scope="col">기본 이율 (%)</th><th scope="col">특별우대이율 (%)</th><th scope="col">비고</th></tr></thead><tbody><tr><td rowspan="1" colspan="2" class="txt_c">개인</td><td scope="row" class="d_td">1년</td><td class="txt_c">2.15</td><td class="txt_c">최고 0.4</td><td class="txt_c"> 인터넷우대 0.05</td></tr></tbody></table></div></div><div class="prd_desc"><h4 class="tit4">중도해지금리</h4><div class="tbl_pdt"><table><caption class="sr_only">중도해지금리 상세정보이며 기간/금액, 기본 이율 (%), 특별우대이율(%) 정보를 제공하고 있습니다.</caption><colgroup><col style="width: 10%"><col style="width: 12%"><col><col style="width: 15%"><col style="width: 30%"></colgroup><thead><tr><th scope="col" colspan="2">구분</th><th scope="col">기간/금액</th><th scope="col">기본 이율 (%)</th><th scope="col">특별우대이율 (%)</th></tr></thead><tbody><tr><td rowspan="5" colspan="2" class="txt_c">중도해지시</td><td scope="row" class="d_td">1개월 미만</td><td class="txt_c">0.10%</td><td class="txt_c">-</td></tr><tr><td scope="row" class="d_td">1개월~ 3개월 미만</td><td class="txt_c">기본이율×50%×경과월수/계약월수<br>최저금리 0.15%</td><td class="txt_c">-</td></tr><tr><td scope="row" class="d_td">3개월~ 6개월 미만</td><td class="txt_c">기본이율×60%×경과월수/계약월수<br>최저금리 0.15%</td><td class="txt_c">-</td></tr><tr><td scope="row" class="d_td">6개월~ 9개월 미만</td><td class="txt_c">기본이율×70%×경과월수/계약월수<br>최저금리 0.20%</td><td class="txt_c">-</td></tr><tr><td scope="row" class="d_td">9개월~ 12개월 미만</td><td class="txt_c">기본이율×80%×경과월수/계약월수<br>최저금리 0.20%</td><td class="txt_c">-</td></tr></tbody></table></div></div><div class="prd_desc"><h4 class="tit4">만기후금리</h4><div class="tbl_pdt"><table><caption class="sr_only">만기후금리 상세정보이며 기간/금액, 기본 이율 (%), 특별우대이율(%) 정보를 제공하고 있습니다.</caption><colgroup><col style="width: 10%"><col style="width: 12%"><col><col style="width: 15%"><col style="width: 30%"></colgroup><thead><tr><th scope="col" colspan="2">구분</th><th scope="col">기간/금액</th><th scope="col">기본 이율 (%)</th><th scope="col">특별우대이율 (%)</th></tr></thead><tbody><tr><td rowspan="2" colspan="2" class="txt_c">만기후이율</td><td scope="row" class="d_td">6개월 이내</td><td class="txt_c">만기일 당시 정기예금 가입기간별 기본이자율의 30% <br>( ※ 2020.6.22.가입(재예치)부터 적용 )</td><td class="txt_c">-</td></tr><tr><td scope="row" class="d_td">6개월 초과 </td><td class="txt_c">만기일 당시 보통예금 기본이자율</td><td class="txt_c">-</td></tr></tbody></table></div></div></div>
+						<div class="prd_desc ref_mttr" style="display: none;">
+							<h4 class="tit4">참고사항</h4>
+							<div class="box">
+								<ul class="list list2">
+									<li class="ref_mttr_desc"></li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<!-- //금리 -->
+
+					<!-- 약관 -->
+					<div class="prd_desc_wrap tab" id="tab9" style="display: none;">
+						<div class="terms_box_list">
+
+								<div class="prd_term_box" data-eldoc_file_id="2025032716042181">
+
+									<strong class="tit">예금기본약관</strong>
+									<div class="term_util_btns">
+										<a href="javascript:void(0);" class="btn_term terms_view" title="예금기본약관 새창열림">
+											<i class="ico ico_terms_view" aria-hidden="true"></i>
+											<span class="txt">보기</span>
+										</a>
+										<a href="javascript:void(0);" class="btn_term terms_save" title="예금기본약관 다운로드">
+											<i class="ico ico_terms_save" aria-hidden="true"></i>
+											<span class="txt">저장</span>
+										</a>
+										<a href="javascript:void(0);" class="btn_term terms_share" title="예금기본약관 약관 공유">
+											<i class="ico ico_terms_share" aria-hidden="true"></i>
+											<span class="txt">공유</span>
+										</a>
+									</div>
+								</div>
+
+								<div class="prd_term_box" data-eldoc_file_id="30250327161616ck">
+
+									<strong class="tit">요구불/거치식/적립식약관</strong>
+									<div class="term_util_btns">
+										<a href="javascript:void(0);" class="btn_term terms_view" title="요구불/거치식/적립식약관 새창열림">
+											<i class="ico ico_terms_view" aria-hidden="true"></i>
+											<span class="txt">보기</span>
+										</a>
+										<a href="javascript:void(0);" class="btn_term terms_save" title="요구불/거치식/적립식약관 다운로드">
+											<i class="ico ico_terms_save" aria-hidden="true"></i>
+											<span class="txt">저장</span>
+										</a>
+										<a href="javascript:void(0);" class="btn_term terms_share" title="요구불/거치식/적립식약관 약관 공유">
+											<i class="ico ico_terms_share" aria-hidden="true"></i>
+											<span class="txt">공유</span>
+										</a>
+									</div>
+								</div>
+
+								<div class="prd_term_box" data-eldoc_file_id="202503271601577a">
+
+									<strong class="tit">상품특약</strong>
+									<div class="term_util_btns">
+										<a href="javascript:void(0);" class="btn_term terms_view" title="상품특약 새창열림">
+											<i class="ico ico_terms_view" aria-hidden="true"></i>
+											<span class="txt">보기</span>
+										</a>
+										<a href="javascript:void(0);" class="btn_term terms_save" title="상품특약 다운로드">
+											<i class="ico ico_terms_save" aria-hidden="true"></i>
+											<span class="txt">저장</span>
+										</a>
+										<a href="javascript:void(0);" class="btn_term terms_share" title="상품특약 약관 공유">
+											<i class="ico ico_terms_share" aria-hidden="true"></i>
+											<span class="txt">공유</span>
+										</a>
+									</div>
+								</div>
+
+								<div class="prd_term_box" data-eldoc_file_id="30250401133734by">
+
+									<strong class="tit">상품설명서</strong>
+									<div class="term_util_btns">
+										<a href="javascript:void(0);" class="btn_term terms_view" title="상품설명서 새창열림">
+											<i class="ico ico_terms_view" aria-hidden="true"></i>
+											<span class="txt">보기</span>
+										</a>
+										<a href="javascript:void(0);" class="btn_term terms_save" title="상품설명서 다운로드">
+											<i class="ico ico_terms_save" aria-hidden="true"></i>
+											<span class="txt">저장</span>
+										</a>
+										<a href="javascript:void(0);" class="btn_term terms_share" title="상품설명서 약관 공유">
+											<i class="ico ico_terms_share" aria-hidden="true"></i>
+											<span class="txt">공유</span>
+										</a>
+									</div>
+								</div>
+
+						</div>
+					</div>
+					<!-- //약관 -->
+				</div>
+			</div>
+		</div>
+
+    </form>
+</div>
+<!-- E: content -->
+
+
+      </article>
+      <footer class="footer">
+
+<a href="javascript:void(0);" class="btn_top">
+	<i class="ico_btn_top"></i>
+	<span>TOP<em class="sr_only">으로 이동</em></span>
+</a>
+<div class="container">
+
+	<div class="clfx">
+		<!-- s: 마크업 추가 4월4주차 -->
+		<div class="f_l">
+			<!-- e: 마크업 추가 4월4주차 -->
+			<div class="footer_cont">
+				<ul>
+					<li>우체국 금융 고객센터(발신자 부담)</li>
+					<li><strong>국내:</strong> <strong>예금</strong> 1599-1900, 1588-1900, 042-612-6000 / <strong>보험</strong>
+						1599-0100,
+						042-336-6898
+					</li>
+					<li><strong>해외:</strong> <strong>예금</strong> 82-42-612-6000 / <strong>보험</strong> 82-42-336-6898
+					</li>
+					<!-- e: 리스트 추가 및 변경 : 12월 1주차 2022-12-06 -->
+					<li><strong>평일:</strong> 09:00~18:00 <strong>주말ㆍ공휴일:</strong> 09:00~18:00 (분실ㆍ사고접수만 가능, 보험업무휴무)</li>
+					<li>공동인증서 발급 및 갱신문의(한국정보인증): 1577-8787 (평일: 09:00~18:00)</li>
+				</ul>
+				<p class="copyright">COPYRIGHTⓒ 2021 KOREAPOST. ALL RIGHTS RESERVED</p>
+			</div>
+			<!-- s: 마크업 추가 4월4주차 -->
+		</div>
+		<div class="f_r">
+			<div class="acc_area">
+				<a title="pdf 파일보기" href="/resources/img/common/WA_certification_mall.pdf" target="_blank">
+					<img class="wa" alt="(사)한국장애인단체총연합회 한국웹접근성인증평가원 웹 접근성 우수사이트 인증마크(WA인증마크)" src="/resources/img/common/img_WAmark.png" width="98px" height="67px">
+				</a>
+			</div>
+			<div class="sns_area">
+				<ul>
+					<li>
+						<!-- 링크 추가 4월4주차 -->
+						<a href="javascript:void(0);" target="_blank" title="새창 바로가기" onclick="window.open('https://www.facebook.com/epost.kr');">
+							<img src="/resources/img/common/sns_icon_1.png" alt="페이스북 바로가기">
+						</a>
+					</li>
+					<li>
+						<!-- 링크 추가 4월4주차 -->
+						<a href="javascript:void(0);" target="_blank" title="새창 바로가기" onclick="window.open('https://www.instagram.com/accounts/login/?next=/korea.post');">
+							<img src="/resources/img/common/sns_icon_2.png" alt="인스타 바로가기">
+						</a>
+					</li>
+					<li>
+						<!-- 링크 추가 4월4주차 -->
+						<a href="javascript:void(0);" target="_blank" title="새창 바로가기" onclick="window.open('https://www.youtube.com/user/ekoreapost');">
+							<img src="/resources/img/common/sns_icon_3.png" alt="유튜브 바로가기">
+						</a>
+					</li>
+					<li>
+						<!-- 링크 추가 4월4주차 -->
+						<a href="javascript:void(0);" target="_blank" title="새창 바로가기" onclick="window.open('https://blog.naver.com/kpostbank');">
+							<img src="/resources/img/common/sns_icon_4.png" alt="네이버 블로그 바로가기">
+						</a>
+					</li>
+					<li>
+						<!-- 링크 추가 4월4주차 -->
+						<a href="javascript:void(0);" target="_blank" title="새창 바로가기" onclick="window.open('https://twitter.com/korea_post');">
+							<img src="/resources/img/common/sns_icon_5.png" alt="트위터 바로가기">
+						</a>
+					</li>
+					<!-- 20220421 수정 / 우체국tv 메뉴 삭제 -->
+
+					<!-- s: 웹진 바로가기 추가 : 6월 4주차 -->
+					<li>
+						<a href="javascript:void(0);" target="_blank" title="새창 바로가기" onclick="window.open('www.postnews.kr');">
+							<img src="/resources/img/common/sns_icon_7.png" alt="우체국웹진 바로가기">
+						</a>
+					</li>
+					<!-- e: 웹진 바로가기 추가 : 6월 4주차 -->
+				</ul>
+				<p>우체국예금보험법률 제4조 국가전액지급보장</p>
+			</div>
+			<!-- e: 마크업 추가 4월4주차 -->
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	// 개인*기업, 고객센터 클래스 적용
+	CEAcomm.menuClasson('', '');
+
+	function open_pop(url){
+		CEcomm.popup.windowOpen(url,'약관', screen.width/1.2, screen.height/1.2, null);
+	}
+
+</script>
+      </footer>
+    </div>
+
+
+
+<script type="text/javascript">
+AfU8LYWM3x8ro();
+</script>
+
+
+<div class="glasp-extension-toaster" style="display: block; width: 320px; margin: unset; padding: unset; border: unset; border-radius: unset; outline: unset; background-color: unset; box-shadow: unset; position: fixed; top: 40px; right: 24px; z-index: 9999;"></div><div class="glasp-extension" style="display: block; width: unset; margin: unset; padding: unset; border: unset; border-radius: unset; outline: unset; background-color: unset; box-shadow: unset; position: fixed; bottom: 16px; right: 16px; z-index: 9999;"></div></body></html>
+</html>

@@ -1,0 +1,921 @@
+<html lang="ko"><head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="format-detection" content="telephone=no">
+    <title>
+
+
+
+        예금상품목록 | 우체국 금융상품몰
+
+
+    </title>
+    <!-- 공통 js  -->
+    <!-- // INZI WEBFORM VIEWER -->
+    <link rel="stylesheet" href="/resources/webform/css/sform/sform.viewer.2.0.0.min.css" type="text/css">
+
+    <!-- uxui -->
+    <link rel="stylesheet" href="/resources/css/style.css">
+    <script async="" charset="utf-8" src="https://wlog.epostbank.go.kr/static/72585/ntm.js?ver=1753574400000"></script><script async="" charset="utf-8" src="https://wlog.epostbank.go.kr/static/72585/install.js?ver=1753574400000"></script><script type="text/javascript" src="/component/js/ND_massageConfig.do"></script>
+    <script type="text/javascript" src="/resources/js/jquery-3.3.1.js"></script>
+
+    <script type="text/javascript" src="/resources/js/jquery.print.js"></script>
+    <script type="text/javascript" src="/resources/js/jquery-ui.js"></script>
+    <script type="text/javascript" src="/resources/js/slick.js"></script>
+    <script type="text/javascript" src="/resources/js/datepicker.js"></script>
+    <script type="text/javascript" src="/resources/js/ui_global.js"></script>
+    <script type="text/javascript" src="/resources/js/ui_layout_set.js"></script>
+    <script type="text/javascript" src="/resources/js/openworks4/js/validate/openworks.validate.js"></script>
+
+    <script type="text/javascript" src="/resources/js/jquery.mCustomScrollbar.js"></script>
+
+    <script type="text/javascript" src="/resources/js/libs/js-cookie-1.5.1/js.cookie.js"></script>
+    <script type="text/javascript" src="/component/popup/ND_popupConfig.do"></script>
+    <!-- /uxui -->
+    <script type="text/javascript" src="/resources/js/xpert-sys.js"></script>
+    <script type="text/javascript" src="/resources/js/xpert-biz.js"></script>
+    <!-- 채널 공통 -->
+    <script type="text/javascript" src="/resources/js/common/CEutil.js"></script>
+    <script type="text/javascript" src="/resources/js/common/CEcomm.js"></script>
+    <script type="text/javascript" src="/resources/js/common/CEfn.js"></script>
+    <script type="text/javascript" src="/resources/js/common/CEAcomm.js"></script>
+    <!-- /채널 공통 -->
+    <!-- eCRM 로그 수집 -->
+    <script type="text/javascript" charset="utf-8" src="/resources/js/ecrm.js"></script>
+    <!-- /eCRM 로그 수집 -->
+
+    <!-- // INZI WEBFORM VIEWER -->
+    <script type="text/javascript" src="/resources/webform/js/sform/sform.viewer.2.0.0.min.js"></script>
+    <!-- // INZI WEBFORM VIEWER -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+  var CHANNEL_ID		= "cea";
+  var RUNNING_MODE		= "P";
+  var CONTEXT_PATH		= "";
+  var MAIN_MENU_ID 		= "/IPDMDM0000.do";
+  var LOGIN_MENU_ID		= "/IPDMDM00DM.do";
+  var LOGOUT_MENU_ID 	= "/CECMLN0001.do";
+  var LOGIN_YN			= "N";
+  var ROOT_PATH			= "D";
+  var SESSION_GDS_CD	= "200105700101";
+  var STR_URL			= "/WEB-INF/views/biz/ip/dg/dl/IPDGDL0000.jsp";
+  var CHANNEL_CODE		= "null";
+  var CSNO				= "";
+  var entFlag			= "N";
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				<!-- 챗봇 보험-->
+
+
+
+
+
+
+<script>
+    var CEA_URL = "https://mall.epostbank.go.kr";
+    var CEB_URL = "https://epostbank.go.kr";
+    var CEC_URL = "https://epostlife.go.kr";
+    var CED_URL = "https://m.epostbank.go.kr";
+    var CEE_URL = "https://m.epostlife.go.kr";
+    var CEG_URL = "https://bot.epostbank.go.kr";
+    var CEGC_URL = "https://bot.epostlife.go.kr:22443";
+
+    var DDM_URL = "http://pddmmt.pobis.kr:20080";
+
+    var isLocal = "N";
+
+    // 2022.11.25 모바일용 추가
+    var IS_MOBILE_APP = "N";
+
+    if(sessionStorage.getItem('LOGIN_SESSION') == null && LOGIN_YN == 'Y'){
+        sessionStorage.removeItem("LOGIN_YN");
+        sessionStorage.removeItem('LOGIN_SESSION');
+        //location.href = "/LNLNDM01DM.do";
+        var strDomain = window.location.search;
+        console.log('로그아웃 처리');
+
+
+        //CEcomm.ajax(CEB_URL+'/LNLNDM01DM.do', '', '', '');
+        if( strDomain.indexOf('IMDMDM0000') == -1 ){
+        	location.href='/cebLogoutMove.do';
+        }
+       }
+
+</script>
+
+    <script type="text/javascript" src="/resources/js/biz/ip/dg/dl/IPDGDL0000.js"></script>
+
+  </head>
+  <body class="scrolled" style="zoom: 0.7216;">
+    <div class="wrapper">
+      <a href="#content" class="skip_nav">본문 바로가기</a>
+      <header class="header mall_header">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="header_menuId" style="display: none;">ipdgdl0000</div>
+<div class="container">
+	<!-- util menu -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="header_top">
+	<div class="logo mr_1">
+		<h1><a href="/IPDMDM0000.do"><img src="/cms/image/i-ch-main/main-logo/mall_logo.png" onerror="this.src='/resources/img/common/mall_logo.png'" alt="우체국 금융상품"></a></h1>
+	</div>
+	<div class="util_menu">
+		<div class="l">
+
+
+
+					<!-- s: 로그인전 노출영역 -->
+					<div class="util_btn bg_type1">
+						<a href="javascript:void(0);" id="loginfocus" onclick="CEcomm.popup.layerOpen({'modalType':400,'id':'ipdmdm00bp'},$('#loginfocus'),'/IPDMDM00BP.do','');" title="로그인 새창열림"><span>로그인</span></a>
+						<!-- 예금/보험 구분값으로 각각 예금/보험 인증센터를 구분해야함 -->
+
+
+
+
+
+
+
+
+
+
+					</div>
+					<!-- e: 로그인전 노출영역 -->
+
+
+		</div>
+		<div class="r">
+		<div class="util_btn bg_type2">
+			<a href="/cebMove.do?url=IBDMDM0000.do" title="우체국예금 예금홈으로 이동"><span>예금</span></a>
+			<a href="/cebMove.do?url=CDDMDM0000.do" title="우체국예금 카드홈으로 이동"><span>카드</span></a>
+			<a href="/cebMove.do?url=FDDMDM0000.do" title="우체국예금 펀드홈으로 이동"><span>펀드</span></a>
+			<a href="/insuMove.do" title="우체국보험으로 이동"><span>보험</span></a>
+		</div>
+	    <div class="util_btn bg_type1 box_single">
+	    	<a href="/" class="on"><span>금융상품몰</span></a>
+    	</div>
+	    <div class="util_btn bg_type1 box_single">
+			<!-- 예금/보험 구분값으로 각각 예금/보험 고객센터를 구분해야함 -->
+
+
+
+					<a href="/cebMove.do?url=CCDMDM0000.do" title="고객센터"><span>고객센터</span></a>
+
+
+
+		</div>
+	  	</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	function open_pop(url){
+		CEcomm.popup.windowOpen(url,'약관', screen.width/1.2, screen.height/1.2, null);
+	};
+</script>
+	<!-- gnb -->
+
+
+
+<div id="gnb" class="gnb">
+	<ul>
+
+
+
+
+				<li>
+
+
+
+
+							<a href="/IPMPLP0000.do" class="">MY상품</a>
+
+
+
+				</li>
+
+
+
+				<li>
+
+
+
+
+							<a href="/IPINDM0000.do" class="">가입진행중</a>
+
+
+
+				</li>
+
+
+
+				<li>
+
+
+
+
+							<a href="/IPDGDM0000.do" class="">예금상품</a>
+
+
+
+				</li>
+
+
+
+				<li>
+
+
+
+
+							<a href="/IPIPDM0000.do" class="">보험상품</a>
+
+
+
+				</li>
+
+
+
+				<li>
+
+
+
+
+							<a href="/IPCDDM0000.do" class="">카드상품</a>
+
+
+
+				</li>
+
+
+
+				<li>
+
+
+
+
+							<a href="/IPFDFL0000.do" class="">펀드상품</a>
+
+
+
+				</li>
+
+
+
+				<li>
+
+
+
+							<a href="/IPPSKE0000.do" class="">상품찾기</a>
+
+
+
+
+
+						<div class="layer_memu_box">
+							<div class="menu_wrap">
+
+
+										<div class="menu_list">
+											<h4><a href="/IPPSKE0000.do">키워드로 찾기</a></h4>
+
+										</div>
+
+
+
+										<div class="menu_list">
+											<h4><a href="/IPPSTG0000.do">상품태그로 찾기</a></h4>
+
+										</div>
+
+
+
+										<div class="menu_list">
+											<h4><a href="/IPPSTS0000.do">테마로 찾기</a></h4>
+
+												<ul>
+
+
+
+
+
+
+
+												</ul>
+
+										</div>
+
+
+
+										<div class="menu_list">
+											<h4><a href="/IPPSPR0000.do">우체국랭킹</a></h4>
+
+										</div>
+
+
+
+										<div class="menu_list">
+											<h4><a href="/IPPSCP0000.do">판매종료상품</a></h4>
+
+										</div>
+
+
+							</div>
+						</div>
+
+				</li>
+
+
+	</ul>
+</div>
+
+	<!-- 퀵메뉴 -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" src="/resources/js/common/internet_quick.js"></script>
+
+<div id="internet_quick" class="quick_menu_wrap">
+	<input type="hidden" id="cur_page" name="cur_page" value="ipdgdl0000">
+	<button type="button" class="btn_quick_open"><span class="sr_only">퀵메뉴 열기</span></button>
+	<div class="quick_menu_inner open">
+
+<!-- 		<h2 class="sr_only">QUICK MENU</h2> -->
+		<h2 class="sr_only">우체국 소개</h2>
+		<div class="quick_tit">
+<!-- 			<a href="javascript:void(0)" class="btn_security"> -->
+			<a href="javascript:void(0)" class="btn_security">
+				<i class="ico_security"></i>
+				<span>우체국 소개</span>
+			</a>
+		</div>
+		<div class="quick_menu">
+			<div class="quick_more">
+				<div class="more_top pb_0">
+					<span class="tit_prod">최근 본 상품</span>
+					<span class="count">2</span>
+				</div>
+				<div class="more_body rev pt_2">
+					<div class="more_inner">
+
+						<!-- s: case01 조회 상품 없음 -->
+						<div class="more_msg view_prod_x" style="display: none;">조회한 상품이 없습니다.</div>
+						<!-- e: case01 조회 상품 없음 -->
+
+						<!-- s: case02 조회 상품 있음 -->
+						<div class="more_msg view_prod_o">
+							<span class="prod_name">우체국럭키신한정기예금</span>
+							<button type="button" class="btn_card_more" title="조회 상품 더보기">
+								더보기 <i class="ico ico_chevron_right_xs ml_2"></i>
+							</button>
+						</div>
+						<!-- e: case02 조회 상품 있음 -->
+					</div>
+
+				</div>
+			</div>
+			<div class="quick_menu_box">
+				<ul class="quick_menu_list">
+
+
+					<li>
+						<a href="javascript:void(0)" title="새 창 열림" class="ico_glossary">
+							<img src="/resources/img/common/ico_quick303.png" alt="금융용어사전">
+							<span>금융용어사전</span>
+						</a>
+					</li>
+					<li>
+						<a href="javascript:void(0)" title="새 창 열림" class="ico_inq">
+							<img src="/resources/img/common/ico_quick006.png" alt="계산기">
+							<span>계산기</span>
+						</a>
+					</li>
+				</ul>
+				<!-- 펀드메뉴 -->
+
+				<!-- 펀드메뉴 -->
+				<ul class="quick_link">
+					<!-- <li><a href="javascript:void(0)" onclick="CEcomm.popup.windowOpen('/cBotMove.do','cbot',null,null,'0');">챗봇(우정톡톡)상담</a></li>  -->
+					<li><a href="javascript:void(0);" onclick="CEcomm.popup.layerOpen({'id':'ipcmdm00fp','modalType':400}, $(this), '/IPCMDM00FP.do', '');">챗봇(우정톡톡)상담</a></li>
+					<li><a href="/cebMove.do" title="우체국예금으로 이동" class="lightyellow txt_default">우체국예금으로 이동</a></li>
+					<li><a href="/insuMove.do" title="우체국보험으로 이동" class="lightpink txt_default">우체국보험으로 이동</a></li>
+				</ul>
+			</div>
+			<button type="button" class="btn_quick_close"><span class="sr_only">퀵메뉴 닫기</span></button>
+		</div>
+	</div>
+</div>
+	<script>
+		var menuId	= ($('#header_menuId').text()).toLowerCase();
+
+		var input	= {
+			'scanId' : menuId
+		};
+		CEcomm.ajax('/IPCMDM00JPR01.do', input , function(result){
+			console.log('IPCMDM00JPR01 :: ' + JSON.stringify(result));
+
+			if (result) {
+				var date		= CEutil.date.getTodayDate();
+				var time		= CEutil.date.getTime();
+				var now			= date + time;
+// 				var param		= result[0];
+				var popupNtcNo	= result.popupNtcNo;
+				var hideCheck	= Number(localStorage.getItem(popupNtcNo + "thPopUpHideTime"));
+
+				if (hideCheck < now) {
+					var option	= {
+						'modalClass': 'main_event_popup',
+						'modalType'	: result.popupArea,
+						'id'		: 'ipcmdm00jp',
+						'bizParam'	: result
+					};
+					CEcomm.popup.layerOpen(option, null, '/IPCMDM00JP.do', '');
+				}
+			}
+
+		}, function(xhr, textStatus, errorThrow){
+    		console.log(xhr.status + ' | ' + textStatus + ' | ' + errorThrow);
+    	});
+	</script>
+</div>
+      </header>
+      <aside class="breadcrumb">
+
+
+
+<div class="container">
+	<ul class="breadcrumb_list">
+
+
+
+					<li>
+						<a href="/" title="펼치기">
+							<i class="ico ico_home"></i>
+							<span class="sr_only">Home</span>
+						</a>
+					</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+						<li><a href="/IPDMDM0000.do" title="펼치기">금융상품몰</a>
+							<div class="sub_list_wrap" style="z-index: 100;">
+								<ul>
+
+
+											<li><a href="/IPDMDM0000.do">금융상품몰</a></li>
+
+
+
+
+								</ul>
+							</div>
+						</li>
+
+
+
+
+
+
+
+
+
+						<li><a href="/IPDGDM0000.do" title="펼치기">예금상품</a>
+							<div class="sub_list_wrap" style="z-index: 100;">
+								<ul>
+
+
+											<li><a href="/IPMPLP0000.do">MY상품</a></li>
+
+
+
+											<li><a href="/IPINDM0000.do">가입진행중</a></li>
+
+
+
+											<li><a href="/IPDGDM0000.do">예금상품</a></li>
+
+
+
+											<li><a href="/IPIPDM0000.do">보험상품</a></li>
+
+
+
+											<li><a href="/IPCDDM0000.do">카드상품</a></li>
+
+
+
+											<li><a href="/IPFDFL0000.do">펀드상품</a></li>
+
+
+
+											<li><a href="">상품찾기</a></li>
+
+
+								</ul>
+							</div>
+						</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+	</ul>
+</div>
+      </aside>
+      <article id="content">
+
+
+	<div class="cont_header">
+ <h2 class="tit_cont">예금상품목록</h2>
+</div>
+
+	<!-- S: content -->
+	<div id="IPDGDL0000" class="cont_body">
+		<form id="formCMGYFP01AS" name="formCMGYFP01AS" method="post">
+			<input type="hidden" name="gdsCd" id="gdsCd" value="">
+			<input type="hidden" name="gdsItmsCd" id="gdsItmsCd" value="">
+			<input type="hidden" name="gdsKornNm" id="gdsKornNm" value="">
+
+
+
+		</form>
+		<form id="contentForm" name="contentForm" method="post">
+			<input type="hidden" name="tabIPDGDL0000" id="tabIPDGDL0000" value="">
+			<input type="hidden" name="pageNum" id="pageNum" value="-1">
+			<input type="hidden" name="orderFlag" id="orderFlag" value="">
+
+			<input type="hidden" name="prod_condition" id="save_prod_condition" value="">
+			<input type="hidden" name="prod_channal" id="save_prod_channal" value="INET_JOIN_PSBL_YN,SBNK_JOIN_PSBL_YN">
+
+			<div class="tab_menu_type1 first_section">
+				<ul>
+					<li><a href="javascript:void(0);" id="at" data-tab_id="IPDGDL00AT" class="">추천</a></li>
+					<li><a href="javascript:void(0);" id="bt" data-tab_id="IPDGDL00BT">입출금</a></li>
+					<li><a href="javascript:void(0);" id="dt" data-tab_id="IPDGDL00DT" class="current" title="선택됨">예금</a></li>
+					<li><a href="javascript:void(0);" id="ct" data-tab_id="IPDGDL00CT">적금</a></li>
+					<li><a href="javascript:void(0);" id="et" data-tab_id="IPDGDL00ET">기업</a></li>
+					<li><a href="javascript:void(0);" id="ft" data-tab_id="IPDGDL00FT">전체</a></li>
+				</ul>
+			</div>
+
+			<!-- s: 예금상품목록 -->
+			<div class="lr_area mt_12">
+				<h2 class="sr_only tab_name">예금 탭 내용 시작</h2>
+				<div class="l">
+					<p class="tit_arr">예금 상품 <span>10</span>개</p>
+				</div>
+				<div class="r">
+					<p class="pdt_inpuiry_time">
+						<span>조회시간</span>
+						<span id="inpuiry_time">2025.07.27. 09:20:26</span>
+<!-- 						<button type="button" class="btn_refresh"><span class="sr_only">새로고침</span></button> -->
+					</p>
+				</div>
+			</div>
+
+			<div class="mt_10 cont_prod">
+				<div class="acco_list">
+					<div class="top flex_box pb_4">
+						<div class="l">
+							<button type="button" id="prodNm" class="btn_toggle_filter up down" data-order="NM">상품명순<span class="sr_only">내림차순 정렬</span></button>
+							<button type="button" class="btn_toggle_filter up down" data-order="MR">최고금리순<span class="sr_only">내림차순 정렬</span></button>
+<!-- 							<button type="button" class="btn_toggle_filter up down" data-order="BR">기본금리순<span class="sr_only">내림차순 정렬</span></button> -->
+						</div>
+						<div class="r">
+							<button type="button" class="btn btn_md btn_outline_darkgray txt_default ml6 btnIPDGDL00AP">
+								<i class="ico ico_list_filter mr_1"></i>상품필터
+							</button>
+							<!-- 비교하기 버튼 (기본) -->
+							<button type="button" class="btn btn_md btn_outline_darkgray txt_default ml6 btnIPDGDL00BP">
+								<i class="ico ico_cart_compare mr_1"></i>
+								비교하기
+							</button>
+						</div>
+					</div>
+					<div class="acco_inner"><div class="ch_product exist_prod" data-gds_cd="200105700101" data-gds_itms_cd="200" data-deps_gds_dvsn_cd="2" data-join_cust_dvsn_cd_cn="E^^개인"><div class="product_check" style="display: none;"><span class="check_item square single"><input type="checkbox" name="check" id="200105700101" class="checkbox"><label for="200105700101">우체국럭키신한정기예금 선택하기</label></span></div><div class="l"><div class="product_cate"><ul class="inline_list pd_list1"><li class="fir">예금</li><li>일반과세</li><li>비과세</li></ul></div><div class="product_name mt_5"><strong><a href="javascript:void(0);">우체국럭키신한정기예금</a></strong></div><ul class="product_hashtag mt_5"><li>#신한제휴</li><li>#신한카드특별리워드 연 1.1%</li></ul></div><div class="r"><div class="prd_top mb_6"><ul class="product_top_btn"><li><a href="javascript:void(0);" class="btn btn_sm btn_outline_default btnIPDGDI0000" title="우체국럭키신한정기예금">상세보기</a></li><li><a href="javascript:void(0);" class="btn btn_sm btn_outline_default btnCMGYFP01AS" title="우체국럭키신한정기예금">가입하기</a></li></ul><ul class="product_top_btn"><li><a href="javascript:void(0);" class="btn_pd_like" title="관심상품 해제됨 : 우체국럭키신한정기예금"><span class="sr_only">좋아요</span></a></li><li><a href="javascript:void(0);" class="btn_pd_cart" title="장바구니 해제됨 : 우체국럭키신한정기예금"><span class="sr_only">장바구니</span></a></li><li><a href="javascript:void(0);" class="btn_pd_share" title="우체국럭키신한정기예금"><span class="sr_only">상품 공유하기</span></a></li></ul></div><div class="product_price"><div class="price_tit"><strong>최고우대</strong>기간별 적용이율</div><ul>               <li>                   <span>12개월 기준</span>                   <strong>3.7%</strong>               </li></ul></div></div></div><div class="ch_product exist_prod" data-gds_cd="200109200101" data-gds_itms_cd="200" data-deps_gds_dvsn_cd="2" data-join_cust_dvsn_cd_cn="E^^개인"><div class="product_check" style="display: none;"><span class="check_item square single"><input type="checkbox" name="check" id="200109200101" class="checkbox"><label for="200109200101">초록별사랑정기예금 선택하기</label></span></div><div class="l"><div class="product_cate"><ul class="inline_list pd_list1"><li class="fir">예금</li><li>일반과세</li><li>비과세</li><li>예금자보호</li></ul></div><div class="product_name mt_5"><strong><a href="javascript:void(0);">초록별사랑정기예금</a></strong></div><ul class="product_hashtag mt_5"><li>#친환경 기부</li><li>#초록별사랑</li><li>#환경보호</li><li>#탄소중립</li><li>#실천포인트</li></ul></div><div class="r"><div class="prd_top mb_6"><ul class="product_top_btn"><li><a href="javascript:void(0);" class="btn btn_sm btn_outline_default btnIPDGDI0000" title="초록별사랑정기예금">상세보기</a></li><li><a href="javascript:void(0);" class="btn btn_sm btn_outline_default btnCMGYFP01AS" title="초록별사랑정기예금">가입하기</a></li></ul><ul class="product_top_btn"><li><a href="javascript:void(0);" class="btn_pd_like" title="관심상품 해제됨 : 초록별사랑정기예금"><span class="sr_only">좋아요</span></a></li><li><a href="javascript:void(0);" class="btn_pd_cart" title="장바구니 해제됨 : 초록별사랑정기예금"><span class="sr_only">장바구니</span></a></li><li><a href="javascript:void(0);" class="btn_pd_share" title="초록별사랑정기예금"><span class="sr_only">상품 공유하기</span></a></li></ul></div><div class="product_price"><div class="price_tit"><strong>최고우대</strong>기간별 적용이율</div><ul>               <li>                   <span>12개월 기준</span>                   <strong>2.6%</strong>               </li></ul></div></div></div><div class="ch_product exist_prod" data-gds_cd="200108800101" data-gds_itms_cd="200" data-deps_gds_dvsn_cd="2" data-join_cust_dvsn_cd_cn="E^^개인"><div class="product_check" style="display: none;"><span class="check_item square single"><input type="checkbox" name="check" id="200108800101" class="checkbox"><label for="200108800101">시니어싱글벙글정기예금 선택하기</label></span></div><div class="l"><div class="product_cate"><ul class="inline_list pd_list1"><li class="fir">예금</li><li>일반과세</li><li>비과세</li><li>예금자보호</li></ul></div><div class="product_name mt_5"><strong><a href="javascript:void(0);">시니어싱글벙글정기예금</a></strong></div><ul class="product_hashtag mt_5"><li>#중년층</li><li>#목돈관리</li></ul></div><div class="r"><div class="prd_top mb_6"><ul class="product_top_btn"><li><a href="javascript:void(0);" class="btn btn_sm btn_outline_default btnIPDGDI0000" title="시니어싱글벙글정기예금">상세보기</a></li><li><a href="javascript:void(0);" class="btn btn_sm btn_outline_default btnCMGYFP01AS" title="시니어싱글벙글정기예금">가입하기</a></li></ul><ul class="product_top_btn"><li><a href="javascript:void(0);" class="btn_pd_like" title="관심상품 해제됨 : 시니어싱글벙글정기예금"><span class="sr_only">좋아요</span></a></li><li><a href="javascript:void(0);" class="btn_pd_cart" title="장바구니 해제됨 : 시니어싱글벙글정기예금"><span class="sr_only">장바구니</span></a></li><li><a href="javascript:void(0);" class="btn_pd_share" title="시니어싱글벙글정기예금"><span class="sr_only">상품 공유하기</span></a></li></ul></div><div class="product_price"><div class="price_tit"><strong>최고우대</strong>기간별 적용이율</div><ul>               <li>                   <span>12개월 기준</span>                   <strong>2.6%</strong>               </li></ul></div></div></div><div class="ch_product exist_prod" data-gds_cd="200108000101" data-gds_itms_cd="200" data-deps_gds_dvsn_cd="2" data-join_cust_dvsn_cd_cn="E^^개인"><div class="product_check" style="display: none;"><span class="check_item square single"><input type="checkbox" name="check" id="200108000101" class="checkbox"><label for="200108000101">우체국편리한e정기예금 선택하기</label></span></div><div class="l"><div class="product_cate"><ul class="inline_list pd_list1"><li class="fir">예금</li><li>일반과세</li><li>비과세</li><li>예금자보호</li></ul></div><div class="product_name mt_5"><strong><a href="javascript:void(0);">우체국편리한e정기예금</a></strong></div><ul class="product_hashtag mt_5"><li>#추가입금</li><li>#편리한</li><li>#목돈관리</li></ul></div><div class="r"><div class="prd_top mb_6"><ul class="product_top_btn"><li><a href="javascript:void(0);" class="btn btn_sm btn_outline_default btnIPDGDI0000" title="우체국편리한e정기예금">상세보기</a></li><li><a href="javascript:void(0);" class="btn btn_sm btn_outline_default btnCMGYFP01AS" title="우체국편리한e정기예금">가입하기</a></li></ul><ul class="product_top_btn"><li><a href="javascript:void(0);" class="btn_pd_like" title="관심상품 해제됨 : 우체국편리한e정기예금"><span class="sr_only">좋아요</span></a></li><li><a href="javascript:void(0);" class="btn_pd_cart" title="장바구니 해제됨 : 우체국편리한e정기예금"><span class="sr_only">장바구니</span></a></li><li><a href="javascript:void(0);" class="btn_pd_share" title="우체국편리한e정기예금"><span class="sr_only">상품 공유하기</span></a></li></ul></div><div class="product_price"><div class="price_tit"><strong>최고우대</strong>기간별 적용이율</div><ul>               <li>                   <span>12개월 기준</span>                   <strong>2.6%</strong>               </li></ul></div></div></div><div class="ch_product exist_prod" data-gds_cd="200107800101" data-gds_itms_cd="200" data-deps_gds_dvsn_cd="2" data-join_cust_dvsn_cd_cn="M^^금융기관을 제외한 모든 고객"><div class="product_check" style="display: none;"><span class="check_item square single"><input type="checkbox" name="check" id="200107800101" class="checkbox"><label for="200107800101">우체국파트너든든정기예금 선택하기</label></span></div><div class="l"><div class="product_cate"><ul class="inline_list pd_list1"><li class="fir">예금</li><li>일반과세</li><li>비과세</li><li>예금자보호</li></ul></div><div class="product_name mt_5"><strong><a href="javascript:void(0);">우체국파트너든든정기예금</a></strong></div><ul class="product_hashtag mt_5"><li>#회전주기</li><li>#목돈운용</li></ul></div><div class="r"><div class="prd_top mb_6"><ul class="product_top_btn"><li><a href="javascript:void(0);" class="btn btn_sm btn_outline_default btnIPDGDI0000" title="우체국파트너든든정기예금">상세보기</a></li><li><a href="javascript:void(0);" class="btn btn_sm btn_outline_default btnCMGYFP01AS" title="우체국파트너든든정기예금">가입하기</a></li></ul><ul class="product_top_btn"><li><a href="javascript:void(0);" class="btn_pd_like" title="관심상품 해제됨 : 우체국파트너든든정기예금"><span class="sr_only">좋아요</span></a></li><li><a href="javascript:void(0);" class="btn_pd_cart" title="장바구니 해제됨 : 우체국파트너든든정기예금"><span class="sr_only">장바구니</span></a></li><li><a href="javascript:void(0);" class="btn_pd_share" title="우체국파트너든든정기예금"><span class="sr_only">상품 공유하기</span></a></li></ul></div><div class="product_price"><div class="price_tit"><strong>최고우대</strong>기간별 적용이율</div><ul>               <li>                   <span>12개월 기준</span>                   <strong>2.6%</strong>               </li></ul></div></div></div><div class="ch_product exist_prod" data-gds_cd="210000100101" data-gds_itms_cd="210" data-deps_gds_dvsn_cd="2" data-join_cust_dvsn_cd_cn="B^^금융기관"><div class="product_check" style="display: none;"><span class="check_item square single"><input type="checkbox" name="check" id="210000100101" class="checkbox"><label for="210000100101">우체국퇴직연금정기예금 선택하기</label></span></div><div class="l"><div class="product_cate"><ul class="inline_list pd_list1"><li class="fir">예금</li><li>퇴직연금/ISA비과세</li><li>예금자보호</li></ul></div><div class="product_name mt_5"><strong><a href="javascript:void(0);">우체국퇴직연금정기예금</a></strong></div><ul class="product_hashtag mt_5"><li>#퇴직연금사업자</li></ul></div><div class="r"><div class="prd_top mb_6"><ul class="product_top_btn"><li><a href="javascript:void(0);" class="btn btn_sm btn_outline_default btnIPDGDI0000" title="우체국퇴직연금정기예금">상세보기</a></li><li><a href="javascript:void(0);" class="btn btn_sm btn_outline_default btnCMGYFP01AS" title="우체국퇴직연금정기예금">가입하기</a></li></ul><ul class="product_top_btn"><li><a href="javascript:void(0);" class="btn_pd_like" title="관심상품 해제됨 : 우체국퇴직연금정기예금"><span class="sr_only">좋아요</span></a></li><li><a href="javascript:void(0);" class="btn_pd_cart" title="장바구니 해제됨 : 우체국퇴직연금정기예금"><span class="sr_only">장바구니</span></a></li><li><a href="javascript:void(0);" class="btn_pd_share" title="우체국퇴직연금정기예금"><span class="sr_only">상품 공유하기</span></a></li></ul></div><div class="product_price"><div class="price_tit"><strong>최고우대</strong>기간별 적용이율</div><ul>               <li>                   <span>12개월 기준</span>                   <strong>2.4%</strong>               </li></ul></div></div></div><div class="ch_product exist_prod" data-gds_cd="200100200101" data-gds_itms_cd="200" data-deps_gds_dvsn_cd="2" data-join_cust_dvsn_cd_cn="E^^개인[]M^^금융기관을 제외한 모든 고객[]P^^개인, 개인사업자[]Q^^개인, 법인, 개인사업자"><div class="product_check" style="display: none;"><span class="check_item square single"><input type="checkbox" name="check" id="200100200101" class="checkbox"><label for="200100200101">2040+α정기예금 선택하기</label></span></div><div class="l"><div class="product_cate"><ul class="inline_list pd_list1"><li class="fir">예금</li><li>일반과세</li><li>비과세</li><li>예금자보호</li></ul></div><div class="product_name mt_5"><strong><a href="javascript:void(0);">2040+α정기예금</a></strong></div><ul class="product_hashtag mt_5"><li>#20~40대</li><li>#직장인</li><li>#자금운용</li></ul></div><div class="r"><div class="prd_top mb_6"><ul class="product_top_btn"><li><a href="javascript:void(0);" class="btn btn_sm btn_outline_default btnIPDGDI0000" title="2040+α정기예금">상세보기</a></li><li><a href="javascript:void(0);" class="btn btn_sm btn_outline_default btnCMGYFP01AS" title="2040+α정기예금">가입하기</a></li></ul><ul class="product_top_btn"><li><a href="javascript:void(0);" class="btn_pd_like" title="관심상품 해제됨 : 2040+α정기예금"><span class="sr_only">좋아요</span></a></li><li><a href="javascript:void(0);" class="btn_pd_cart" title="장바구니 해제됨 : 2040+α정기예금"><span class="sr_only">장바구니</span></a></li><li><a href="javascript:void(0);" class="btn_pd_share" title="2040+α정기예금"><span class="sr_only">상품 공유하기</span></a></li></ul></div><div class="product_price"><div class="price_tit"><strong>최고우대</strong>기간별 적용이율</div><ul>               <li>                   <span>12개월 기준</span>                   <strong>2.5%</strong>               </li></ul></div></div></div><div class="ch_product exist_prod" data-gds_cd="200100500101" data-gds_itms_cd="200" data-deps_gds_dvsn_cd="2" data-join_cust_dvsn_cd_cn="E^^개인"><div class="product_check" style="display: none;"><span class="check_item square single"><input type="checkbox" name="check" id="200100500101" class="checkbox"><label for="200100500101">e-Postbank정기예금 선택하기</label></span></div><div class="l"><div class="product_cate"><ul class="inline_list pd_list1"><li class="fir">예금</li><li>일반과세</li><li>비과세</li><li>예금자보호</li></ul></div><div class="product_name mt_5"><strong><a href="javascript:void(0);">e-Postbank정기예금</a></strong></div><ul class="product_hashtag mt_5"><li>#비대면전용</li><li>#목돈관리</li></ul></div><div class="r"><div class="prd_top mb_6"><ul class="product_top_btn"><li><a href="javascript:void(0);" class="btn btn_sm btn_outline_default btnIPDGDI0000" title="e-Postbank정기예금">상세보기</a></li><li><a href="javascript:void(0);" class="btn btn_sm btn_outline_default btnCMGYFP01AS" title="e-Postbank정기예금">가입하기</a></li></ul><ul class="product_top_btn"><li><a href="javascript:void(0);" class="btn_pd_like" title="관심상품 해제됨 : e-Postbank정기예금"><span class="sr_only">좋아요</span></a></li><li><a href="javascript:void(0);" class="btn_pd_cart" title="장바구니 해제됨 : e-Postbank정기예금"><span class="sr_only">장바구니</span></a></li><li><a href="javascript:void(0);" class="btn_pd_share" title="e-Postbank정기예금"><span class="sr_only">상품 공유하기</span></a></li></ul></div><div class="product_price"><div class="price_tit"><strong>최고우대</strong>기간별 적용이율</div><ul>               <li>                   <span>12개월 기준</span>                   <strong>2.5%</strong>               </li></ul></div></div></div><div class="ch_product exist_prod" data-gds_cd="200107500101" data-gds_itms_cd="200" data-deps_gds_dvsn_cd="2" data-join_cust_dvsn_cd_cn="E^^개인[]L^^무제한[]P^^개인, 개인사업자"><div class="product_check" style="display: none;"><span class="check_item square single"><input type="checkbox" name="check" id="200107500101" class="checkbox"><label for="200107500101">챔피언정기예금 선택하기</label></span></div><div class="l"><div class="product_cate"><ul class="inline_list pd_list1"><li class="fir">예금</li><li>일반과세</li><li>비과세</li><li>예금자보호</li></ul></div><div class="product_name mt_5"><strong><a href="javascript:void(0);">챔피언정기예금</a></strong></div><ul class="product_hashtag mt_5"><li>#일단위 가입</li><li>#1개월 이상</li></ul></div><div class="r"><div class="prd_top mb_6"><ul class="product_top_btn"><li><a href="javascript:void(0);" class="btn btn_sm btn_outline_default btnIPDGDI0000" title="챔피언정기예금">상세보기</a></li><li><a href="javascript:void(0);" class="btn btn_sm btn_outline_default btnCMGYFP01AS" title="챔피언정기예금">가입하기</a></li></ul><ul class="product_top_btn"><li><a href="javascript:void(0);" class="btn_pd_like" title="관심상품 해제됨 : 챔피언정기예금"><span class="sr_only">좋아요</span></a></li><li><a href="javascript:void(0);" class="btn_pd_cart" title="장바구니 해제됨 : 챔피언정기예금"><span class="sr_only">장바구니</span></a></li><li><a href="javascript:void(0);" class="btn_pd_share" title="챔피언정기예금"><span class="sr_only">상품 공유하기</span></a></li></ul></div><div class="product_price"><div class="price_tit"><strong>최고우대</strong>기간별 적용이율</div><ul>               <li>                   <span>12개월 기준</span>                   <strong>2.35%</strong>               </li></ul></div></div></div><div class="ch_product exist_prod" data-gds_cd="200000100101" data-gds_itms_cd="200" data-deps_gds_dvsn_cd="2" data-join_cust_dvsn_cd_cn="E^^개인[]L^^무제한[]P^^개인, 개인사업자"><div class="product_check" style="display: none;"><span class="check_item square single"><input type="checkbox" name="check" id="200000100101" class="checkbox"><label for="200000100101">정기예금 선택하기</label></span></div><div class="l"><div class="product_cate"><ul class="inline_list pd_list1"><li class="fir">예금</li><li>일반과세</li><li>비과세</li><li>예금자보호</li></ul></div><div class="product_name mt_5"><strong><a href="javascript:void(0);">정기예금</a></strong></div><ul class="product_hashtag mt_5"><li>#정기예금</li><li>#비과세</li></ul></div><div class="r"><div class="prd_top mb_6"><ul class="product_top_btn"><li><a href="javascript:void(0);" class="btn btn_sm btn_outline_default btnIPDGDI0000" title="정기예금">상세보기</a></li><li><a href="javascript:void(0);" class="btn btn_sm btn_outline_default btnCMGYFP01AS" title="정기예금">가입하기</a></li></ul><ul class="product_top_btn"><li><a href="javascript:void(0);" class="btn_pd_like" title="관심상품 해제됨 : 정기예금"><span class="sr_only">좋아요</span></a></li><li><a href="javascript:void(0);" class="btn_pd_cart" title="장바구니 해제됨 : 정기예금"><span class="sr_only">장바구니</span></a></li><li><a href="javascript:void(0);" class="btn_pd_share" title="정기예금"><span class="sr_only">상품 공유하기</span></a></li></ul></div><div class="product_price"><div class="price_tit"><strong>최고우대</strong>기간별 적용이율</div><ul>               <li>                   <span>12개월 기준</span>                   <strong>2.15%</strong>               </li></ul></div></div></div></div>
+				</div>
+			</div>
+
+			<!-- e: 예금상품목록 -->
+
+		</form>
+	</div>
+	<!-- E: content -->
+
+      </article>
+      <footer class="footer">
+
+<a href="javascript:void(0);" class="btn_top">
+	<i class="ico_btn_top"></i>
+	<span>TOP<em class="sr_only">으로 이동</em></span>
+</a>
+<div class="container">
+
+	<div class="clfx">
+		<!-- s: 마크업 추가 4월4주차 -->
+		<div class="f_l">
+			<!-- e: 마크업 추가 4월4주차 -->
+			<div class="footer_cont">
+				<ul>
+					<li>우체국 금융 고객센터(발신자 부담)</li>
+					<li><strong>국내:</strong> <strong>예금</strong> 1599-1900, 1588-1900, 042-612-6000 / <strong>보험</strong>
+						1599-0100,
+						042-336-6898
+					</li>
+					<li><strong>해외:</strong> <strong>예금</strong> 82-42-612-6000 / <strong>보험</strong> 82-42-336-6898
+					</li>
+					<!-- e: 리스트 추가 및 변경 : 12월 1주차 2022-12-06 -->
+					<li><strong>평일:</strong> 09:00~18:00 <strong>주말ㆍ공휴일:</strong> 09:00~18:00 (분실ㆍ사고접수만 가능, 보험업무휴무)</li>
+					<li>공동인증서 발급 및 갱신문의(한국정보인증): 1577-8787 (평일: 09:00~18:00)</li>
+				</ul>
+				<p class="copyright">COPYRIGHTⓒ 2021 KOREAPOST. ALL RIGHTS RESERVED</p>
+			</div>
+			<!-- s: 마크업 추가 4월4주차 -->
+		</div>
+		<div class="f_r">
+			<div class="acc_area">
+				<a title="pdf 파일보기" href="/resources/img/common/WA_certification_mall.pdf" target="_blank">
+					<img class="wa" alt="(사)한국장애인단체총연합회 한국웹접근성인증평가원 웹 접근성 우수사이트 인증마크(WA인증마크)" src="/resources/img/common/img_WAmark.png" width="98px" height="67px">
+				</a>
+			</div>
+			<div class="sns_area">
+				<ul>
+					<li>
+						<!-- 링크 추가 4월4주차 -->
+						<a href="javascript:void(0);" target="_blank" title="새창 바로가기" onclick="window.open('https://www.facebook.com/epost.kr');">
+							<img src="/resources/img/common/sns_icon_1.png" alt="페이스북 바로가기">
+						</a>
+					</li>
+					<li>
+						<!-- 링크 추가 4월4주차 -->
+						<a href="javascript:void(0);" target="_blank" title="새창 바로가기" onclick="window.open('https://www.instagram.com/accounts/login/?next=/korea.post');">
+							<img src="/resources/img/common/sns_icon_2.png" alt="인스타 바로가기">
+						</a>
+					</li>
+					<li>
+						<!-- 링크 추가 4월4주차 -->
+						<a href="javascript:void(0);" target="_blank" title="새창 바로가기" onclick="window.open('https://www.youtube.com/user/ekoreapost');">
+							<img src="/resources/img/common/sns_icon_3.png" alt="유튜브 바로가기">
+						</a>
+					</li>
+					<li>
+						<!-- 링크 추가 4월4주차 -->
+						<a href="javascript:void(0);" target="_blank" title="새창 바로가기" onclick="window.open('https://blog.naver.com/kpostbank');">
+							<img src="/resources/img/common/sns_icon_4.png" alt="네이버 블로그 바로가기">
+						</a>
+					</li>
+					<li>
+						<!-- 링크 추가 4월4주차 -->
+						<a href="javascript:void(0);" target="_blank" title="새창 바로가기" onclick="window.open('https://twitter.com/korea_post');">
+							<img src="/resources/img/common/sns_icon_5.png" alt="트위터 바로가기">
+						</a>
+					</li>
+					<!-- 20220421 수정 / 우체국tv 메뉴 삭제 -->
+
+					<!-- s: 웹진 바로가기 추가 : 6월 4주차 -->
+					<li>
+						<a href="javascript:void(0);" target="_blank" title="새창 바로가기" onclick="window.open('www.postnews.kr');">
+							<img src="/resources/img/common/sns_icon_7.png" alt="우체국웹진 바로가기">
+						</a>
+					</li>
+					<!-- e: 웹진 바로가기 추가 : 6월 4주차 -->
+				</ul>
+				<p>우체국예금보험법률 제4조 국가전액지급보장</p>
+			</div>
+			<!-- e: 마크업 추가 4월4주차 -->
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	// 개인*기업, 고객센터 클래스 적용
+	CEAcomm.menuClasson('', '');
+
+	function open_pop(url){
+		CEcomm.popup.windowOpen(url,'약관', screen.width/1.2, screen.height/1.2, null);
+	}
+
+</script>
+      </footer>
+    </div>
+
+
+
+<script type="text/javascript">
+AGs5fyPC5ropw();
+</script>
+
+
+<div class="glasp-extension-toaster" style="display: block; width: 320px; margin: unset; padding: unset; border: unset; border-radius: unset; outline: unset; background-color: unset; box-shadow: unset; position: fixed; top: 40px; right: 24px; z-index: 9999;"></div><div class="glasp-extension" style="display: block; width: unset; margin: unset; padding: unset; border: unset; border-radius: unset; outline: unset; background-color: unset; box-shadow: unset; position: fixed; bottom: 16px; right: 16px; z-index: 9999;"></div></body></html>
