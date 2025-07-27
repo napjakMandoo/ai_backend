@@ -103,8 +103,7 @@ class SinHanBankCrawler:
                         time.sleep(3)
                         self.wait.until(lambda d: d.execute_script("return document.readyState") == "complete")
 
-                        # product_data = self.util.extract_content_text(self.driver.page_source)
-                        product_data = self.extract_content_text()
+                        product_data = self.util.extract_content_text(self.driver.page_source)
                         products.append(product_data)
                         print(f"상품 '{name}' 처리 완료")
 
@@ -134,33 +133,3 @@ class SinHanBankCrawler:
             print(f"[{datetime.now()}] 크롤링 완료, 드라이버 종료")
             self.driver.quit()
 
-    def extract_content_text(self):
-        self.wait.until(EC.presence_of_element_located((By.ID, "contents")))
-
-        container = self.driver.find_element(By.ID, "contents")
-        full_text = container.text  # grabs all visible text under #contents
-
-        tab_ids = [
-            "tac_상품상세_tab_tab_상품안내1",
-            "tac_상품상세_tab_tab_상품안내2",
-            "tac_상품상세_tab_tab_상품안내3",
-            "tac_상품상세_tab_tab_금리안내",
-        ]
-
-        for tab_id in tab_ids:
-            try:
-                tab = self.driver.find_element(By.ID, tab_id)
-                self.driver.execute_script("arguments[0].click();", tab)
-                time.sleep(0.5)
-                panel_id = tab.get_attribute("aria-controls")
-                panel = self.driver.find_element(By.ID, panel_id)
-                full_text += "\n\n" + panel.text
-            except Exception:
-                continue
-
-        for img in container.find_elements(By.TAG_NAME, "img"):
-            alt = img.get_attribute("alt")
-            if alt:
-                full_text += "\n\n[Image] " + alt
-
-        return re.sub(r"\s+\n", " ", full_text.strip()) + " " + self.driver.current_url
