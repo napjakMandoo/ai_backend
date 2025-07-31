@@ -12,6 +12,12 @@ class BankRepositoryTest:
     def __init__(self):
         self.mysqlUtil = MysqlUtil()
 
+    def get_uuid_by_bank_name_test(self, bank_name):
+
+        repository = BankRepository()
+        uuid = repository.get_uuid_by_bank_name(bank_name)
+        return uuid
+
     def save_bank_test(self):
         connection = self.mysqlUtil.get_connection()
         cursor = connection.cursor()
@@ -31,8 +37,6 @@ class BankRepositoryTest:
         cursor.close()
         connection.close()
 
-
-
 if __name__ == '__main__':
     logging.basicConfig(
         level=logging.INFO,
@@ -42,3 +46,6 @@ if __name__ == '__main__':
 
     test = BankRepositoryTest()
     test.save_bank_test()
+
+    name_test = test.get_uuid_by_bank_name_test("KDB")
+    print(name_test)

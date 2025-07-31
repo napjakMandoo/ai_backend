@@ -47,3 +47,14 @@ class BankRepository:
                 cursor.close()
             if connection:
                 connection.close()
+
+    def get_uuid_by_bank_name(self, bank_name):
+        connection = self.mysqlUtil.get_connection()
+        cursor = connection.cursor()
+
+        cursor.execute("select bank_uuid from bank where bank_name=%s", bank_name)
+        row = cursor.fetchone()
+        if row:
+            return uuid.UUID(bytes=row[0])
+        else:
+            return None
