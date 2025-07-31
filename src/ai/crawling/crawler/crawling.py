@@ -1,6 +1,6 @@
-from src.crawling.crawler.BankLink import BankLink
-from src.crawling.crawler.kyongnam.KyongNamBankCrawler import  KyongNamBankCrawler
-from src.crawling.crawler.sinhan.SinHanBankCrawler import SinHanBankCrawler
+from src.ai.crawling.crawler.BankLink import BankLink
+from src.ai.crawling.crawler.kyongnam.KyongNamBankCrawler import  KyongNamBankCrawler
+from src.ai.crawling.crawler.sinhan.SinHanBankCrawler import SinHanBankCrawler
 
 if __name__ == "__main__":
     before_preprocessed_products = []

@@ -34,10 +34,14 @@ class LlmUtil:
             " \"product_minimum_amount\": Refers to the minimum amount that can be deposited into the financial product.\n"
             " \"product_maximum_amount_per_day\": Refers to the maximum amount that can be deposited into the financial product per day.\n"
             " \"product_minimum_amount_per_day\": Refers to the minimum amount that can be deposited into the financial product per day.\n"
+            " \"product_maximum_amount_per_month\": Refers to the maximum amount that can be deposited into the financial product per month.\n"
+            " \"product_minimum_amount_per_month\": Refers to the minimum amount that can be deposited into the financial product per month.\n"
+            
             " \"preferential_conditions_detail_header\": Refers to the title of each preferential condition within the financial product.\n"
             " \"preferential_conditions_detail_detail\": Refers to the detailed information of each preferential condition within the financial product.\n"
             " \"preferential_conditions_detail_interest_rate\": Refers to the interest rate of each preferential condition within the financial product.\n"
             " \"preferential_conditions_detail_keyword\": Select the appropriate keyword for each preferential condition within the financial product. The keywords must be selected from the following: [‘자동이체’, ‘비대면가입’, ‘마케팅동의’, ‘신규고객’, ‘급여이체’, ‘신용카드이용/카드실적’, ‘나이’, ‘첫거래’, ‘계좌보유’, ‘연계상품가입’, ‘장기거래/장기상품’, ‘목표금액달성/적금성공’]. If none apply, label it ‘기타’.\n"
+            
             "\"product_period_period\": Indicates the deposit term for the financial product. Examples are as follows:\n"
             "1. If \"3 months or more and less than 6 months,\" then \"[3,6)\"\n"
             "2. If \"3 months or more and up to 6 months,\" then \"[3,6]\"\n"
