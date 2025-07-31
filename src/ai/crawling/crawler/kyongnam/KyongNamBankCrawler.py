@@ -11,7 +11,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import traceback
 
-from src.crawling.crawler.util.crawlingUtil import CrawlingUtil
+from src.ai.crawling.crawler.util.crawlingUtil import CrawlingUtil
 
 
 class KyongNamBankCrawler:

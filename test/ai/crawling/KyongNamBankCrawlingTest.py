@@ -1,6 +1,6 @@
 from src.ai.preprocessing.LlmUtil import LlmUtil
-from src.crawling.crawler.kyongnam.KyongNamBankCrawler import KyongNamBankCrawler
-from src.crawling.crawler.BankLink import BankLink
+from src.ai.crawling.crawler.kyongnam.KyongNamBankCrawler import KyongNamBankCrawler
+from src.ai.crawling.crawler.BankLink import BankLink
 
 if __name__ == '__main__':
     start = KyongNamBankCrawler(base_url=BankLink.KYONGNAM_BANK_DEPOSIT_LINK.value).start()

@@ -9,10 +9,8 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import traceback
-import re
 
-from src.crawling.crawler.util.crawlingUtil import CrawlingUtil
+from src.ai.crawling.crawler.util.crawlingUtil import CrawlingUtil
 
 
 class SinHanBankCrawler:
