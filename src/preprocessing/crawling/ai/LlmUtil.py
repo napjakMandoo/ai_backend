@@ -46,8 +46,10 @@ class LlmUtil:
             " \"preferential_conditions_detail_header\": Refers to the title of each preferential condition within the financial product.\n"
             " \"preferential_conditions_detail_detail\": Refers to the detailed information of each preferential condition within the financial product.\n"
             " \"preferential_conditions_detail_interest_rate\": Refers to the interest rate of each preferential condition within the financial product.\n"
-            " \"preferential_conditions_detail_keyword\": Select the appropriate keyword for each preferential condition within the financial product. The keywords must be selected from the following: [‘자동이체’, ‘비대면가입’, ‘마케팅동의’, ‘신규고객’, ‘급여이체’, ‘신용카드이용/카드실적’, ‘나이’, ‘첫거래’, ‘계좌보유’, ‘연계상품가입’, ‘장기거래/장기상품’, ‘목표금액달성/적금성공’]. If none apply, label it ‘기타’.\n"
-            
+            # " \"preferential_conditions_detail_keyword\": Select the appropriate keyword for each preferential condition within the financial product. The keywords must be selected from the following: ['ACCOUNT_HOLDING','AGE','AUTOMATIC_TRANSFER','CREDIT_CARD_USE_OR_PERFORMANCE','FIRST_TRANSACTION','LINKED_PRODUCT_JOIN','LONG_TERM_TRANSACTION_OR_PRODUCT','MARKETING_CONSENT','NEW_CUSTOMER','NON_FACE_TO_FACE_JOIN','SALARY_TRANSFER','TARGET_AMOUNT_ACHIEVED_OR_SAVE_SUCCESS']. If none apply, label it ‘기타’.\n"
+            " \"preferential_conditions_detail_keyword\": Select an appropriate keyword for each preferential condition within the financial product. "
+            " The keyword must be chosen from the following list: ['ACCOUNT_HOLDING','AGE','AUTOMATIC_TRANSFER','CREDIT_CARD_USE_OR_PERFORMANCE','FIRST_TRANSACTION','LINKED_PRODUCT_JOIN','LONG_TERM_TRANSACTION_OR_PRODUCT','MARKETING_CONSENT','NEW_CUSTOMER','NON_FACE_TO_FACE_JOIN','SALARY_TRANSFER','TARGET_AMOUNT_ACHIEVED_OR_SAVE_SUCCESS']"
+            ".If no suitable keyword applies, label it as 'ETC' In other words, each preferential condition must map to exactly one keyword.\n"
             "\"product_period_period\": Indicates the deposit term for the financial product. Examples are as follows:\n"
             "1. If \"3 months or more and less than 6 months,\" then \"[3,6)\"\n"
             "2. If \"3 months or more and up to 6 months,\" then \"[3,6]\"\n"

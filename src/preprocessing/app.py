@@ -3,6 +3,7 @@ import logging
 from src.preprocessing.crawling.ai.LlmUtil import LlmUtil
 from src.preprocessing.crawling.BankLink import BankLink
 from src.preprocessing.crawling.crawler.kyongnam.KyongNamBankCrawler import  KyongNamBankCrawler
+from src.preprocessing.db.bank.BankRepository import BankRepository
 from src.preprocessing.db.product.productRepository import ProductRepository
 from src.preprocessing.db.util.MysqlUtil import MysqlUtil
 
@@ -13,6 +14,7 @@ class App:
         self.logger = logging.getLogger(__name__)
         self.mysqlUtil = MysqlUtil()
         self.llmUtil = LlmUtil()
+        self.bankRepository = BankRepository()
 
     def crawling(self):
         before_preprocessed_products = []
@@ -28,39 +30,49 @@ class App:
             preprocessed_products.append(json)
         return preprocessed_products
 
-
-    def start(self):
-        logging.basicConfig(
-            level=logging.INFO,
-            format="%(asctime)s %(levelname)s [%(name)s] %(message)s",
-            handlers=[logging.StreamHandler()]
-        )
-
-        self.logger.info("=====크롤링 시작=====")
-        crawling = self.crawling()
-        self.logger.info("=====크롤링 끝=====")
-
-        self.logger.info("=====전처리 시작=====")
-        after_preprocessed_products = self.preprocessed(crawling)
-        self.logger.info("=====전처리 끝=====")
-
+    def saveToDB(self, after_preprocessed_products):
         connection = self.mysqlUtil.get_connection()
         try:
             connection.begin()
             for product in after_preprocessed_products:
-                self.productRepository.save_one_product(product_data=product, bank_name="BNK_GYEONGNAM",
+                self.productRepository.save_one_product(product_data=product,
+                                                        bank_name="BNK_GYEONGNAM",  # 이거 수정해야함
                                                         connection=connection)
             connection.commit()
-            self.logger.info("=====DB에 저장=====")
         except Exception as e:
             self.logger.error(f"mysql 데이터 삽입 에러: {e}")
             connection.rollback()
         finally:
             connection.close()
+
+
+    def start(self):
+        self.logger.info("=====크롤링 시작=====")
+        crawling = self.crawling()
+        self.logger.info("=====크롤링 끝=====")
+        #######
+        self.logger.info("=====전처리 시작=====")
+        after_preprocessed_products = self.preprocessed(crawling)
+        self.logger.info("=====전처리 끝=====")
+        #######
+        self.logger.info("=====은행 데이터 저장 시작=====")
+        bank_repository = BankRepository()
+        bank_repository.save_bank()
+        self.logger.info("=====은행 데이터 저장 끝=====")
+        #######
+        self.logger.info("=====DB에 저장 시작=====")
+        self.saveToDB(after_preprocessed_products)
+        #######
         self.logger.info("=====DB에 끝=====")
 
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s [%(name)s] %(message)s",
+        handlers=[logging.StreamHandler()]
+    )
+
     app = App()
     app.start()
 

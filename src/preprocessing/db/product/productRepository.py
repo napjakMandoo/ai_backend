@@ -11,6 +11,15 @@ class ProductRepository:
         self.mysqlUtil = MysqlUtil()
         self.BankRepository = BankRepository()
 
+    def check_duplicate_product(self, product_name, connection):
+        cursor = connection.cursor()
+        cursor.execute("select product_name from bank_product where product_name=%s", product_name)
+        row = cursor.fetchone()
+        if row:
+            return True
+        else:
+            return False
+
     def save_one_product(self, product_data, bank_name, connection):
 
         self.logger.info("상품 데이터 삽입 시작")
@@ -42,17 +51,18 @@ class ProductRepository:
         product_period_period: list[str] = product_data.product_period_period
         product_period_base_rate: list[float] = product_data.product_period_base_rate
 
+        if self.check_duplicate_product(product_name=product_name, connection=connection):
+            self.logger.info("이미 존재하는 상품입니다.")
+            return
 
         try:
             connection.begin()
             cursor = connection.cursor()
-            # product_uuid 생성해야함
             product_uuid = uuid.uuid4().bytes
-
-            # bank로 부터 uuid 가져와야함
             bank_uuid = self.BankRepository.get_uuid_by_bank_name(bank_name=bank_name).bytes
 
-            sql = (
+            self.logger.info("bank_product 테이블 데이터 삽입 시작")
+            product_insert_sql = (
                 "INSERT INTO bank_product ("
                 "  product_uuid, bank_uuid, basic_rate, max_rate, maximum_amount,"
                 "  maximum_amount_per_day, maximum_amount_per_month, minimum_amount,"
@@ -76,9 +86,40 @@ class ProductRepository:
                 product_type
             )
 
-            cursor.execute(sql, params)
+            cursor.execute(product_insert_sql, params)
+            self.logger.info("bank_product 테이블 데이터 삽입 끝")
+            ###################################################################################
+            self.logger.info("preferential_condition_detail 테이블 데이터 삽입 시작")
+            preferential_condition_detail_insert_sql = ("INSERT INTO preferential_condition_detail (detail_uuid, product_uuid, header, detail,  interest_rate, keyword) VALUES (%s, %s, %s, %s, %s, %s)")
+
+            for i in range(len(preferential_conditions_detail_header)):
+                preferential_condition_detail_uuid = uuid.uuid4().bytes
+                header = preferential_conditions_detail_header[i]
+                detail = preferential_conditions_detail_detail[i]
+                interest_rate = preferential_conditions_detail_interest_rate[i]
+                keyword = preferential_conditions_detail_keyword[i]
+
+                params = (preferential_condition_detail_uuid, product_uuid, header, detail, interest_rate, keyword)
+                cursor.execute(preferential_condition_detail_insert_sql, params)
+
+            self.logger.info("preferential_condition_detail 테이블 데이터 삽입 끝")
+            ###################################################################################
+            self.logger.info("product_period 테이블 데이터 삽입 시작")
+
+            period_insert_sql = ("INSERT INTO product_period (period_uuid, product_uuid, period, bank_rate) VALUES (%s, %s, %s, %s)")
+
+            for i in range(len(product_period_period)):
+                period_uuid = uuid.uuid4().bytes
+                period = product_period_period[i]
+                base_rate = product_period_base_rate[i]
+
+                params = (period_uuid, product_uuid, period, base_rate)
+                cursor.execute(period_insert_sql, params)
+
+            self.logger.info("product_period 테이블 데이터 삽입 끝")
             connection.commit()
-            self.logger.info("상품 데이터 삽입 끝")
+
+
         except Exception as e:
             self.logger.error(f"상품 데이터 삽입 에러 발생: roll back: {e}")
             self.logger.error(f"product_uuid: {product_uuid}, bank_uuid: {bank_uuid}, product_basic_rate:{product_period_base_rate}")
@@ -87,6 +128,9 @@ class ProductRepository:
             self.logger.error(f"product_name: {product_name}, product_info: {product_info}, product_preferential_info:{product_preferential_info}")
             self.logger.error(f"product_sub_amount: {product_sub_amount}, product_sub_target: {product_sub_target}, product_sub_term:{product_sub_term}")
             self.logger.error(f"product_sub_way: {product_sub_way}, product_tax_benefit: {product_tax_benefit}, product_url_links:{product_url_links}, product_type:{product_type}")
+            self.logger.error(f"preferential_conditions_detail_header: {preferential_conditions_detail_header}, preferential_conditions_detail_detail: {preferential_conditions_detail_detail}")
+            self.logger.error(f"preferential_conditions_detail_interest_rate: {preferential_conditions_detail_interest_rate}, preferential_conditions_detail_keyword: {preferential_conditions_detail_keyword}")
+            self.logger.error(f"product_period_period: {product_period_period}, product_period_base_rate: {product_period_base_rate}")
             raise e
         finally:
             cursor.close()

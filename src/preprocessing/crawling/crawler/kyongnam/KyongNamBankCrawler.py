@@ -96,7 +96,7 @@ class KyongNamBankCrawler:
                 time.sleep(3)
 
                 html_content = self.driver.page_source
-                product_info = self.util.extract_content_text(html_content)
+                product_info = self.util.extract_content_text(html_content, self.base_url)
                 print("상품 상세 정보 추출 완료")
                 saving_products.append(product_info)
 
