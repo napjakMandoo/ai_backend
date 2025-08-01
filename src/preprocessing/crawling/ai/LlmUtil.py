@@ -82,7 +82,9 @@ class LlmUtil:
                     )
                     break
                 except ServerError as e:
-                    if e.status_code == 503:
+                    self.logger.error(f"전처리 도중 에러 발생: {e}")
+                    error_dict = e.args[0] if e.args else {}
+                    if isinstance(error_dict, dict) and error_dict.get('error', {}).get('code') == 503:
                         time.sleep(2 ** i + random.random())
                         continue
                     raise

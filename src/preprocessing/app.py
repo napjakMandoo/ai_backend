@@ -1,4 +1,7 @@
+from datetime import datetime
 import logging
+import schedule
+import time
 
 from src.preprocessing.crawling.ai.LlmUtil import LlmUtil
 from src.preprocessing.crawling.BankLink import BankLink
@@ -30,6 +33,7 @@ class App:
             preprocessed_products.append(json)
         return preprocessed_products
 
+    # after_preprocessed_products는 전처리된 데이터들 묶음
     def saveToDB(self, after_preprocessed_products):
         connection = self.mysqlUtil.get_connection()
         try:
@@ -45,26 +49,44 @@ class App:
         finally:
             connection.close()
 
+    def month_task(self):
+        ####### 자동화 해야할 부분 ########
 
-    def start(self):
+        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self.logger.info(f"월 마다 진행: {current_time}")
+
         self.logger.info("=====크롤링 시작=====")
         crawling = self.crawling()
         self.logger.info("=====크롤링 끝=====")
+
         #######
         self.logger.info("=====전처리 시작=====")
         after_preprocessed_products = self.preprocessed(crawling)
         self.logger.info("=====전처리 끝=====")
+
         #######
+        self.logger.info("=====DB에 저장 시작=====")
+        self.saveToDB(after_preprocessed_products)
+
+        #######
+        self.logger.info("=====DB에 끝=====")
+        self.logger.info(f"월 마다 진행: {current_time}")
+
+
+
+    def start(self):
+        # 해야할 거: 자동화 해야함, url, 팀원들 크롤링 합쳐야함, print 대신 로깅 처리, 사진도 넣어야함,
+
         self.logger.info("=====은행 데이터 저장 시작=====")
         bank_repository = BankRepository()
         bank_repository.save_bank()
         self.logger.info("=====은행 데이터 저장 끝=====")
-        #######
-        self.logger.info("=====DB에 저장 시작=====")
-        self.saveToDB(after_preprocessed_products)
-        #######
-        self.logger.info("=====DB에 끝=====")
 
+        schedule.every().day.at("02:00").do(self.month_task)
+
+        while True:
+            schedule.run_pending()
+            time.sleep(3600)
 
 if __name__ == "__main__":
     logging.basicConfig(

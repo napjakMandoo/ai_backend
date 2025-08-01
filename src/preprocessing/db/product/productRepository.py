@@ -13,7 +13,7 @@ class ProductRepository:
 
     def check_duplicate_product(self, product_name, connection):
         cursor = connection.cursor()
-        cursor.execute("select product_name from bank_product where product_name=%s", product_name)
+        cursor.execute("select name from bank_product where name=%s", product_name)
         row = cursor.fetchone()
         if row:
             return True
