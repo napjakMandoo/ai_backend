@@ -11,6 +11,22 @@ class ProductRepository:
         self.mysqlUtil = MysqlUtil()
         self.BankRepository = BankRepository()
 
+    # 테스트
+    def delete_all_product(self):
+        delete_all_product_period_query = "delete from product_period"
+        delete_all_product_detail_query = "delete from preferential_condition_detail"
+        delete_all_product_query = "delete from bank_product"
+
+        mysql_connection = self.mysqlUtil.get_connection()
+        mysql_cursor = mysql_connection.cursor()
+        mysql_cursor.execute(delete_all_product_detail_query)
+        mysql_cursor.execute(delete_all_product_period_query)
+        mysql_cursor.execute(delete_all_product_query)
+        mysql_connection.commit()
+        mysql_cursor.close()
+        mysql_connection.close()
+
+
     def check_duplicate_product(self, product_name, connection):
         cursor = connection.cursor()
         cursor.execute("select name from bank_product where name=%s", product_name)

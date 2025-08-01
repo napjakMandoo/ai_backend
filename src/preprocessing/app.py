@@ -75,18 +75,22 @@ class App:
 
 
     def start(self):
-        # 해야할 거: @자동화 해야함, url, 팀원들 크롤링 합쳐야함, print 대신 로깅 처리, 사진도 넣어야함, 크롤링 테스트
+        # 해야할 거: @자동화 해야함, url, 팀원들 크롤링 합쳐야함, @print 대신 로깅 처리, 사진도 넣어야함, 크롤링 테스트
 
         self.logger.info("=====은행 데이터 저장 시작=====")
         bank_repository = BankRepository()
         bank_repository.save_bank()
         self.logger.info("=====은행 데이터 저장 끝=====")
 
-        schedule.every().day.at("02:00").do(self.month_task)
+        self.productRepository.delete_all_product()
+        self.month_task()
 
-        while True:
-            schedule.run_pending()
-            time.sleep(3600)
+        # 자동화 코드입니다. 주석을 풀면 됩니다.
+        # schedule.every().day.at("02:00").do(self.month_task)
+        #
+        # while True:
+        #     schedule.run_pending()
+        #     time.sleep(3600)
 
 if __name__ == "__main__":
     logging.basicConfig(
