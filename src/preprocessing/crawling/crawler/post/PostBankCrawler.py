@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 from datetime import datetime
@@ -11,6 +10,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from src.preprocessing.crawling.crawler.util.crawlingUtil import CrawlingUtil
 from selenium.webdriver.support import expected_conditions as EC
 import time
+import logging
 
 class PostBankCrawler:
     def __init__(self, headless: bool = True, timeout: int = 30, base_url:str=""):
@@ -21,6 +21,7 @@ class PostBankCrawler:
         self.base_url = base_url
         self.util = CrawlingUtil(self.driver)
         self.processed_products = set()
+        self.logger = logging.getLogger(__name__)
 
     def _create_driver(self) -> webdriver.Chrome:
         opts = Options()
@@ -36,7 +37,7 @@ class PostBankCrawler:
         return webdriver.Chrome(options=opts)
 
     def start(self):
-        print("우체국 금융상품몰 크롤링 시작")
+        self.logger.info("우체국 금융상품몰 크롤링 시작")
         products = []
         try:
             self.driver.get(self.base_url)
@@ -45,7 +46,7 @@ class PostBankCrawler:
 
             tabs = ['예금', '적금']
             for tab_name in tabs:
-                print(f"\n=== {tab_name} 탭 처리 시작 ===")
+                self.logger.info(f"=== {tab_name} 탭 처리 시작 ===")
 
                 clicked = False
                 tab_selectors = [
@@ -74,7 +75,7 @@ class PostBankCrawler:
                     except Exception:
                         continue
                 if not clicked:
-                    print(f"{tab_name} 탭 클릭 실패, 건너뜁니다")
+                    self.logger.error(f"{tab_name} 탭 클릭 실패, 건너뜁니다")
                     continue
 
                 time.sleep(3)
@@ -83,14 +84,14 @@ class PostBankCrawler:
                         EC.presence_of_element_located((By.CLASS_NAME, "acco_inner"))
                     )
                 except Exception:
-                    print(f"{tab_name} 탭의 상품 컨테이너 로드 실패")
+                    self.logger.error(f"{tab_name} 탭의 상품 컨테이너 로드 실패")
                     continue
 
                 elems = self.driver.find_elements(By.CSS_SELECTOR, ".ch_product.exist_prod")
 
-                print(f"{tab_name} 탭에서 {len(elems)}개 상품 발견")
+                self.logger.info(f"{tab_name} 탭에서 {len(elems)}개 상품 발견")
                 for idx, elem in enumerate(elems, start=1):
-                    print(f"상품 {idx} 처리 중...")
+                    self.logger.info(f"상품 {idx} 처리 중...")
 
                     try:
                         original = self.driver.current_window_handle
@@ -134,7 +135,7 @@ class PostBankCrawler:
                             # extract_content_text를 사용해서 상품 정보를 추출하고 products 리스트에 추가
                             product_info = self.util.extract_content_text(self.driver.page_source)
                             products.append(product_info)
-                            print(f"상품 {idx} 정보 수집 완료")
+                            self.logger.info(f"상품 {idx} 정보 수집 완료")
 
                             if len(self.driver.window_handles) > 1:
                                 self.driver.close()
@@ -143,7 +144,7 @@ class PostBankCrawler:
                                 self.driver.back()
                                 time.sleep(2)
                     except Exception as detail_err:
-                        print(f"상품 {idx} 크롤링 실패: {detail_err}")
+                        self.logger.error(f"상품 {idx} 크롤링 실패: {detail_err}")
                         try:
                             if len(self.driver.window_handles) > 1:
                                 self.driver.close()
@@ -151,15 +152,15 @@ class PostBankCrawler:
                         except:
                             pass
 
-                print(f"{tab_name} 탭 처리 완료")
+                self.logger.info(f"{tab_name} 탭 처리 완료")
 
-            print(f"\n전체 크롤링 완료: 총 {len(products)}개 상품 수집")
+            self.logger.info(f"전체 크롤링 완료: 총 {len(products)}개 상품 수집")
             return products
 
         except Exception as e:
-            print(f"크롤링 중 오류: {e}")
+            self.logger.error(f"크롤링 중 오류: {e}")
             return products
 
         finally:
-            print(f"[{datetime.now()}] 드라이버 종료")
+            self.logger.info(f"[{datetime.now()}] 드라이버 종료")
             self.driver.quit()

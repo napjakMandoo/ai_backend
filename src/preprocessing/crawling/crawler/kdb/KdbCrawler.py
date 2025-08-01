@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import time
+import logging
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -20,6 +21,7 @@ class KdbCrawler:
         self.wait     = WebDriverWait(self.driver, timeout)
         self.base_url = base_url
         self.util = CrawlingUtil(self.driver)
+        self.logger = logging.getLogger(__name__)
 
     def _create_driver(self) -> webdriver.Chrome:
         opts = Options()
@@ -35,7 +37,7 @@ class KdbCrawler:
         return webdriver.Chrome(options=opts)
 
     def start(self):
-        print("KDB산업은행 금융상품몰 크롤링 시작")
+        self.logger.info("KDB산업은행 금융상품몰 크롤링 시작")
         products = []
         try:
             self.driver.get(self.base_url)
@@ -44,12 +46,12 @@ class KdbCrawler:
                 self.wait.until(lambda d: d.execute_script("return document.readyState") == "complete")
                 # 추가로 특정 요소가 로드될 때까지 대기
                 self.wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-                print("금융상품몰 페이지 로딩 완료")
+                self.logger.info("금융상품몰 페이지 로딩 완료")
             except:
-                print("페이지 로딩 대기 중 타임아웃 발생, 계속 진행...")
+                self.logger.error("페이지 로딩 대기 중 타임아웃 발생, 계속 진행...")
 
             # 1단계: 금융상품몰 클릭
-            print("금융상품몰 메뉴 클릭 시도...")
+            self.logger.info("금융상품몰 메뉴 클릭 시도...")
             financial_product_clicked = False
 
             # 더 구체적인 선택자로 금융상품몰 링크 찾기
@@ -64,15 +66,15 @@ class KdbCrawler:
             # 먼저 네비게이션이 로드될 때까지 대기
             try:
                 self.wait.until(EC.presence_of_element_located((By.ID, "gnb")))
-                print("네비게이션 메뉴 로드 완료")
+                self.logger.info("네비게이션 메뉴 로드 완료")
             except:
-                print("네비게이션 메뉴 로드 실패")
+                self.logger.error("네비게이션 메뉴 로드 실패")
 
             for i, selector in enumerate(financial_selectors, 1):
                 try:
-                    print(f"금융상품몰 링크 찾기 시도 {i}...")
+                    self.logger.info(f"금융상품몰 링크 찾기 시도 {i}...")
                     financial_link = self.wait.until(EC.element_to_be_clickable((By.XPATH, selector)))
-                    print(f"금융상품몰 링크 발견: {financial_link.get_attribute('href')}")
+                    self.logger.info(f"금융상품몰 링크 발견: {financial_link.get_attribute('href')}")
 
                     self.driver.execute_script(
                         "arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});",
@@ -82,30 +84,30 @@ class KdbCrawler:
 
                     # JavaScript 함수 직접 실행을 우선 시도
                     try:
-                        print("JavaScript 함수 직접 실행 시도...")
+                        self.logger.info("JavaScript 함수 직접 실행 시도...")
                         self.driver.execute_script("_menu.goitbbm();")
-                        print("JavaScript 함수로 금융상품몰 이동 성공")
+                        self.logger.info("JavaScript 함수로 금융상품몰 이동 성공")
                         financial_product_clicked = True
                         break
                     except Exception as js_err:
-                        print(f"JavaScript 함수 실행 실패: {js_err}")
+                        self.logger.error(f"JavaScript 함수 실행 실패: {js_err}")
                         # JavaScript 함수 실행 실패 시 클릭 시도
                         try:
-                            print("일반 클릭 시도...")
+                            self.logger.error("일반 클릭 시도...")
                             self.driver.execute_script("arguments[0].click();", financial_link)
-                            print("클릭으로 금융상품몰 이동 성공")
+                            self.logger.error("클릭으로 금융상품몰 이동 성공")
                             financial_product_clicked = True
                             break
                         except Exception as click_err:
-                            print(f"클릭도 실패: {click_err}")
+                            self.logger.error(f"클릭도 실패: {click_err}")
                             continue
 
                 except Exception as e:
-                    print(f"금융상품몰 링크 {i} 시도 실패: {str(e)[:100]}...")
+                    self.logger.error(f"금융상품몰 링크 {i} 시도 실패: {str(e)[:100]}...")
                     continue
 
             if not financial_product_clicked:
-                print("금융상품몰 메뉴 클릭 실패")
+                self.logger.info("금융상품몰 메뉴 클릭 실패")
                 return products
 
             time.sleep(5)

@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 import time
@@ -12,7 +11,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import traceback
 
 from src.preprocessing.crawling.crawler.util.crawlingUtil import CrawlingUtil
-
+import logging
 
 class KyongNamBankCrawler:
     def __init__(self, headless: bool = True, timeout: int = 30, base_url:str=""):
@@ -22,6 +21,7 @@ class KyongNamBankCrawler:
         self.wait     = WebDriverWait(self.driver, timeout)
         self.base_url = base_url
         self.util = CrawlingUtil(self.driver)
+        self.logger = logging.getLogger(__name__)
 
     def _create_driver(self) -> webdriver.Chrome:
         opts = Options()
@@ -37,7 +37,7 @@ class KyongNamBankCrawler:
         return webdriver.Chrome(options=opts)
 
     def start(self):
-        print(self.base_url + " 시작")
+        self.logger.info(f"{self.base_url} 시작")
         product = []
         try:
             self.driver.get(self.base_url)
@@ -46,7 +46,7 @@ class KyongNamBankCrawler:
             last_page = self.util.get_last_page()
 
             for i in range(1, last_page+1):
-                print("현재 페이지 : " +str(i))
+                self.logger.info(f"현재 페이지 : {i}")
 
                 if i >= 2:
                     xpath_num = f"//div[contains(@class,'paginate')]//a[normalize-space(text())='{i}']"
@@ -61,12 +61,11 @@ class KyongNamBankCrawler:
                 time.sleep(3)
 
         except Exception as e:
-            print(f"\n크롤링 중 오류 발생: {e}")
-            traceback.print_exc()
+            self.logger.error(f"크롤링 중 오류 발생: {e}")
+            self.logger.error(traceback.format_exc())
 
         finally:
-            print(f"\n[{datetime.now()}] 크롤링 완료")
-
+            self.logger.info(f"[{datetime.now()}] 크롤링 완료")
             self.driver.quit()
 
         return product
@@ -78,11 +77,11 @@ class KyongNamBankCrawler:
             EC.presence_of_all_elements_located((By.CSS_SELECTOR, "div.pro-intlist-in dt a"))
         )
         total_products = len(initial_links)
-        print(f"총 {total_products}개의 상품을 발견했습니다.")
+        self.logger.info(f"총 {total_products}개의 상품을 발견했습니다.")
 
         for i in range(total_products):
             try:
-                print(f"\n[{i + 1}/{total_products}] 상품 처리 중...")
+                self.logger.info(f"[{i + 1}/{total_products}] 상품 처리 중...")
 
                 current_links = self.wait.until(
                     EC.presence_of_all_elements_located((By.CSS_SELECTOR, "div.pro-intlist-in dt a"))
@@ -90,14 +89,14 @@ class KyongNamBankCrawler:
 
                 product_link = current_links[i]
                 product_name = product_link.text.strip()
-                print(f"상품명: {product_name}")
+                self.logger.info(f"상품명: {product_name}")
 
                 self.driver.execute_script("arguments[0].click();", product_link)
                 time.sleep(3)
 
                 html_content = self.driver.page_source
                 product_info = self.util.extract_content_text(html_content, self.base_url)
-                print("상품 상세 정보 추출 완료")
+                self.logger.info("상품 상세 정보 추출 완료")
                 saving_products.append(product_info)
 
                 self.driver.get(self.base_url)
@@ -106,22 +105,21 @@ class KyongNamBankCrawler:
                 self.wait.until(
                     EC.presence_of_element_located((By.CSS_SELECTOR, "div.pro-intlist-in dt a"))
                 )
-                print("원래 페이지로 복귀 완료")
+                self.logger.info("원래 페이지로 복귀 완료")
 
             except Exception as e:
-                print(f"상품 {i + 1} 처리 중 오류: {e}")
+                self.logger.error(f"상품 {i + 1} 처리 중 오류: {e}")
                 try:
                     self.driver.get(self.base_url)
                     time.sleep(3)
                     self.wait.until(
                         EC.presence_of_element_located((By.CSS_SELECTOR, "div.pro-intlist-in dt a"))
                     )
-                    print("오류 후 원래 페이지 복구 완료")
+                    self.logger.info("오류 후 원래 페이지 복구 완료")
                 except Exception as e2:
-                    print(f"페이지 복구 실패: {e2}")
+                    self.logger.error(f"페이지 복구 실패: {e2}")
                     break
                 continue
 
-        print(f"\n총 {len(saving_products)}개 상품 크롤링 완료")
+        self.logger.info(f"총 {len(saving_products)}개 상품 크롤링 완료")
         return saving_products
-

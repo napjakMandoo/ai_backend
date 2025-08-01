@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 import time
@@ -11,6 +10,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 from src.preprocessing.crawling.crawler.util.crawlingUtil import CrawlingUtil
+import logging
 
 
 class SinHanBankCrawler:
@@ -22,6 +22,7 @@ class SinHanBankCrawler:
         self.base_url = base_url
         self.util = CrawlingUtil(self.driver)
         self.processed_products = set()
+        self.logger = logging.getLogger(__name__)
 
     def _create_driver(self) -> webdriver.Chrome:
         opts = Options()
@@ -37,7 +38,7 @@ class SinHanBankCrawler:
         return webdriver.Chrome(options=opts)
 
     def start(self):
-        print(f"{self.base_url} 시작")
+        self.logger.info(f"{self.base_url} 시작")
         products: list[dict] = []
         try:
             self.driver.get(self.base_url)
@@ -49,10 +50,10 @@ class SinHanBankCrawler:
             labels = self.driver.find_elements(By.CSS_SELECTOR, "a[id^='pgl_gen_list_page_']")
             page_indices = [int(a.get_attribute("index")) for a in labels if a.get_attribute("index") and a.get_attribute("index").isdigit()]
             last_page = max(page_indices) if page_indices else 1
-            print("last page:", last_page)
+            self.logger.info(f"last page: {last_page}")
 
             for page in range(1, last_page + 1):
-                print(f"\n--- {page} 페이지 처리 중 ---")
+                self.logger.info(f"--- {page} 페이지 처리 중 ---")
                 if page > 1:
                     page_link = self.driver.find_elements(By.CSS_SELECTOR, f"a[id='pgl_gen_list_page_{page}']")
                     if page_link:
@@ -75,22 +76,22 @@ class SinHanBankCrawler:
                         pid = link.get_attribute('id')
                         product_info_list.append({'name': name, 'id': pid})
                     except Exception as e:
-                        print(f"상품 정보 수집 오류: {e}")
+                        self.logger.error(f"상품 정보 수집 오류: {e}")
 
-                print(f"페이지 {page}에서 {len(product_info_list)}개 상품 발견")
+                self.logger.info(f"페이지 {page}에서 {len(product_info_list)}개 상품 발견")
 
                 for info in product_info_list:
                     name = info['name']
                     if name in self.processed_products:
-                        print(f"중복 상품 건너뛰기: {name}")
+                        self.logger.info(f"중복 상품 건너뛰기: {name}")
                         continue
-                    print(f"\n상품 처리 시작: {name}")
+                    self.logger.info(f"상품 처리 시작: {name}")
                     self.processed_products.add(name)
 
                     try:
                         target = next((e for e in self.driver.find_elements(By.CSS_SELECTOR, "a[id*='gen_prod_list'][id*='_tbx_상품명']") if e.text.strip() == name), None)
                         if not target:
-                            print(f"상품 링크 찾기 실패: {name}")
+                            self.logger.error(f"상품 링크 찾기 실패: {name}")
                             continue
                         self.driver.execute_script(
                             "arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});",
@@ -103,10 +104,10 @@ class SinHanBankCrawler:
 
                         product_data = self.util.extract_content_text(self.driver.page_source)
                         products.append(product_data)
-                        print(f"상품 '{name}' 처리 완료")
+                        self.logger.info(f"상품 '{name}' 처리 완료")
 
                     except Exception as e:
-                        print(f"상품 처리 중 오류: {e}")
+                        self.logger.error(f"상품 처리 중 오류: {e}")
 
                     self.driver.get(self.base_url)
                     time.sleep(5)
@@ -120,14 +121,13 @@ class SinHanBankCrawler:
                             self.wait.until(EC.presence_of_element_located((By.ID, "gen_prod_list")))
                             time.sleep(3)
 
-            print(f"\n총 {len(products)}개 상품 수집 완료")
+            self.logger.info(f"총 {len(products)}개 상품 수집 완료")
             return products
 
         except Exception as e:
-            print(f"전체 처리 중 오류 발생: {e}")
+            self.logger.error(f"전체 처리 중 오류 발생: {e}")
             return products
 
         finally:
-            print(f"[{datetime.now()}] 크롤링 완료, 드라이버 종료")
+            self.logger.info(f"[{datetime.now()}] 크롤링 완료, 드라이버 종료")
             self.driver.quit()
-
