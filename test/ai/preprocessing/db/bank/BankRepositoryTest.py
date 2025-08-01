@@ -1,9 +1,7 @@
-import uuid
-
-from src.ai.preprocessing.db.bank.BankRepository import BankRepository
+from src.preprocessing.db.bank.BankRepository import BankRepository
 import logging
 
-from src.ai.preprocessing.db.bank.MysqlUtil import MysqlUtil
+from src.preprocessing.db.util.MysqlUtil import MysqlUtil
 
 class BankRepositoryTest:
     

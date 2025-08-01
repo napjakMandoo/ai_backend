@@ -11,8 +11,6 @@ class CrawlingUtil:
     def extract_content_text(self, html_content: str):
         soup = BeautifulSoup(html_content, 'html.parser')
 
-        content_div = None
-
         content_div = soup.find('div', id=['content', 'contents'])
 
         if not content_div:

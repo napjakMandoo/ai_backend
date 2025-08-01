@@ -12,6 +12,8 @@ class Preferential(BaseModel):
     product_minimum_amount: int # 상품: 최소금액
     product_maximum_amount_per_day: int # 상품: 하루 최대 금액
     product_minimum_amount_per_day: int # 상품 : 하루 최소 금액
+    product_maximum_amount_per_month: int # 상품: 한달 최대 금액
+    product_minimum_amount_per_month: int # 상품 : 한달 최소 금액
     product_sub_target: str # 상품: 가입 대상
     product_sub_amount: str  # 상품: 가입 금액
     product_sub_way:str  # 상품: 가입 방법
