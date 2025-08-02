@@ -720,9 +720,7 @@ class SCBankCleanCrawler:
         os.makedirs(directory_path, exist_ok=True)
 
         if filename is None:
-            # 현재 날짜로 파일명 생성 (YYYY-MM-DD 형식)
-            current_date = datetime.datetime.now().strftime("%Y%m%d")
-            filename = f"sc_bank_products_{current_date}.json"
+            filename = f"sc_products.json"
             file_path = os.path.join(directory_path, filename)
 
         with open(file_path, 'w', encoding='utf-8') as f:

@@ -1,3 +1,5 @@
+import os
+
 import requests
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -8,13 +10,17 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException
 import time
 import json
 import re
+import dotenv
+
+from src.preprocessing.crawling.BankLink import BankLink
+
 
 class WooriBankCrawler:
     # 우리은행 예적금 상품 크롤러 초기화
     def __init__(self, headless=True):
-        self.base_url = "https://spot.wooribank.com/pot/Dream?withyou=PODEP0020"
-        self.deposit_url = "https://spot.wooribank.com/pot/Dream?withyou=PODEP0020"  # 목돈굴리기상품
-        self.savings_url = "https://spot.wooribank.com/pot/Dream?withyou=PODEP0021"  # 목돈모으기상품
+        self.base_url = BankLink.WOORI_BANK_BASE_LINK.value
+        self.deposit_url = BankLink.WOORI_BANK_DEPOSIT_LINK.value   # 목돈굴리기상품
+        self.savings_url =   BankLink.WOORI_BANK_SAVINGS_LINK.value# 목돈모으기상품
         self.driver = self.setup_driver(headless)
         self.all_products = []
         
@@ -549,8 +555,16 @@ class WooriBankCrawler:
     
     # JSON 파일 저장
     def save_data(self, filename="woori_bank_products.json"):
+        dotenv.load_dotenv()
+        directory_path = os.getenv("JSON_RESULT_PATH")
+
+        os.makedirs(directory_path, exist_ok=True)
+
+        full_path = os.path.join(directory_path, filename)
+
+
         try:
-            with open(filename, 'w', encoding='utf-8') as f:
+            with open(full_path, 'w', encoding='utf-8') as f:
                 json.dump(self.all_products, f, ensure_ascii=False, indent=2)
             print(f"JSON 데이터가 {filename}에 저장되었습니다.")
         except Exception as e:
@@ -632,18 +646,16 @@ class WooriBankCrawler:
         finally:
             self.driver.quit()
 
-# 실행
-if __name__ == "__main__":
-    print("우리은행 예금/적금 크롤러 v2.0")
-    print("예금(목돈굴리기) + 적금(목돈모으기) 전체 수집")
-    print("7개 필수 항목 구조화 추출")
-    
-    crawler = WooriBankCrawler(headless=True)
-    result = crawler.run()
-    
-    if result:
-        print("크롤링 성공")
-        print(f"파일: woori_bank_products.json")
-        print(f"예금 {result['deposit_count']}개 + 적금 {result['savings_count']}개 = 총 {result['total_products']}개")
-    else:
-        print("크롤링 실패")
+    def start(self):
+        print("우리은행 예금/적금 크롤러 v2.0")
+        print("예금(목돈굴리기) + 적금(목돈모으기) 전체 수집")
+        print("7개 필수 항목 구조화 추출")
+
+        result = self.run()
+
+        if result:
+            print("크롤링 성공")
+            print(f"파일: woori_bank_products.json")
+            print(f"예금 {result['deposit_count']}개 + 적금 {result['savings_count']}개 = 총 {result['total_products']}개")
+        else:
+            print("크롤링 실패")

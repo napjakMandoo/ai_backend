@@ -9,11 +9,15 @@ import time
 import json
 import re
 from datetime import datetime
+import dotenv
+import os
+from src.preprocessing.crawling.BankLink import BankLink
+
 
 class HanaBankCrawler:
     # 하나은행 예적금 상품 크롤러 초기화
     def __init__(self, headless=True):
-        self.base_url = "https://www.kebhana.com/cont/mall/mall08/mall0805/index.jsp?_menuNo=62608"
+        self.base_url =BankLink.HANA_BANK_LINK.value
         self.driver = self.setup_driver(headless)
         self.all_products = []
         
@@ -564,8 +568,14 @@ class HanaBankCrawler:
     
     # JSON 파일로 저장
     def save_data(self, filename="hana_bank_products.json"):
+        dotenv.load_dotenv()
+        directory_path = os.getenv("JSON_RESULT_PATH")
+
+        os.makedirs(directory_path, exist_ok=True)
+        full_path = os.path.join(directory_path, filename)
+
         try:
-            with open(filename, 'w', encoding='utf-8') as f:
+            with open(full_path, 'w', encoding='utf-8') as f:
                 json.dump(self.all_products, f, ensure_ascii=False, indent=2)
             print(f"JSON 데이터가 {filename}에 저장되었습니다.")
         except Exception as e:
@@ -648,26 +658,26 @@ class HanaBankCrawler:
         finally:
             self.driver.quit()
 
-# 브라우저 종료
-def close_driver(self):
-    try:
-        self.driver.quit()
-        print("브라우저가 종료되었습니다.")
-    except Exception as e:
-        print(f"브라우저 종료 오류: {str(e)}")
+    # 브라우저 종료
+    def close_driver(self):
+        try:
+            self.driver.quit()
+            print("브라우저가 종료되었습니다.")
+        except Exception as e:
+            print(f"브라우저 종료 오류: {str(e)}")
 
-# 실행
-if __name__ == "__main__":
-    print("하나은행 예금/적금 크롤러 v2.0")
-    print("정기예금 + 적금 + 입출금이 자유로운 예금 전체 수집")
-    print("7개 필수 항목 구조화 추출")
-    
-    crawler = HanaBankCrawler(headless=True)
-    result = crawler.run()
-    
-    if result:
-        print("크롤링 성공")
-        print(f"파일: hana_bank_products.json")
-        print(f"정기예금 {result['deposit_count']}개 + 적금 {result['savings_count']}개 + 입출금 {result['checking_count']}개 = 총 {result['total_products']}개")
-    else:
-        print("크롤링 실패")
+    def start(self):
+        print("하나은행 예금/적금 크롤러 v2.0")
+        print("정기예금 + 적금 + 입출금이 자유로운 예금 전체 수집")
+        print("7개 필수 항목 구조화 추출")
+
+        result = self.run()
+
+        if result:
+            print("크롤링 성공")
+            print(f"파일: hana_bank_products.json")
+            print(
+                f"정기예금 {result['deposit_count']}개 + 적금 {result['savings_count']}개 + 입출금 {result['checking_count']}개 = 총 {result['total_products']}개")
+        else:
+            print("크롤링 실패")
+

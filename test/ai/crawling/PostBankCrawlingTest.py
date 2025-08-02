@@ -6,3 +6,4 @@ if __name__ == '__main__':
     for i in start:
         print("===================")
         print(i)
+        print("d")

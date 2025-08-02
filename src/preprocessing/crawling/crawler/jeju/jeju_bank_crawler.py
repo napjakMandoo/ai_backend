@@ -693,8 +693,7 @@ class JejuBankDepositSavingsOnlyCrawler:
         os.makedirs(directory_path, exist_ok=True)
         """결과를 JSON 파일로 저장"""
         if filename is None:
-            current_date = datetime.datetime.now().strftime("%Y%m%d")
-            filename = f"jeju_bank_products_{current_date}.json"
+            filename = f"jeju_products.json"
 
         file_path = os.path.join(directory_path, filename)
 

@@ -1089,8 +1089,7 @@ class KJBankCompleteCrawler:
             directory = os.getenv("JSON_RESULT_PATH")
             os.makedirs(directory, exist_ok=True)
 
-            current_date = datetime.datetime.now().strftime("%Y%m%d")
-            f_name = f"gwangju_bank_products_{current_date}.json"
+            f_name = f"gwangju_products.json"
             filename = os.path.join(directory, f_name)
 
             with open(filename, 'w', encoding='utf-8') as f:
