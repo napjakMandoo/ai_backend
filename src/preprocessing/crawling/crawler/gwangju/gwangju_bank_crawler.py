@@ -1,3 +1,4 @@
+import os
 import requests
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -10,11 +11,12 @@ import json
 import datetime
 import logging
 import re
+import dotenv
 
 class KJBankCompleteCrawler:
-    def __init__(self, headless=True):
+    def __init__(self, headless=True, base_url:str=""):
         """광주은행 크롤러 - 다중헤더 테이블 처리 포함 최종버전"""
-        self.base_url = "https://www.kjbank.com"
+        self.base_url = base_url
         self.deposit_list_url = "https://www.kjbank.com/ib20/mnu/FPMDPTR030000"
         
         # Selenium 설정
@@ -1083,9 +1085,14 @@ class KJBankCompleteCrawler:
             filtered_products = self.filter_deposit_savings_only(all_products)
             
             # 4. 결과 저장
+            dotenv.load_dotenv()
+            directory = os.getenv("JSON_RESULT_PATH")
+            os.makedirs(directory, exist_ok=True)
+
             current_date = datetime.datetime.now().strftime("%Y%m%d")
-            filename = f"gwangju_bank_products_{current_date}.json"
-            
+            f_name = f"gwangju_bank_products_{current_date}.json"
+            filename = os.path.join(directory, f_name)
+
             with open(filename, 'w', encoding='utf-8') as f:
                 json.dump(filtered_products, f, ensure_ascii=False, indent=2)
             
@@ -1107,19 +1114,17 @@ class KJBankCompleteCrawler:
         if self.driver:
             self.driver.quit()
 
-# 실행 코드
-if __name__ == "__main__":
-    crawler = KJBankCompleteCrawler(headless=True)
-    
-    try:
-        # 전체 크롤링 실행
-        products = crawler.crawl_all_products(limit=None) 
-            
-        print("\n크롤링 완료!")
-        
-    except KeyboardInterrupt:
-        print("\n사용자에 의해 중단됨")
-    except Exception as e:
-        print(f"\n오류 발생: {e}")
-    finally:
-        crawler.close()
+
+    def start(self):
+        try:
+            # 전체 크롤링 실행
+            products = self.crawl_all_products(limit=None)
+
+            print("\n크롤링 완료!")
+
+        except KeyboardInterrupt:
+            print("\n사용자에 의해 중단됨")
+        except Exception as e:
+            print(f"\n오류 발생: {e}")
+        finally:
+            self.close()
