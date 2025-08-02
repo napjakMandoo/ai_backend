@@ -5,11 +5,17 @@
 import time
 import json
 from datetime import datetime
+
+from poetry.utils.helpers import directory
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
+import dotenv
+import os
+
+from src.preprocessing.crawling.BankLink import BankLink
 
 try:
     from webdriver_manager.chrome import ChromeDriverManager
@@ -20,8 +26,8 @@ except ImportError:
 class KBProductCrawler:
     # 국민은행 예적금 상품 크롤러 초기화
     def __init__(self, headless=True):
-        self.base_url = "https://obank.kbstar.com/quics?page=C016613"
-        self.savings_url = "https://obank.kbstar.com/quics?page=C016613#CP"
+        self.base_url = BankLink.KB_BANK_LINK.value
+        self.savings_url = BankLink.KB_SAVINGS_LINK.value
         self.driver = self.setup_driver(headless)
         self.wait = WebDriverWait(self.driver, 15)
         self.all_products = []
@@ -1705,6 +1711,11 @@ class KBProductCrawler:
     
     # JSON 파일 저장
     def save_data(self, filename="kb_products.json"):
+        dotenv.load_dotenv()
+        directory_path = os.getenv("JSON_RESULT_PATH")
+        os.makedirs(directory_path, exist_ok=True)
+        full_path = os.path.join(directory_path, filename)
+
         try:
             clean_products = []
             for product in self.all_products:
@@ -1721,7 +1732,7 @@ class KBProductCrawler:
                 if clean_product:
                     clean_products.append(clean_product)
             
-            with open(filename, 'w', encoding='utf-8') as f:
+            with open(full_path, 'w', encoding='utf-8') as f:
                 json.dump(clean_products, f, ensure_ascii=False, indent=2)
             print(f"JSON 데이터가 {filename}에 저장되었습니다.")
             
@@ -1801,18 +1812,17 @@ class KBProductCrawler:
         finally:
             self.driver.quit()
 
-# 실행
-if __name__ == "__main__":
-    print("국민은행 예금/적금 크롤러 v2.0")
-    print("예금 + 적금 전체 수집")
-    print("7개 필수 항목 구조화 추출")
-    
-    crawler = KBProductCrawler(headless=True)
-    result = crawler.run()
-    
-    if result:
-        print("크롤링 성공")
-        print(f"파일: kb_products.json")
-        print(f"예금 {result['deposit_count']}개 + 적금 {result['savings_count']}개 = 총 {result['total_products']}개")
-    else:
-        print("크롤링 실패")
+    def start(self):
+        print("국민은행 예금/적금 크롤러 v2.0")
+        print("예금 + 적금 전체 수집")
+        print("7개 필수 항목 구조화 추출")
+
+        result = self.run()
+
+        if result:
+            print("크롤링 성공")
+            print(f"파일: kb_products.json")
+            print(f"예금 {result['deposit_count']}개 + 적금 {result['savings_count']}개 = 총 {result['total_products']}개")
+        else:
+            print("크롤링 실패")
+

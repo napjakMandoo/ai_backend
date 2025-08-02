@@ -633,8 +633,7 @@ class BusanBankUnifiedCrawler:
         os.makedirs(directory_path, exist_ok=True)
 
         if filename is None:
-            current_date = datetime.datetime.now().strftime("%Y%m%d")
-            filename = f"busan_bank_products_{current_date}.json"
+            filename = f"busan_products.json"
 
         file_path = os.path.join(directory_path, filename)
 
