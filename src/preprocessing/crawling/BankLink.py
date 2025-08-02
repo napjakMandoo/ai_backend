@@ -11,3 +11,8 @@ class BankLink(Enum):
 
     BUSAN_BANK_LINK="https://www.busanbank.co.kr/ib20/mnu/FPMDPO012009001"
     GWANGJU_BANK_LINK="https://www.kjbank.com"
+
+    SC_BANK_LINK="https://www.standardchartered.co.kr/np/kr/pl/se/SavingList.jsp?id=list1"
+    SC_BANK_BASE_LINK="https://www.standardchartered.co.kr/np/kr/pl/se/SavingDetail.jsp"
+
+    JEJU_BANK_BASE_LINK="https://www.jejubank.co.kr/hmpg/prdGdnc/sid/mndp.do"
