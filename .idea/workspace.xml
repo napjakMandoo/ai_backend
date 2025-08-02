@@ -4,10 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0ad7dfd5-a6f6-4dc6-97b1-4be27dbc1e76" name="Changes" comment="refactor: 부산은행 크롤링 코드 일관화 및 테스트 코드 추">
-      <change afterPath="$PROJECT_DIR$/test/ai/crawling/GwangJuCrawlingTest.py" afterDir="false" />
+    <list default="true" id="0ad7dfd5-a6f6-4dc6-97b1-4be27dbc1e76" name="Changes" comment="refactor: 광주은행 크롤링 코드 일관화 및 테스트 코드 추">
+      <change afterPath="$PROJECT_DIR$/test/ai/crawling/ScCrawlingTest.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/ai/crawling/test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/preprocessing/crawling/crawler/gwangju/gwangju_bank_crawler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/preprocessing/crawling/crawler/gwangju/gwangju_bank_crawler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/preprocessing/crawling/crawler/sc/sc_bank_crawler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/preprocessing/crawling/crawler/sc/sc_bank_crawler.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,21 +25,21 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "jeonggiju"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;jeonggiju&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/napjakMandoo/ai_backend.git",
-    "accountId": "c61ace2a-27e2-4b81-a93a-12d3388d537e"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/napjakMandoo/ai_backend.git&quot;,
+    &quot;accountId&quot;: &quot;c61ace2a-27e2-4b81-a93a-12d3388d537e&quot;
   }
-}]]></component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 1
-}]]></component>
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
   <component name="ProjectId" id="30iR9W9qq8EJs1Ets666Q7gV0HM" />
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -53,11 +54,13 @@
     "Python.BusanCrawlingTest.executor": "Run",
     "Python.GwangJuCrawlingTest.executor": "Run",
     "Python.KyongNamBankCrawlingTest.executor": "Run",
+    "Python.ScCrawlingTest.executor": "Run",
     "Python.busan_bank_crawler.executor": "Run",
+    "Python.test.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "crawling",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -75,7 +78,7 @@
       <recent name="$PROJECT_DIR$/src/preprocessing/crawling/crawler/sc" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.GwangJuCrawlingTest">
+  <component name="RunManager" selected="Python.test">
     <configuration name="BusanCrawlingTest" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="ai_backend" />
       <option name="ENV_FILES" value="" />
@@ -145,7 +148,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="busan_bank_crawler" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="ScCrawlingTest" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="ai_backend" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -154,12 +157,35 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/preprocessing/crawling/crawler/busan" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/test/ai/crawling" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/preprocessing/crawling/crawler/busan/busan_bank_crawler.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test/ai/crawling/ScCrawlingTest.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="ai_backend" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/test/ai/crawling" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test/ai/crawling/test.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -170,10 +196,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.test" />
+        <item itemvalue="Python.ScCrawlingTest" />
         <item itemvalue="Python.GwangJuCrawlingTest" />
         <item itemvalue="Python.BusanCrawlingTest" />
         <item itemvalue="Python.KyongNamBankCrawlingTest" />
-        <item itemvalue="Python.busan_bank_crawler" />
       </list>
     </recent_temporary>
   </component>
@@ -224,7 +251,8 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1754108256895</updated>
-      <workItem from="1754108258267" duration="4455000" />
+      <workItem from="1754108258267" duration="4500000" />
+      <workItem from="1754115423523" duration="653000" />
     </task>
     <task id="LOCAL-00005" summary="refactor: 부산은행 크롤링 코드 일관화 및 테스트 코드 추">
       <option name="closed" value="true" />
@@ -234,7 +262,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754114787333</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="refactor: 광주은행 크롤링 코드 일관화 및 테스트 코드 추">
+      <option name="closed" value="true" />
+      <created>1754115270008</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1754115270008</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -244,12 +280,15 @@
     <MESSAGE value="refactor: Merge 이후 디렉토리 구조 개선 및 불필요한 파일 제거" />
     <MESSAGE value="refactor: 마지막 Merge 이후 디렉토리 구조 개선 및 불필요한 파일 제거" />
     <MESSAGE value="refactor: 부산은행 크롤링 코드 일관화 및 테스트 코드 추" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor: 부산은행 크롤링 코드 일관화 및 테스트 코드 추" />
+    <MESSAGE value="refactor: 광주은행 크롤링 코드 일관화 및 테스트 코드 추" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactor: 광주은행 크롤링 코드 일관화 및 테스트 코드 추" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/ai_backend$KyongNamBankCrawlingTest.coverage" NAME="KyongNamBankCrawlingTest Coverage Results" MODIFIED="1754109651746" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test/ai/crawling" />
+    <SUITE FILE_PATH="coverage/ai_backend$ScCrawlingTest.coverage" NAME="ScCrawlingTest Coverage Results" MODIFIED="1754115930429" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test/ai/crawling" />
     <SUITE FILE_PATH="coverage/ai_backend$BusanCrawlingTest.coverage" NAME="BusanCrawlingTest Coverage Results" MODIFIED="1754109874669" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test/ai/crawling" />
     <SUITE FILE_PATH="coverage/ai_backend$GwangJuCrawlingTest.coverage" NAME="GwangJuCrawlingTest Coverage Results" MODIFIED="1754114879126" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test/ai/crawling" />
+    <SUITE FILE_PATH="coverage/ai_backend$test.coverage" NAME="test Coverage Results" MODIFIED="1754116061191" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test/ai/crawling" />
     <SUITE FILE_PATH="coverage/ai_backend$busan_bank_crawler.coverage" NAME="busan_bank_crawler Coverage Results" MODIFIED="1754109507252" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/preprocessing/crawling/crawler/busan" />
   </component>
 </project>

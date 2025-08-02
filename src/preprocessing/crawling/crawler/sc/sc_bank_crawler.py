@@ -9,11 +9,11 @@ import json
 import re
 import datetime
 from typing import List, Dict, Optional
-
+import os
+import dotenv
 
 class SCBankCleanCrawler:
-    """SC제일은행 크롤러 - 로그 정리 및 불필요 필드 제거 버전"""
-    
+
     BASE_URL = "https://www.standardchartered.co.kr/np/kr/pl/se/SavingList.jsp?id=list1"
     DETAIL_URL_BASE = "https://www.standardchartered.co.kr/np/kr/pl/se/SavingDetail.jsp"
     
@@ -715,13 +715,19 @@ class SCBankCleanCrawler:
         return all_products
     
     def save_to_json(self, data: List[Dict], filename: str = None) -> str:
-        """결과를 JSON 파일로 저장 - 날짜 기반 파일명"""
+
+        dotenv.load_dotenv()
+        directory_path = os.getenv("JSON_RESULT_PATH")
+
+        os.makedirs(directory_path, exist_ok=True)
+
         if filename is None:
             # 현재 날짜로 파일명 생성 (YYYY-MM-DD 형식)
             current_date = datetime.datetime.now().strftime("%Y%m%d")
             filename = f"sc_bank_products_{current_date}.json"
-        
-        with open(filename, 'w', encoding='utf-8') as f:
+            file_path = os.path.join(directory_path, filename)
+
+        with open(file_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
         
         print(f"결과 저장: {filename}")
@@ -732,39 +738,31 @@ class SCBankCleanCrawler:
         if self.driver:
             self.driver.quit()
 
+    def start(self):
+        """메인 실행 함수"""
+        print("SC제일은행 예/적금 크롤링 시작...")
 
-def main():
-    """메인 실행 함수"""
-    print("SC제일은행 예/적금 크롤링 시작...")
-    
-    crawler = SCBankCleanCrawler(headless=True)
-    
-    try:
-        # 모든 상품 크롤링
-        all_products = crawler.crawl_all_products()
-        
-        # 결과 출력
-        total_products = len(all_products)
-        print(f"\n=== 크롤링 완료 ===")
-        print(f"총 {total_products}개 상품 수집")
-        
-        # 카테고리별 개수 출력
-        deposit_count = sum(1 for p in all_products if p.get('type') == '예금')
-        savings_count = sum(1 for p in all_products if p.get('type') == '적금')
-        print(f"예금: {deposit_count}개, 적금: {savings_count}개")
-        
-        # JSON 저장
-        filename = crawler.save_to_json(all_products)
-        
-        
-        return all_products
-        
-    except Exception as e:
-        print(f"크롤링 오류: {e}")
-        return {}
-    finally:
-        crawler.close()
+        try:
+            # 모든 상품 크롤링
+            all_products = self.crawl_all_products()
 
+            # 결과 출력
+            total_products = len(all_products)
+            print(f"\n=== 크롤링 완료 ===")
+            print(f"총 {total_products}개 상품 수집")
 
-if __name__ == "__main__":
-    results = main()
+            # 카테고리별 개수 출력
+            deposit_count = sum(1 for p in all_products if p.get('type') == '예금')
+            savings_count = sum(1 for p in all_products if p.get('type') == '적금')
+            print(f"예금: {deposit_count}개, 적금: {savings_count}개")
+
+            # JSON 저장
+            filename = self.save_to_json(all_products)
+
+            return all_products
+
+        except Exception as e:
+            print(f"크롤링 오류: {e}")
+            return {}
+        finally:
+            self.close()
