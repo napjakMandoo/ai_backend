@@ -1,0 +1,333 @@
+[
+  {
+    "name": "스마일드림정기예금",
+    "product_idx": "1",
+    "list_index": 1,
+    "scraped_at": "2025-08-02T23:11:15.877749",
+    "product_code": "SID_3cc385d21803429eb93b979332f45aa8",
+    "type": "예금",
+    "detail_type": "정기예금",
+    "basic_rate": "1.90%",
+    "max_rate": "2.55%",
+    "url_link": "https://www.jejubank.co.kr/hmpg/prdGdnc/sid/mndp.do?mode=detail&prdId=SID_3cc385d21803429eb93b979332f45aa8",
+    "sub_amount": "최소 100만원 이상\n최대금액 제한없음",
+    "sub_target": "실명의 개인",
+    "sub_way": "가입\nJBANK\nJWEB\n영업점\n해지\nJBANK\nJWEB\n인터넷뱅킹\n영업점",
+    "sub_term": "3개월 이상   \n3개월, 6개월, 12개월",
+    "tax_benefit": "비과세종합저축 : 가능(전 금융기관 통합한도 범위내)\n※ 비과세종합저축은 계약기간 만기일 이전까지의 이자는 비과세하고, 계약기간 만기일 이후의 이자는 과세합니다.",
+    "preferential_rate": {
+      "text_info": [
+        "아래의 요건 충족여부에 따라 우대 금리를 제공합니다.\n우대금리 안내\n우대조건\t금리\n김만덕나눔적금 보유 또는 김만덕나눔적금 만기 해지고객\t0.2% 우대(가입시 제공)\n예금가입 시 탐나는전 체크카드 보유고객\t0.1% 우대(가입시 제공)"
+      ],
+      "table_list": [
+        {
+          "headers": [
+            "우대조건",
+            "금리"
+          ],
+          "rows": [
+            [
+              "김만덕나눔적금 보유 또는 김만덕나눔적금 만기 해지고객",
+              "0.2% 우대(가입시 제공)"
+            ],
+            [
+              "예금가입 시 탐나는전 체크카드 보유고객",
+              "0.1% 우대(가입시 제공)"
+            ]
+          ],
+          "table_index": 1
+        }
+      ],
+      "table_count": 1
+    },
+    "period_rate": {
+      "table_list": [
+        {
+          "headers": [
+            "가입기간",
+            "금리"
+          ],
+          "rows": [
+            [
+              "3개월(만기)",
+              "1.70%"
+            ],
+            [
+              "6개월(만기)",
+              "1.80%"
+            ],
+            [
+              "12개월(만기)",
+              "1.90%"
+            ]
+          ],
+          "table_index": 1
+        }
+      ],
+      "table_count": 1,
+      "text_info": [
+        "※ 실제 적용이자율은 모바일신규시 모바일 화면에서 또는 통장 발급시 통장내지에 인자된 기간 및 적용 이자율에서 확인이 가능합니다."
+      ]
+    }
+  },
+  {
+    "name": "J정기예금",
+    "product_idx": "2",
+    "list_index": 2,
+    "scraped_at": "2025-08-02T23:11:24.737619",
+    "product_code": "SID_387390e17264452192bddf57c54763d6",
+    "type": "예금",
+    "detail_type": "정기예금",
+    "basic_rate": "2.00%",
+    "max_rate": "2.65%",
+    "url_link": "https://www.jejubank.co.kr/hmpg/prdGdnc/sid/mndp.do?mode=detail&prdId=SID_387390e17264452192bddf57c54763d6",
+    "sub_amount": "최소 30만원 이상\n최대금액 제한없음",
+    "sub_target": "실명의 개인",
+    "sub_way": "가입\nJBANK\nJWEB\n인터넷뱅킹\n해지\nJBANK\nJWEB\n인터넷뱅킹\n영업점",
+    "sub_term": "1개월 이상   3년 이하\n1개월 이상 3년 이하 범위내에서 월단위로 정함",
+    "tax_benefit": "비과세종합저축 : 가능(전 금융기관 통합한도 범위내)\n※비과세종합저축은 계약기간 만기일 이전까지의 이자는 비과세하고, 계약기간 만기일 이후의 이자는 과세합니다.",
+    "preferential_rate": {
+      "text_info": [
+        "아래의 요건 충족여부에 따라 우대 금리를 제공합니다.\n※ 이벤트 시 영업점, 디지털채널에 고시한 우대금리를 추가적용 할 수 있습니다.\n우대금리 안내\n우대조건\t금리\n이 예금 상품을 디지털채널(jBANK,jWEB,인터넷뱅킹)로 가입 시\t0.3% 우대(가입시 제공)"
+      ],
+      "table_list": [
+        {
+          "headers": [
+            "우대조건",
+            "금리"
+          ],
+          "rows": [
+            [
+              "이 예금 상품을 디지털채널(jBANK,jWEB,인터넷뱅킹)로 가입 시",
+              "0.3% 우대(가입시 제공)"
+            ]
+          ],
+          "table_index": 1
+        }
+      ],
+      "table_count": 1
+    },
+    "period_rate": {
+      "table_list": [
+        {
+          "headers": [
+            "가입기간",
+            "금리"
+          ],
+          "rows": [
+            [
+              "1개월이상 3개월미만",
+              "1.40%"
+            ],
+            [
+              "3개월이상 6개월미만",
+              "1.70%"
+            ],
+            [
+              "6개월이상 1년미만",
+              "1.90%"
+            ],
+            [
+              "1년이상 2년미만",
+              "2.00%"
+            ],
+            [
+              "2년이상 3년미만",
+              "1.85%"
+            ],
+            [
+              "3년만기",
+              "1.85%"
+            ]
+          ],
+          "table_index": 1
+        }
+      ],
+      "table_count": 1,
+      "text_info": [
+        "1. 신규 시 적용 이자율이 변동될 수 있습니다.\n2. 기본이자율은 신규일(재예치일) 당시 영업점 또는 홈페이지에 고시된 이자율 적용"
+      ]
+    }
+  },
+  {
+    "name": "정기예금 (월이자지급식)",
+    "product_idx": "3",
+    "list_index": 3,
+    "scraped_at": "2025-08-02T23:11:33.462983",
+    "product_code": "SID_a656aa8ea77e4c87b24aa0403e891f1e",
+    "type": "예금",
+    "detail_type": "정기예금",
+    "basic_rate": "2.15%",
+    "max_rate": "2.15%",
+    "url_link": "https://www.jejubank.co.kr/hmpg/prdGdnc/sid/mndp.do?mode=detail&prdId=SID_a656aa8ea77e4c87b24aa0403e891f1e",
+    "sub_amount": "최소 100만원 이상\n최고거래금액 제한없음",
+    "sub_target": "제한없음",
+    "sub_way": "가입\n영업점\n해지\nJBANK\n인터넷뱅킹\n영업점",
+    "sub_term": "1개월 이상   5년 이하\n월단위/일단위 가능",
+    "tax_benefit": "비과세종합저축 : 가능(전 금융기관 통합한도 범위내)\n*비과세종합저축은 계약기간 만기일 이전까지의 이자는 비과세하고, 계약기간 만기일 이후의 이자는 과세합니다.",
+    "preferential_rate": {
+      "text_info": [],
+      "table_list": [],
+      "table_count": 0
+    },
+    "period_rate": {
+      "table_list": [
+        {
+          "headers": [
+            "가입기간",
+            "금리"
+          ],
+          "rows": [
+            [
+              "1개월이상 3개월미만",
+              "1.85%"
+            ],
+            [
+              "3개월이상 6개월미만",
+              "1.95%"
+            ],
+            [
+              "6개월이상 1년미만",
+              "2.10%"
+            ],
+            [
+              "1년이상 2년미만",
+              "2.15%"
+            ],
+            [
+              "2년이상 5년만기",
+              "2.05%"
+            ]
+          ],
+          "table_index": 1
+        }
+      ],
+      "table_count": 1,
+      "text_info": [
+        "※ 신규 시 적용 이자율이 변동될 수 있습니다.\n※ 세부 계약 기간별 이율은 가입일 당시 영업점 또는 홈페이지에 게시한 이율을 적용합니다."
+      ]
+    }
+  },
+  {
+    "name": "정기예금 (만기이자지급식)",
+    "product_idx": "4",
+    "list_index": 4,
+    "scraped_at": "2025-08-02T23:11:42.229579",
+    "product_code": "SID_499defcb3bba482b82fee6558903b1e8",
+    "type": "예금",
+    "detail_type": "정기예금",
+    "basic_rate": "2.20%",
+    "max_rate": "2.20%",
+    "url_link": "https://www.jejubank.co.kr/hmpg/prdGdnc/sid/mndp.do?mode=detail&prdId=SID_499defcb3bba482b82fee6558903b1e8",
+    "sub_amount": "최소 100만원 이상\n최고거래금액 제한없음",
+    "sub_target": "제한없음",
+    "sub_way": "가입\n영업점\n해지\nJWEB\n인터넷뱅킹\n영업점",
+    "sub_term": "1개월 이상   5년 이하\n월단위/일단위 가능",
+    "tax_benefit": "비과세종합저축 : 가능(전 금융기관 통합한도 범위내)\n※비과세종합저축은 계약기간 만기일 이전까지의 이자는 비과세하고, 계약기간 만기일 이후의 이자는 과세합니다.",
+    "preferential_rate": {
+      "text_info": [],
+      "table_list": [],
+      "table_count": 0
+    },
+    "period_rate": {
+      "table_list": [
+        {
+          "headers": [
+            "가입기간",
+            "금리"
+          ],
+          "rows": [
+            [
+              "1개월이상 3개월미만",
+              "1.90%"
+            ],
+            [
+              "3개월이상 6개월미만",
+              "2.00%"
+            ],
+            [
+              "6개월이상 1년미만",
+              "2.15%"
+            ],
+            [
+              "1년이상 2년미만",
+              "2.20%"
+            ],
+            [
+              "2년이상 5년만기",
+              "2.10%"
+            ]
+          ],
+          "table_index": 1
+        }
+      ],
+      "table_count": 1,
+      "text_info": [
+        "※ 신규 시 적용 이자율이 변동될 수 있습니다.\n※ 세부 계약 기간별 이율은 가입일 당시 영업점 또는 홈페이지에 게시한 이율을 적용합니다."
+      ]
+    }
+  },
+  {
+    "name": "퇴직연금정기예금",
+    "product_idx": "5",
+    "list_index": 5,
+    "scraped_at": "2025-08-02T23:11:50.921329",
+    "product_code": "SID_f6f36bdd45444272a1467012919c69ea",
+    "type": "예금",
+    "detail_type": "정기예금",
+    "basic_rate": "",
+    "max_rate": "",
+    "url_link": "https://www.jejubank.co.kr/hmpg/prdGdnc/sid/mndp.do?mode=detail&prdId=SID_f6f36bdd45444272a1467012919c69ea",
+    "sub_amount": "최소 1원 이상",
+    "sub_target": "실명의 개인\n퇴직연금제도와 관련한 특정금전신탁의 수탁자",
+    "sub_way": "가입\n영업점",
+    "sub_term": "ㆍ3개월, 6개월, 1년, 2년, 3년, 5년\n※ 별도의 해지 요청이 없으면 이자를 가산한 금액을 당초 계약기간과 동일한 기간으로 자동재예치",
+    "tax_benefit": "",
+    "preferential_rate": {
+      "text_info": [],
+      "table_list": [],
+      "table_count": 0
+    },
+    "period_rate": {
+      "table_list": [
+        {
+          "headers": [
+            "가입기간",
+            "금리"
+          ],
+          "rows": [
+            [
+              "3개월(만기)",
+              "2.10%"
+            ],
+            [
+              "6개월(만기)",
+              "2.20%"
+            ],
+            [
+              "12개월(만기)",
+              "2.50%"
+            ],
+            [
+              "24개월(만기)",
+              "2.10%"
+            ],
+            [
+              "36개월(만기)",
+              "2.00%"
+            ],
+            [
+              "60개월(만기)",
+              "2.00%"
+            ]
+          ],
+          "table_index": 1
+        }
+      ],
+      "table_count": 1,
+      "text_info": [
+        "※ 예금일 또는 재예치일에 고시된 계약기간별 이율을 적용 (단, 재예치일이 휴일인 경우에는 직전영업일의 이율을 적용하며 재예치일이 없는 경우에는 그 달의 말일을 재예치일로 함)"
+      ]
+    }
+  }
+]
