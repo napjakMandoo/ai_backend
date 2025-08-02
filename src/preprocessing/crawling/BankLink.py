@@ -25,3 +25,7 @@ class BankLink(Enum):
     HANA_BANK_LINK="https://www.kebhana.com/cont/mall/mall08/mall0805/index.jsp?_menuNo=62608"
     KB_BANK_LINK= "https://obank.kbstar.com/quics?page=C016613"
     KB_SAVINGS_LINK="https://obank.kbstar.com/quics?page=C016613#CP"
+
+
+    #####
+    SH_BANK_LINK="https://www.suhyup-bank.com/ib20/mnu/FPD00124"
