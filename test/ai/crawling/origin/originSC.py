@@ -739,7 +739,6 @@ class SCBankCleanCrawler:
         if self.driver:
             self.driver.quit()
 
-
 def main():
     """메인 실행 함수"""
     print("SC제일은행 예/적금 크롤링 시작...")
