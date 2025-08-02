@@ -1,3 +1,5 @@
+import os
+
 from selenium import webdriver
 from selenium.common import NoSuchElementException, TimeoutException
 from selenium.webdriver.chrome.options import Options
@@ -8,27 +10,29 @@ import datetime
 import re
 import time
 import json
-
+import dotenv
 
 class BusanBankUnifiedCrawler:
-    BASE_URL = 'https://www.busanbank.co.kr/ib20/mnu/FPMDPO012009001'
+    # BASE_URL = 'https://www.busanbank.co.kr/ib20/mnu/FPMDPO012009001'
 
-    def __init__(self, headless: bool = True, timeout: int = 15):
+    def __init__(self, headless: bool = True, timeout: int = 15, base_url:str=""):
         self.headless = headless
         self.timeout = timeout
         self.driver = self._create_driver()
+        self.base_url = base_url
 
     def _create_driver(self) -> webdriver.Chrome:
-        options = Options()
+        opts = Options()
         if self.headless:
-            options.add_argument("--headless")
-            options.add_argument("--disable-gpu")
-        options.add_argument("--no-sandbox")
-        options.add_argument("--disable-dev-shm-usage")
-        options.add_argument("--window-size=1920,1080")
-        options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
-
-        return webdriver.Chrome(options=options)
+            opts.add_argument("--headless=new")
+        opts.add_argument("--no-sandbox")
+        opts.add_argument("--disable-dev-shm-usage")
+        opts.add_argument("--window-size=1920,1080")
+        opts.add_argument(
+            "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64)" \
+            " AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+        )
+        return webdriver.Chrome(options=opts)
 
     def safe_find_text(self, element, selector, default="-"):
         """안전하게 텍스트를 찾는 헬퍼 함수"""
@@ -459,7 +463,7 @@ class BusanBankUnifiedCrawler:
         """통합 구조로 상품 정보 크롤링"""
         
         driver = self.driver
-        driver.get(self.BASE_URL)
+        driver.get(self.base_url)
 
         wait = WebDriverWait(driver, self.timeout)
         wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "div.paginate")))
@@ -480,7 +484,7 @@ class BusanBankUnifiedCrawler:
                 break
             
             if page > 1:
-                driver.get(self.BASE_URL)
+                driver.get(self.base_url)
                 wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "div.paginate")))
                 
                 for _ in range(page - 1):
@@ -623,50 +627,65 @@ class BusanBankUnifiedCrawler:
         return products
 
     def save_to_json(self, products, filename=None):
-        """결과를 JSON 파일로 저장"""
+        dotenv.load_dotenv()
+        directory_path = os.getenv("JSON_RESULT_PATH")
+
+        os.makedirs(directory_path, exist_ok=True)
+
         if filename is None:
             current_date = datetime.datetime.now().strftime("%Y%m%d")
             filename = f"busan_bank_products_{current_date}.json"
-        
-        with open(filename, 'w', encoding='utf-8') as f:
+
+        file_path = os.path.join(directory_path, filename)
+
+        with open(file_path, 'w', encoding='utf-8') as f:
             json.dump(products, f, ensure_ascii=False, indent=2)
-        
-        return filename
+
+        return file_path
+
+    # def save_to_json(self, products, filename=None):
+    #     dotenv.load_dotenv()
+    #
+    #     directory_path = os.getenv("JSON_RESULT_PATH")
+    #
+    #     """결과를 JSON 파일로 저장"""
+    #     if filename is None:
+    #         current_date = datetime.datetime.now().strftime("%Y%m%d")
+    #         filename = f"busan_bank_products_{current_date}.json"
+    #
+    #     with open(filename, 'w', encoding='utf-8') as f:
+    #         json.dump(products, f, ensure_ascii=False, indent=2)
+    #
+    #     return filename
 
 
-def main():
-    crawler = BusanBankUnifiedCrawler(headless=True)
-    
-    try:
-        # 전체 상품 크롤링
-        all_products = crawler.fetch_products_with_unified_structure(limit=999)
-        
-        # 예금과 적금만 필터링
-        products = crawler.filter_deposit_savings_only(all_products)
-        
-        print(f"크롤링 완료! 전체 {len(all_products)}개 중 예금/적금 {len(products)}개 상품")
-        
-        # 필터링된 결과만 저장
-        filename = crawler.save_to_json(products)
-        print(f"결과 저장: {filename}")
-        
-        # 결과 요약 출력
-        print("\n=== 결과 요약 ===")
-        category_count = {}
-        
-        for product in products:
-            category = product['type']  # product_category -> type
-            category_count[category] = category_count.get(category, 0) + 1
-        
-        for category, count in category_count.items():
-            print(f"{category}: {count}개")
-            
-        return products
-        
-    except Exception as e:
-        print(f"크롤링 오류: {e}")
-        return []
+    def start(self):
+        try:
+            all_products = self.fetch_products_with_unified_structure(limit=999)
 
+            # 예금과 적금만 필터링
+            products = self.filter_deposit_savings_only(all_products)
 
-if __name__ == "__main__":
-    products = main()
+            print(f"크롤링 완료! 전체 {len(all_products)}개 중 예금/적금 {len(products)}개 상품")
+
+            # 필터링된 결과만 저장
+            filename = self.save_to_json(products)
+            print(f"결과 저장: {filename}")
+
+            # 결과 요약 출력
+            print("\n=== 결과 요약 ===")
+            category_count = {}
+
+            for product in products:
+                category = product['type']  # product_category -> type
+                category_count[category] = category_count.get(category, 0) + 1
+
+            for category, count in category_count.items():
+                print(f"{category}: {count}개")
+
+            return products
+
+        except Exception as e:
+            print(f"크롤링 오류: {e}")
+            return []
+

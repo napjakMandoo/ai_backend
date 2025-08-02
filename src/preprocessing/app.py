@@ -24,6 +24,10 @@ class App:
         # 경남은행
         before_preprocessed_products.extend(KyongNamBankCrawler(base_url=BankLink.KYONGNAM_BANK_DEPOSIT_LINK.value).start())
         # before_preprocessed_products.extend(KyongNamBankCrawler(base_url=BankLink.KYONGNAM_BANK_SAVING_LINK.value).start())
+        # before_preprocessed_products.extend(SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_ONLINE_LINK.value).start())
+        # before_preprocessed_products.extend(SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_LUMP_LINK.value).start())
+        # before_preprocessed_products.extend(SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_LUMP_ROLL_LINK.value).start())
+
         return before_preprocessed_products
 
     def preprocessed(self, before_preprocessed_products):
@@ -51,7 +55,6 @@ class App:
 
     def month_task(self):
         ####### 자동화 해야할 부분 ########
-
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.logger.info(f"월 마다 진행: {current_time}")
 
@@ -85,7 +88,7 @@ class App:
         self.productRepository.delete_all_product()
         self.month_task()
 
-        # 자동화 코드입니다. 주석을 풀면 됩니다.
+        ################### 자동화 코드입니다. 주석을 풀면 됩니다.########################
         # schedule.every().day.at("02:00").do(self.month_task)
         #
         # while True:
@@ -102,6 +105,3 @@ if __name__ == "__main__":
     app = App()
     app.start()
 
-    # before_preprocessed_products.extend(SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_ONLINE_LINK.value).start())
-    # before_preprocessed_products.extend(SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_LUMP_LINK.value).start())
-    # before_preprocessed_products.extend(SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_LUMP_ROLL_LINK.value).start())

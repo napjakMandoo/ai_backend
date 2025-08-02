@@ -8,3 +8,6 @@ class BankLink(Enum):
     SINHAN_BANK_LUMP_ROLL_LINK = "https://bank.shinhan.com/index.jsp#020105040000"
     POST_BANK_LINK = "https://mall.epostbank.go.kr/IPDGDL0000.do"
     KDB_LINK="https://www.kdb.co.kr/index.jsp"
+
+    BUSAN_BANK_LINK="https://www.busanbank.co.kr/ib20/mnu/FPMDPO012009001"
+    GWANGJU_BANK_LINK="https://www.kjbank.com"
