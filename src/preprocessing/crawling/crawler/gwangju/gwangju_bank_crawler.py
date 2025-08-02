@@ -14,10 +14,10 @@ import re
 import dotenv
 
 class KJBankCompleteCrawler:
-    def __init__(self, headless=True, base_url:str=""):
+    def __init__(self, headless=True, base_url:str="", deposit_list_url:str="", ):
         """광주은행 크롤러 - 다중헤더 테이블 처리 포함 최종버전"""
         self.base_url = base_url
-        self.deposit_list_url = "https://www.kjbank.com/ib20/mnu/FPMDPTR030000"
+        self.deposit_list_url = deposit_list_url
         
         # Selenium 설정
         chrome_options = Options()
@@ -1089,7 +1089,7 @@ class KJBankCompleteCrawler:
             directory = os.getenv("JSON_RESULT_PATH")
             os.makedirs(directory, exist_ok=True)
 
-            f_name = f"gwangju_products.json"
+            f_name = f"GWANGJU.json"
             filename = os.path.join(directory, f_name)
 
             with open(filename, 'w', encoding='utf-8') as f:

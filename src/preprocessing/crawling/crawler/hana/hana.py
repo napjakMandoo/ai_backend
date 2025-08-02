@@ -567,7 +567,7 @@ class HanaBankCrawler:
             print(f"상세정보 수집 오류: {str(e)}")
     
     # JSON 파일로 저장
-    def save_data(self, filename="hana_bank_products.json"):
+    def save_data(self, filename="HANA.json"):
         dotenv.load_dotenv()
         directory_path = os.getenv("JSON_RESULT_PATH")
 

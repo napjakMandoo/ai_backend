@@ -24,7 +24,7 @@ class BankRepository:
         hana = ["HANA", "/home/jeonggiju/hanium/ai_backend/src/static/logos/kyongnam_logo.png"]
         kookmin = ["KB", "/home/jeonggiju/hanium/ai_backend/src/static/logos/kyongnam_logo.png"]
         suhyup = ["SH_SUHYUP", "/home/jeonggiju/hanium/ai_backend/src/static/logos/kyongnam_logo.png"]
-        idk = ["ibk", "/home/jeonggiju/hanium/ai_backend/src/static/logos/kyongnam_logo.png"]
+        idk = ["IBK", "/home/jeonggiju/hanium/ai_backend/src/static/logos/kyongnam_logo.png"]
         im = ["IM_BANK", "/home/jeonggiju/hanium/ai_backend/src/static/logos/kyongnam_logo.png"]
         return [busan, sc, gwangju, jeju, jeonbuk, gyeongnam, post, sinhan, kdb, nonghyup, woori, hana, kookmin, suhyup,
                 idk, im]

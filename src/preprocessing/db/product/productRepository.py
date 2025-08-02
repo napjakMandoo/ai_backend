@@ -11,8 +11,9 @@ class ProductRepository:
         self.mysqlUtil = MysqlUtil()
         self.BankRepository = BankRepository()
 
-    # 테스트
+    # 테스트 용도
     def delete_all_product(self):
+        self.logger.info("상품 관련 데이터 삭제 시작")
         delete_all_product_period_query = "delete from product_period"
         delete_all_product_detail_query = "delete from preferential_condition_detail"
         delete_all_product_query = "delete from bank_product"
@@ -25,6 +26,7 @@ class ProductRepository:
         mysql_connection.commit()
         mysql_cursor.close()
         mysql_connection.close()
+        self.logger.info("상품 관련 데이터 삭제 끝")
 
 
     def check_duplicate_product(self, product_name, connection):

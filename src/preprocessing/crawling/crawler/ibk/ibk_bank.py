@@ -1195,7 +1195,7 @@ class IBKFullCrawler:
 
         if not filename:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = f"ibk_all_products.json"
+            filename = f"IBK.json"
 
         file_path = os.path.join(directory_path, filename)
 

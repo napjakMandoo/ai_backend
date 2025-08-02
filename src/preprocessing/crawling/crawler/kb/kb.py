@@ -1710,7 +1710,7 @@ class KBProductCrawler:
             pass
     
     # JSON 파일 저장
-    def save_data(self, filename="kb_products.json"):
+    def save_data(self, filename="KB.json"):
         dotenv.load_dotenv()
         directory_path = os.getenv("JSON_RESULT_PATH")
         os.makedirs(directory_path, exist_ok=True)

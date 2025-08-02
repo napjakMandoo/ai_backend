@@ -1225,15 +1225,19 @@ class IMBankCompleteCrawler:
                 print(f"📊 기간별 금리 추출 성공률: {round((period_rate_success_count / len(self.products)) * 100)}% ({period_rate_success_count}/{len(self.products)})")
             
             # CSV 파일 저장
-            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-            csv_filename = f"아이엠뱅크_완전크롤링_기간별금리포함_{timestamp}.csv"
+            # IM_BANK
+            # timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            # csv_filename = f"아이엠뱅크_완전크롤링_기간별금리포함_{timestamp}.csv"
+            csv_filename = f"IM_BANK.csv"
             # self.save_to_csv(self.products, csv_filename)
 
             dotenv.load_dotenv()
             directory_path = os.getenv("JSON_RESULT_PATH")
             os.makedirs(directory_path, exist_ok=True)
             # JSON 파일 저장
-            json_filename = f"아이엠뱅크_완전크롤링결과_{timestamp}.json"
+
+            # json_filename = f"아이엠뱅크_완전크롤링결과_{timestamp}.json"
+            json_filename = f"IM_BANK.json"
             file_path = os.path.join(directory_path, json_filename)
 
             with open(file_path, 'w', encoding='utf-8') as f:

@@ -633,7 +633,7 @@ class BusanBankUnifiedCrawler:
         os.makedirs(directory_path, exist_ok=True)
 
         if filename is None:
-            filename = f"busan_products.json"
+            filename = f"BNK_BUSAN.json"
 
         file_path = os.path.join(directory_path, filename)
 

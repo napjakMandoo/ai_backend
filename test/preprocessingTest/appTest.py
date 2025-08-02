@@ -9,7 +9,7 @@ from src.preprocessing.crawling.crawler.kyongnam.KyongNamBankCrawler import  Kyo
 from src.preprocessing.db.bank.BankRepository import BankRepository
 from src.preprocessing.db.product.productRepository import ProductRepository
 from src.preprocessing.db.util.MysqlUtil import MysqlUtil
-
+import json
 
 class AppTest:
     def __init__(self):
@@ -21,12 +21,24 @@ class AppTest:
 
     def crawling(self):
         before_preprocessed_products = []
-        # 경남은행
-        before_preprocessed_products.extend(KyongNamBankCrawler(base_url=BankLink.KYONGNAM_BANK_DEPOSIT_LINK.value).start())
-        # before_preprocessed_products.extend(KyongNamBankCrawler(base_url=BankLink.KYONGNAM_BANK_SAVING_LINK.value).start())
-        # before_preprocessed_products.extend(SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_ONLINE_LINK.value).start())
-        # before_preprocessed_products.extend(SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_LUMP_LINK.value).start())
-        # before_preprocessed_products.extend(SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_LUMP_ROLL_LINK.value).start())
+        # # 정기주 테스트
+        # before_preprocessed_products.extend(KyongNamBankCrawler(base_url=BankLink.KYONGNAM_BANK_DEPOSIT_LINK.value).start())
+
+        # # 이수민님 테스트
+        # hana = "/home/jeonggiju/hanium/ai_backend/src/preprocessing/crawling/crawler/hana/hana_bank_products.json"
+        # with open(hana, "r", encoding="utf-8") as f:
+        #     data = json.load(f)
+        #
+        # for i in data:
+        #     before_preprocessed_products.append(i)
+
+        # 은주연 테스트
+        jeju = "/home/jeonggiju/hanium/ai_backend/src/preprocessing/crawling/crawler/jeju/JEJU.json"
+        with open(jeju, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        for i in data:
+            before_preprocessed_products.append(i)
 
         return before_preprocessed_products
 
@@ -76,7 +88,6 @@ class AppTest:
         self.logger.info(f"월 마다 진행: {current_time}")
 
 
-
     def start(self):
         # 해야할 거: @자동화 해야함, url, 팀원들 크롤링 합쳐야함, @print 대신 로깅 처리, 사진도 넣어야함, 크롤링 테스트
 
@@ -101,7 +112,7 @@ if __name__ == "__main__":
         format="%(asctime)s %(levelname)s [%(name)s] %(message)s",
         handlers=[logging.StreamHandler()]
     )
-
+    ProductRepository().delete_all_product()
     app = AppTest()
     app.start()
 

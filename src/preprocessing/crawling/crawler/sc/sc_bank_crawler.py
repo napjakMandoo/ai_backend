@@ -720,7 +720,7 @@ class SCBankCleanCrawler:
         os.makedirs(directory_path, exist_ok=True)
 
         if filename is None:
-            filename = f"sc_products.json"
+            filename = f"SC_JEIL.json"
             file_path = os.path.join(directory_path, filename)
 
         with open(file_path, 'w', encoding='utf-8') as f:

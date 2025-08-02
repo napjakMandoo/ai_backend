@@ -743,7 +743,7 @@ class NHBankCrawler:
             return []
 
     # JSON 파일로 저장
-    def save_to_json(self, filename="nh_bank_products.json"):
+    def save_to_json(self, filename="NH.json"):
         dotenv.load_dotenv()
         directory_path = os.getenv("JSON_RESULT_PATH")
 

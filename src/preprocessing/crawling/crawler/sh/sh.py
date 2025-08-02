@@ -869,7 +869,7 @@ class SuhyupBankCategoryCrawler:
             if not filename:
                 # timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
                 # filename = f"suhyup_category_products_{timestamp}.json"
-                filename = f"suhyup_category_products.json"
+                filename = f"SH_SUHYUP.json"
             file_path = os.path.join(directory_path, filename)
 
             # 중복 제거
