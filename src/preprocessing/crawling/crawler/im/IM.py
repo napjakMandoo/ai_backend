@@ -1,7 +1,7 @@
 """
 IM은행 완전 크롤러 - 3단계 포함 최종 버전
 JavaScript 콘솔 코드와 정확히 동일한 3단계 플로우 구현
-IM.py 수정 코드 파일. 
+im.py 수정 코드 파일.
 """
 
 import time
@@ -182,7 +182,7 @@ class IMBankCompleteCrawler:
                 
                 text_sufficient = len(body_text) > 500
                 html_sufficient = len(body_html) > 2000
-                has_content = '적금' in body_text or '예금' in body_text or 'IM' in body_text
+                has_content = '적금' in body_text or '예금' in body_text or 'im' in body_text
                 
                 print(f"⏳ 시도 {attempt}/20: 텍스트 {len(body_text)}자, HTML {len(body_html)}자, 상품키워드: {has_content}")
                 

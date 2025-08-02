@@ -9,7 +9,7 @@ class BankRepository:
         self.logger = logging.getLogger(__name__)
 
     def get_bank_data(self):
-        # 부산, SC, 광주, 제주, 전북, 경남, 우체국, 신한, KDB, 농협, 우리, 하나, 국민, 수협, IBK, IM,
+        # 부산, SC, 광주, 제주, 전북, 경남, 우체국, 신한, KDB, 농협, 우리, 하나, 국민, 수협, ibk, im,
         busan = ["BNK_BUSAN", "/home/jeonggiju/hanium/ai_backend/src/static/logos/kyongnam_logo.png"]
         sc = ["SC_JEIL", "/home/jeonggiju/hanium/ai_backend/src/static/logos/kyongnam_logo.png"]
         gwangju = ["GWANGJU", "/home/jeonggiju/hanium/ai_backend/src/static/logos/kyongnam_logo.png"]
@@ -24,7 +24,7 @@ class BankRepository:
         hana = ["HANA", "/home/jeonggiju/hanium/ai_backend/src/static/logos/kyongnam_logo.png"]
         kookmin = ["KB", "/home/jeonggiju/hanium/ai_backend/src/static/logos/kyongnam_logo.png"]
         suhyup = ["SH_SUHYUP", "/home/jeonggiju/hanium/ai_backend/src/static/logos/kyongnam_logo.png"]
-        idk = ["IBK", "/home/jeonggiju/hanium/ai_backend/src/static/logos/kyongnam_logo.png"]
+        idk = ["ibk", "/home/jeonggiju/hanium/ai_backend/src/static/logos/kyongnam_logo.png"]
         im = ["IM_BANK", "/home/jeonggiju/hanium/ai_backend/src/static/logos/kyongnam_logo.png"]
         return [busan, sc, gwangju, jeju, jeonbuk, gyeongnam, post, sinhan, kdb, nonghyup, woori, hana, kookmin, suhyup,
                 idk, im]

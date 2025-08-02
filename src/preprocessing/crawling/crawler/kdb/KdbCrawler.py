@@ -10,7 +10,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from src.preprocessing.crawling.crawler.util.crawlingUtil import CrawlingUtil
+from src.preprocessing.crawling.util.crawlingUtil import CrawlingUtil
 
 
 class KdbCrawler:
