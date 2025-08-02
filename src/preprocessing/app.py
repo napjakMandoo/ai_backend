@@ -192,7 +192,7 @@ class App:
 
     def start(self):
         # 해야할 거: @자동화 해야함, url, 팀원들 크롤링 합쳐야함, @print 대신 로깅 처리, 사진도 넣어야함, 크롤링 테스트
-
+        # 해야할 거: 삭제된것은 어떻게 구분할거야? -> delete_at 속성에 삭제됨을 추가해야함
         self.logger.info("=====은행 데이터 저장 시작=====")
         bank_repository = BankRepository()
         bank_repository.save_bank()

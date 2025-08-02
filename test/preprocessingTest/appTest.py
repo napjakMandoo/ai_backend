@@ -21,8 +21,8 @@ class AppTest:
 
     def crawling(self):
         before_preprocessed_products = []
-        # # 정기주 테스트
-        # before_preprocessed_products.extend(KyongNamBankCrawler(base_url=BankLink.KYONGNAM_BANK_DEPOSIT_LINK.value).start())
+        # # 정기주 테스트 -> 상품명으로 중복 여부를 체크하는데, LLM이 상품명을 가끔 다르게 뱉음 " "와 같은 공백을 넣을떄도 있음
+        before_preprocessed_products.extend(KyongNamBankCrawler(base_url=BankLink.KYONGNAM_BANK_DEPOSIT_LINK.value).start())
 
         # # 이수민님 테스트
         # hana = "/home/jeonggiju/hanium/ai_backend/src/preprocessing/crawling/crawler/hana/hana_bank_products.json"
@@ -33,12 +33,21 @@ class AppTest:
         #     before_preprocessed_products.append(i)
 
         # 은주연 테스트
-        jeju = "/home/jeonggiju/hanium/ai_backend/src/preprocessing/crawling/crawler/jeju/JEJU.json"
-        with open(jeju, "r", encoding="utf-8") as f:
-            data = json.load(f)
+        # jeju = "/home/jeonggiju/hanium/ai_backend/src/preprocessing/crawling/crawler/jeju/JEJU.json"
+        # with open(jeju, "r", encoding="utf-8") as f:
+        #     data = json.load(f)
+        #
+        # for i in data:
+        #     before_preprocessed_products.append(i)
+        #
 
-        for i in data:
-            before_preprocessed_products.append(i)
+        # 박연제님 테스트
+        # sh = "/home/jeonggiju/hanium/ai_backend/src/preprocessing/crawling/crawler/sh/suhyup_category_products_20250730_170125.json"
+        # with open(sh, "r", encoding="utf-8") as f:
+        #     data = json.load(f)
+        #
+        # for i in data["products"]:
+        #     before_preprocessed_products.append(i)
 
         return before_preprocessed_products
 
