@@ -216,7 +216,7 @@ class App:
         bank_data = bank_repository.get_bank_data()
         bank_name_list = []
         for bank in bank_data:
-            bank_name_list.append(bank["bank_name"])
+            bank_name_list.append(bank[0])
 
         self.logger.info(f"월 마다 진행 시작: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
