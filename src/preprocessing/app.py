@@ -188,7 +188,6 @@ class App:
             after_preprocessed_products = self.preprocessed(before_preprocessed_products)
             self.logger.info("=====전처리 끝=====")
 
-
             #######
             self.logger.info("=====DB에 저장 시작=====")
             self.saveToDB(after_preprocessed_products,  bank_name=bank_name)
@@ -196,9 +195,7 @@ class App:
 
             ####### 삭제를 위한 데이터(은행 상품)
             self.logger.info("=====삭제 작업 시작=====")
-
             self.logger.info("=====삭제 작업 끝=====")
-
 
         self.logger.info(f"월 마다 진행: {current_time}")
 
@@ -208,10 +205,10 @@ class App:
         # 1. @자동화 해야함 -> fin
         # 2. url
         # 3. 팀원들 크롤링 합쳐야함 -> fin
-        # 4. @print 대신 로깅 처리
-        # 5. 사진도 넣어야함
-        # 6. 크롤링 테스트
-        # 7. 삭제된것은 어떻게 구분할거야? -> delete_at 속성에 삭제됨을 추가해야함
+        # 4. print 대신 로깅 처리
+        # 5. 사진도 넣어야함 -> assert -> icon -> svg
+        # 6. 전체 크롤링 테스트
+        # 7. 삭제된것은 어떻게 구분할거야? -> delete_at 속성에 삭제됨을 추가해야함 -> fin
         self.logger.info("=====은행 데이터 저장 시작=====")
         bank_repository = BankRepository()
         bank_repository.save_bank()

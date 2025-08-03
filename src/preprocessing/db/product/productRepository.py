@@ -33,7 +33,6 @@ class ProductRepository:
 
         self.logger.info("=====삭제 작업 시작=====")
 
-
         cursor = connection.cursor()
         try:
             bank_uuid = self.BankRepository.get_uuid_by_bank_name(bank_name=bank_name)
@@ -58,12 +57,18 @@ class ProductRepository:
             self.logger.info("=====삭제 작업 끝=====")
 
     def check_duplicate_product(self, product_name, connection):
+
+        self.logger.info("중복 상품 검사 시작")
         cursor = connection.cursor()
         cursor.execute("select name from bank_product where name=%s", product_name)
         row = cursor.fetchone()
         if row:
+            self.logger.info("중복 상품 검사 끝")
+            cursor.close()
             return True
         else:
+            self.logger.info("중복 상품 검사 끝")
+            cursor.close()
             return False
 
     def save_one_product(self, product_data, bank_name, connection):

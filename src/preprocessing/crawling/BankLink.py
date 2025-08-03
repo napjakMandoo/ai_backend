@@ -33,3 +33,9 @@ class BankLink(Enum):
     IBK_BANK_LINK="https://mybank.ibk.co.kr"
     IBK_BANK_SAVINGS_LINK="/uib/jsp/guest/ntr/ntr70/ntr7010/PNTR701010_m.jsp?APLY_EFNC_MENU_ID=P0104020000&SCRE_ID=PNTR701010_m&MENU_DIV=GNB"
     IBK_BANK_DEPOSIT_LINK="/uib/jsp/guest/ntr/ntr70/ntr7010/PNTR701015_m.jsp?APLY_EFNC_MENU_ID=P0104030000&SCRE_ID=PNTR701015_m&MENU_DIV=GNB"
+
+
+    ###
+    # 1. SH
+    # 2. im
+    # 3. SC

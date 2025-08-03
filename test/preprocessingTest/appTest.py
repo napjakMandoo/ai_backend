@@ -78,6 +78,7 @@ class AppTest:
                 products_name_set.add(product.product_name)
 
             self.productRepository.check_is_deleted(bank_name=bank_name, new_products_name=products_name_set,connection=connection)
+
             connection.commit()
         except Exception as e:
             self.logger.error(f"mysql 데이터 삽입 에러: {e}")
@@ -96,9 +97,9 @@ class AppTest:
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.logger.info(f"월 마다 진행: {current_time}")
 
+        #######
         bank_name = "SH_SUHYUP" # 테스트할때 바꿔줘야함
         self.logger.info("=====크롤링 시작=====")
-        # before_preprocessed_products = self.crawling(bank_name=bank_name)
         before_preprocessed_products = self.crawling()
         self.logger.info("=====크롤링 끝=====")
 
@@ -106,7 +107,6 @@ class AppTest:
         self.logger.info("=====전처리 시작=====")
         after_preprocessed_products = self.preprocessed(before_preprocessed_products)
         self.logger.info("=====전처리 끝=====")
-
 
         #######
         self.logger.info("=====DB에 저장 시작=====")
@@ -127,7 +127,6 @@ class AppTest:
         bank_repository.save_bank()
         self.logger.info("=====은행 데이터 저장 끝=====")
 
-        self.productRepository.delete_all_product()
         self.month_task()
 
         ################### 자동화 코드입니다. 주석을 풀면 됩니다.########################
@@ -144,7 +143,7 @@ if __name__ == "__main__":
         handlers=[logging.StreamHandler()]
     )
     ### 시작전 삭제
-    ProductRepository().delete_all_product()
+    # ProductRepository().delete_all_product()
 
     app = AppTest()
     app.start()
