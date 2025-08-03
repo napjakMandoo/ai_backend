@@ -2,30 +2,34 @@ import uuid
 import logging
 
 from src.preprocessing.db.util.MysqlUtil import MysqlUtil
-
+import dotenv
+import os
 class BankRepository:
     def __init__(self):
         self.mysqlUtil = MysqlUtil()
         self.logger = logging.getLogger(__name__)
 
+
     def get_bank_data(self):
         # 부산, SC, 광주, 제주, 전북, 경남, 우체국, 신한, KDB, 농협, 우리, 하나, 국민, 수협, ibk, im,
-        busan = ["BNK_BUSAN", "/home/jeonggiju/hanium/ai_backend/src/static/logos/kyongnam_logo.png"]
-        sc = ["SC_JEIL", "/home/jeonggiju/hanium/ai_backend/src/static/logos/kyongnam_logo.png"]
-        gwangju = ["GWANGJU", "/home/jeonggiju/hanium/ai_backend/src/static/logos/kyongnam_logo.png"]
-        jeju = ["JEJU", "/home/jeonggiju/hanium/ai_backend/src/static/logos/kyongnam_logo.png"]
-        jeonbuk = ["JEONBUK", "/home/jeonggiju/hanium/ai_backend/src/static/logos/kyongnam_logo.png"]
-        gyeongnam = ["BNK_GYEONGNAM", "/home/jeonggiju/hanium/ai_backend/src/static/logos/kyongnam_logo.png"]
-        post = ["POST_OFFICE", "/home/jeonggiju/hanium/ai_backend/src/static/logos/kyongnam_logo.png"]
-        sinhan = ["SHINHAN", "/home/jeonggiju/hanium/ai_backend/src/static/logos/kyongnam_logo.png"]
-        kdb = ["KDB", "/home/jeonggiju/hanium/ai_backend/src/static/logos/kyongnam_logo.png"]
-        nonghyup = ["NH", "/home/jeonggiju/hanium/ai_backend/src/static/logos/kyongnam_logo.png"]
-        woori = ["WOORI", "/home/jeonggiju/hanium/ai_backend/src/static/logos/kyongnam_logo.png"]
-        hana = ["HANA", "/home/jeonggiju/hanium/ai_backend/src/static/logos/kyongnam_logo.png"]
-        kookmin = ["KB", "/home/jeonggiju/hanium/ai_backend/src/static/logos/kyongnam_logo.png"]
-        suhyup = ["SH_SUHYUP", "/home/jeonggiju/hanium/ai_backend/src/static/logos/kyongnam_logo.png"]
-        idk = ["IBK", "/home/jeonggiju/hanium/ai_backend/src/static/logos/kyongnam_logo.png"]
-        im = ["IM_BANK", "/home/jeonggiju/hanium/ai_backend/src/static/logos/kyongnam_logo.png"]
+        dotenv.load_dotenv()
+        logo_path = os.getenv("LOGO_PATH")
+        busan = ["BNK_BUSAN", f"{logo_path}/kyongnam_logo.png"]
+        sc = ["SC_JEIL", f"{logo_path}/kyongnam_logo.png"]
+        gwangju = ["GWANGJU", f"{logo_path}/kyongnam_logo.png"]
+        jeju = ["JEJU", f"{logo_path}/kyongnam_logo.png"]
+        jeonbuk = ["JEONBUK", f"{logo_path}/kyongnam_logo.png"]
+        gyeongnam = ["BNK_GYEONGNAM", f"{logo_path}/kyongnam_logo.png"]
+        post = ["POST_OFFICE", f"{logo_path}/kyongnam_logo.png"]
+        sinhan = ["SHINHAN", f"{logo_path}/kyongnam_logo.png"]
+        kdb = ["KDB", f"{logo_path}/kyongnam_logo.png"]
+        nonghyup = ["NH", f"{logo_path}/kyongnam_logo.png"]
+        woori = ["WOORI", f"{logo_path}/kyongnam_logo.png"]
+        hana = ["HANA", f"{logo_path}/kyongnam_logo.png"]
+        kookmin = ["KB", f"{logo_path}/kyongnam_logo.png"]
+        suhyup = ["SH_SUHYUP", f"{logo_path}/kyongnam_logo.png"]
+        idk = ["IBK", f"{logo_path}/kyongnam_logo.png"]
+        im = ["IM_BANK", f"{logo_path}/kyongnam_logo.png"]
         return [busan, sc, gwangju, jeju, jeonbuk, gyeongnam, post, sinhan, kdb, nonghyup, woori, hana, kookmin, suhyup,
                 idk, im]
 
