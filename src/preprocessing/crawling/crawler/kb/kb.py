@@ -1741,7 +1741,7 @@ class KBProductCrawler:
             self.logger.info(f"JSON 저장 오류: {e}")
     
     # 수집 결과 요약 출력
-    def self.logger.info_summary(self):
+    def print_summary(self):
         self.logger.info("수집 결과 요약")
         
         total_products = len(self.all_products)
@@ -1795,7 +1795,7 @@ class KBProductCrawler:
             self.logger.info("크롤링 완료")
             self.logger.info(f"소요 시간: {duration:.1f}초")
             
-            self.self.logger.info_summary()
+            self.print_summary()
             
             self.save_data()
             

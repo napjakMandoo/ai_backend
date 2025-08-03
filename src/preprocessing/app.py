@@ -3,6 +3,8 @@ import logging
 import schedule
 import time
 import json
+import os
+from logging.handlers import RotatingFileHandler
 from src.preprocessing.crawling.ai.LlmUtil import LlmUtil
 from src.preprocessing.crawling.BankLink import BankLink
 from src.preprocessing.crawling.crawler.busan.busan_bank_crawler import BusanBankUnifiedCrawler
@@ -13,7 +15,7 @@ from src.preprocessing.crawling.crawler.im.IM import IMBankCompleteCrawler
 from src.preprocessing.crawling.crawler.jeju.jeju_bank_crawler import JejuBankDepositSavingsOnlyCrawler
 from src.preprocessing.crawling.crawler.kb.kb import KBProductCrawler
 from src.preprocessing.crawling.crawler.kdb.KdbCrawler import KdbCrawler
-from src.preprocessing.crawling.crawler.kyongnam.KyongNamBankCrawler import  KyongNamBankCrawler
+from src.preprocessing.crawling.crawler.kyongnam.KyongNamBankCrawler import KyongNamBankCrawler
 from src.preprocessing.crawling.crawler.nh.nh import NHBankCrawler
 from src.preprocessing.crawling.crawler.post.PostBankCrawler import PostBankCrawler
 from src.preprocessing.crawling.crawler.sc.sc_bank_crawler import SCBankCleanCrawler
@@ -23,11 +25,6 @@ from src.preprocessing.crawling.crawler.woori.woori import WooriBankCrawler
 from src.preprocessing.db.bank.BankRepository import BankRepository
 from src.preprocessing.db.product.productRepository import ProductRepository
 from src.preprocessing.db.util.MysqlUtil import MysqlUtil
-import dotenv
-import os
-
-from test.preprocessingTest.preprocessing.preprocessingTest import kyongNam
-
 
 class App:
     def __init__(self):
@@ -36,6 +33,42 @@ class App:
         self.mysqlUtil = MysqlUtil()
         self.llmUtil = LlmUtil()
         self.bankRepository = BankRepository()
+
+    def setup_logging(self):
+        """로깅 설정 - 파일과 콘솔 동시 출력"""
+        log_dir = "logs"
+        os.makedirs(log_dir, exist_ok=True)
+
+        log_file = os.path.join(log_dir, f"bank_crawler_{datetime.now().strftime('%Y%m%d')}.log")
+
+        logger = logging.getLogger()
+        logger.setLevel(logging.INFO)
+
+        for handler in logger.handlers[:]:
+            logger.removeHandler(handler)
+
+        formatter = logging.Formatter(
+            fmt="%(asctime)s %(levelname)s [%(name)s] %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S"
+        )
+
+        file_handler = RotatingFileHandler(
+            filename=log_file,
+            maxBytes=50 * 1024 * 1024,  # 50MB
+            backupCount=10,  # 최대 10개 백업 파일
+            encoding='utf-8'
+        )
+        file_handler.setLevel(logging.INFO)
+        file_handler.setFormatter(formatter)
+
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(logging.INFO)
+        console_handler.setFormatter(formatter)
+
+        logger.addHandler(file_handler)
+        logger.addHandler(console_handler)
+
+        return logger
 
     def read_json(self, file_name):
         directory = os.getenv("JSON_RESULT_PATH")
@@ -47,35 +80,42 @@ class App:
 
         return data
 
-    def crawling(self, bank_name:str=""):
+    def crawling(self, bank_name: str = ""):
         before_preprocessed_products = []
 
         ######################## 정기주
         if bank_name == "BNK_GYEONGNAM":
-            before_preprocessed_products.extend(KyongNamBankCrawler(base_url=BankLink.KYONGNAM_BANK_DEPOSIT_LINK.value).start())
+            before_preprocessed_products.extend(
+                KyongNamBankCrawler(base_url=BankLink.KYONGNAM_BANK_DEPOSIT_LINK.value).start())
         elif bank_name == "POST_OFFICE":
             before_preprocessed_products.extend(PostBankCrawler(base_url=BankLink.POST_BANK_LINK.value).start())
         elif bank_name == "SHINHAN":
-            before_preprocessed_products.extend(SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_ONLINE_LINK.value).start())
-            before_preprocessed_products.extend(SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_LUMP_LINK.value).start())
-            before_preprocessed_products.extend(SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_LUMP_ROLL_LINK.value).start())
+            before_preprocessed_products.extend(
+                SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_ONLINE_LINK.value).start())
+            before_preprocessed_products.extend(
+                SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_LUMP_LINK.value).start())
+            before_preprocessed_products.extend(
+                SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_LUMP_ROLL_LINK.value).start())
         elif bank_name == "KDB":
             before_preprocessed_products.extend(KdbCrawler(base_url=BankLink.KDB_LINK.value).start())
+
         ############################# 은주연
         elif bank_name == "BNK_BUSAN":
-             BusanBankUnifiedCrawler(base_url=BankLink.BUSAN_BANK_LINK.value).start()
-             data = self.read_json("BNK_BUSAN")
-             for i in data:
-                 before_preprocessed_products.append(i)
+            BusanBankUnifiedCrawler(base_url=BankLink.BUSAN_BANK_LINK.value).start()
+            data = self.read_json("BNK_BUSAN")
+            for i in data:
+                before_preprocessed_products.append(i)
 
         elif bank_name == "SC_JEIL":
-            SCBankCleanCrawler(base_url=BankLink.SC_BANK_LINK.value, detail_url_base=BankLink.SC_BANK_BASE_LINK.value).start()
+            SCBankCleanCrawler(base_url=BankLink.SC_BANK_LINK.value,
+                               detail_url_base=BankLink.SC_BANK_BASE_LINK.value).start()
             data = self.read_json("SC_JEIL")
             for i in data:
                 before_preprocessed_products.append(i)
 
         elif bank_name == "GWANGJU":
-            KJBankCompleteCrawler(base_url=BankLink.GWANGJU_BANK_LINK.value, deposit_list_url=BankLink.GWANGJU_BANK_DEPOSIT_LINK.value).start()
+            KJBankCompleteCrawler(base_url=BankLink.GWANGJU_BANK_LINK.value,
+                                  deposit_list_url=BankLink.GWANGJU_BANK_DEPOSIT_LINK.value).start()
             data = self.read_json("GWANGJU")
             for i in data:
                 before_preprocessed_products.append(i)
@@ -114,7 +154,7 @@ class App:
                 before_preprocessed_products.append(i)
 
         ############################ 박연제
-        elif bank_name == "IBK": # 안됨
+        elif bank_name == "IBK":  # 안됨
             IBKFullCrawler().start()
 
             data = self.read_json("IBK")
@@ -144,7 +184,7 @@ class App:
             preprocessed_products.append(json)
         return preprocessed_products
 
-    def saveToDB(self, after_preprocessed_products, bank_name:str=""):
+    def save_to_db(self, after_preprocessed_products, bank_name: str = ""):
         connection = self.mysqlUtil.get_connection()
 
         try:
@@ -152,7 +192,8 @@ class App:
 
             ## 삽입
             for product in after_preprocessed_products:
-                self.productRepository.save_one_product(product_data=product,bank_name=bank_name,connection=connection)
+                self.productRepository.save_one_product(product_data=product, bank_name=bank_name,
+                                                        connection=connection)
 
             ## 삭제
             products_name_set = set()
@@ -160,7 +201,8 @@ class App:
             for product in after_preprocessed_products:
                 products_name_set.add(product.product_name)
 
-            self.productRepository.check_is_deleted(bank_name=bank_name, new_products_name=products_name_set,connection=connection)
+            self.productRepository.check_is_deleted(bank_name=bank_name, new_products_name=products_name_set,
+                                                    connection=connection)
             connection.commit()
         except Exception as e:
             self.logger.error(f"mysql 데이터 삽입 에러: {e}")
@@ -169,14 +211,14 @@ class App:
             connection.close()
 
     def month_task(self):
+        start_time = datetime.now()
         bank_repository = BankRepository()
         bank_data = bank_repository.get_bank_data()
         bank_name_list = []
         for bank in bank_data:
             bank_name_list.append(bank["bank_name"])
 
-        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        self.logger.info(f"월 마다 진행: {current_time}")
+        self.logger.info(f"월 마다 진행 시작: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
         for bank_name in bank_name_list:
             self.logger.info("=====크롤링 시작=====")
@@ -190,48 +232,44 @@ class App:
 
             #######
             self.logger.info("=====DB에 저장 시작=====")
-            self.saveToDB(after_preprocessed_products,  bank_name=bank_name)
+            self.save_to_db(after_preprocessed_products, bank_name=bank_name)
             self.logger.info("=====DB에 끝=====")
 
-            ####### 삭제를 위한 데이터(은행 상품)
-            self.logger.info("=====삭제 작업 시작=====")
-            self.logger.info("=====삭제 작업 끝=====")
-
-        self.logger.info(f"월 마다 진행: {current_time}")
-
+        end_time = datetime.now()
+        elapsed_time = end_time - start_time
+        self.logger.info(f"월 마다 진행 완료: {end_time.strftime('%Y-%m-%d %H:%M:%S')}")
+        self.logger.info(f"총 소요 시간: {elapsed_time}")
 
     def start(self):
-        # 해야할 거:
-        # 1. @자동화 해야함 -> fin
-        # 2. url
-        # 3. 팀원들 크롤링 합쳐야함 -> fin
-        # 4. print 대신 로깅 처리
-        # 5. 사진도 넣어야함 -> assert -> icon -> svg
-        # 6. 전체 크롤링 테스트
-        # 7. 삭제된것은 어떻게 구분할거야? -> delete_at 속성에 삭제됨을 추가해야함 -> fin
-        self.logger.info("=====은행 데이터 저장 시작=====")
-        bank_repository = BankRepository()
-        bank_repository.save_bank()
-        self.logger.info("=====은행 데이터 저장 끝=====")
+        self.logger.info("===== 애플리케이션 시작 =====")
 
-        # 아래 두 줄은 테스트를 위함
-        self.productRepository.delete_all_product()
-        self.month_task()
+        try:
+            self.logger.info("===== 은행 데이터 저장 시작 =====")
+            bank_repository = BankRepository()
+            bank_repository.save_bank()
+            self.logger.info("===== 은행 데이터 저장 완료 =====")
 
-        ################### 자동화 코드입니다. 주석을 풀면 됩니다.########################
-        # schedule.every().day.at("02:00").do(self.month_task)
-        #
-        # while True:
-        #     schedule.run_pending()
-        #     time.sleep(3600)
+            # 아래 두 줄은 테스트를 위함
+            self.logger.info("===== 기존 상품 데이터 삭제 시작 (테스트용) =====")
+            self.productRepository.delete_all_product()
+            self.logger.info("===== 기존 상품 데이터 삭제 완료 (테스트용) =====")
+
+            self.month_task()
+
+            ################### 자동화 코드입니다. 주석을 풀면 됩니다.########################
+            # self.logger.info("===== 스케줄러 시작 - 매일 02:00에 실행 =====")
+            # schedule.every().day.at("02:00").do(self.month_task)
+            #
+            # while True:
+            #     schedule.run_pending()
+            #     time.sleep(3600)
+
+        except Exception as e:
+            self.logger.error(f"애플리케이션 실행 중 오류 발생: {e}")
+            raise
+
 
 if __name__ == "__main__":
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s %(levelname)s [%(name)s] %(message)s",
-        handlers=[logging.StreamHandler()]
-    )
-
     app = App()
+    app.setup_logging()
     app.start()
-
