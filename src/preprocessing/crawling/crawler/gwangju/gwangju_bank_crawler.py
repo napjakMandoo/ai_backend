@@ -29,6 +29,7 @@ class KJBankCompleteCrawler:
         
         self.driver = webdriver.Chrome(options=chrome_options)
         self.wait = WebDriverWait(self.driver, 10)
+        self.logger = loging.getLogger(__name__)
         
         # 로깅 설정 - 간결하게
         logging.basicConfig(
@@ -1055,14 +1056,14 @@ class KJBankCompleteCrawler:
             product_list = self.get_product_list_from_main_page(limit=limit or 999)
             
             if not product_list:
-                print("상품 목록을 가져올 수 없습니다.")
+                self.logger.info("상품 목록을 가져올 수 없습니다.")
                 return []
             
             all_products = []
             
             # 2. 각 상품별 완전 정보 크롤링
             for i, product_info in enumerate(product_list):
-                print(f"[{i+1}/{len(product_list)}] {product_info['name']} 크롤링 중...")
+                self.logger.info(f"[{i+1}/{len(product_list)}] {product_info['name']} 크롤링 중...")
                 
                 try:
                     complete_product = self.extract_complete_product_info(product_info, i+1)
@@ -1099,13 +1100,13 @@ class KJBankCompleteCrawler:
             success_count = len([p for p in filtered_products if 'error' not in p])
             error_count = len([p for p in filtered_products if 'error' in p])
             
-            print(f"크롤링 완료! 전체 {len(all_products)}개 중 예금/적금 {len(filtered_products)}개 상품")
-            print(f"결과 저장: {filename}")
+            self.logger.info(f"크롤링 완료! 전체 {len(all_products)}개 중 예금/적금 {len(filtered_products)}개 상품")
+            self.logger.info(f"결과 저장: {filename}")
             
             return filtered_products
             
         except Exception as e:
-            print(f"전체 크롤링 실패: {e}")
+            self.logger.info(f"전체 크롤링 실패: {e}")
             return []
 
     def close(self):
@@ -1119,11 +1120,11 @@ class KJBankCompleteCrawler:
             # 전체 크롤링 실행
             products = self.crawl_all_products(limit=None)
 
-            print("\n크롤링 완료!")
+            self.logger.info("\n크롤링 완료!")
 
         except KeyboardInterrupt:
-            print("\n사용자에 의해 중단됨")
+            self.logger.info("\n사용자에 의해 중단됨")
         except Exception as e:
-            print(f"\n오류 발생: {e}")
+            self.logger.info(f"\n오류 발생: {e}")
         finally:
             self.close()

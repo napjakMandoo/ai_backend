@@ -1,7 +1,7 @@
 """
 국민은행 예적금 상품 크롤링 - 기본이율/우대이율 수집
 """
-
+import logging
 import time
 import json
 from datetime import datetime
@@ -31,6 +31,7 @@ class KBProductCrawler:
         self.driver = self.setup_driver(headless)
         self.wait = WebDriverWait(self.driver, 15)
         self.all_products = []
+        self.logger = logging.getLogger(__name__)
         
     # Chrome 브라우저 설정
     def setup_driver(self, headless):
@@ -57,12 +58,12 @@ class KBProductCrawler:
     # 페이지네이션 확인 및 이동
     def check_pagination(self, tab_name):
         try:
-            print(f"    다음 페이지 확인 중...")
+            self.logger.info(f"    다음 페이지 확인 중...")
             
             has_gopage = self.driver.execute_script("return typeof window.goPage === 'function';")
             
             if not has_gopage:
-                print(f"    goPage 함수 없음 - 페이지네이션 없음")
+                self.logger.info(f"    goPage 함수 없음 - 페이지네이션 없음")
                 return False
             
             before_products = []
@@ -86,7 +87,7 @@ class KBProductCrawler:
                 else:
                     next_page = 2
                 
-                print(f"    goPage({next_page}) 시도 중...")
+                self.logger.info(f"    goPage({next_page}) 시도 중...")
                 
                 self.driver.execute_script(f"window.goPage({next_page});")
                 time.sleep(4)
@@ -105,20 +106,20 @@ class KBProductCrawler:
                     pass
                 
                 if len(after_products) > 0 and after_products != before_products:
-                    print(f"    {next_page}페이지로 이동 성공")
+                    self.logger.info(f"    {next_page}페이지로 이동 성공")
                     return True
                 else:
-                    print(f"    {next_page}페이지 없음 또는 동일한 상품")
+                    self.logger.info(f"    {next_page}페이지 없음 또는 동일한 상품")
                     self.driver.execute_script("window.goPage(1);")
                     time.sleep(3)
                     return False
                     
             except Exception as e:
-                print(f"    오류: goPage 이동 실패: {e}")
+                self.logger.info(f"    오류: goPage 이동 실패: {e}")
                 return False
             
         except Exception as e:
-            print(f"    오류: 페이지네이션 오류: {e}")
+            self.logger.info(f"    오류: 페이지네이션 오류: {e}")
             return False
     
     # 페이지에서 상품 수집
@@ -126,7 +127,7 @@ class KBProductCrawler:
         all_products = []
         
         try:
-            print(f"{tab_name} 상품 수집 (페이지 {page_num})")
+            self.logger.info(f"{tab_name} 상품 수집 (페이지 {page_num})")
             
             time.sleep(3)
             
@@ -135,7 +136,7 @@ class KBProductCrawler:
             if not detail_buttons:
                 detail_buttons = self.driver.find_elements(By.CSS_SELECTOR, "a[onclick*='dtlDeposit']")
             
-            print(f"상품 버튼 {len(detail_buttons)}개 발견")
+            self.logger.info(f"상품 버튼 {len(detail_buttons)}개 발견")
             
             products = []
             for i, button in enumerate(detail_buttons):
@@ -172,7 +173,7 @@ class KBProductCrawler:
                                 'url': onclick_value,
                                 'button_element': button
                             })
-                            print(f"    {len(products)}. {clean_name}")
+                            self.logger.info(f"    {len(products)}. {clean_name}")
                 
                 except Exception as e:
                     continue
@@ -186,7 +187,7 @@ class KBProductCrawler:
             return all_products
             
         except Exception as e:
-            print(f"오류: {tab_name} 상품 수집 오류: {e}")
+            self.logger.info(f"오류: {tab_name} 상품 수집 오류: {e}")
             return all_products
         
 # 상품 상세정보 추출 - 기본이율/우대이율 추가
@@ -195,7 +196,7 @@ class KBProductCrawler:
         main_window = self.driver.current_window_handle
         
         try:
-            print(f"    상세페이지 접근 중... (상품: {product_name})")
+            self.logger.info(f"    상세페이지 접근 중... (상품: {product_name})")
             
             # 실제 상품 상세 URL 추출 부분 추가
             actual_detail_url = None
@@ -217,10 +218,10 @@ class KBProductCrawler:
                 new_url = self.driver.current_url
                 if new_url != current_url and len(new_url) > 50:  # URL이 변경되고 충분히 긴 경우
                     actual_detail_url = new_url
-                    print(f"    실제 상품 URL 수집 완료")
+                    self.logger.info(f"    실제 상품 URL 수집 완료")
                 
             except Exception as e:
-                print(f"    오류: 실제 URL 수집 실패: {e}")
+                self.logger.info(f"    오류: 실제 URL 수집 실패: {e}")
             
             # detail_url을 detail_info에 추가
             if actual_detail_url:
@@ -246,10 +247,10 @@ class KBProductCrawler:
                 self.driver.close()
             self.driver.switch_to.window(main_window)
             
-            print(f"    수집 완료: {len(detail_info)}개 항목 추출 완료")
+            self.logger.info(f"    수집 완료: {len(detail_info)}개 항목 추출 완료")
             
         except Exception as e:
-            print(f"    오류: 상세정보 추출 오류: {e}")
+            self.logger.info(f"    오류: 상세정보 추출 오류: {e}")
             try:
                 self.driver.switch_to.window(main_window)
             except:
@@ -262,11 +263,11 @@ class KBProductCrawler:
         info = {}
         
         try:
-            print("        기본이율/우대이율 정보 추출 중...")
+            self.logger.info("        기본이율/우대이율 정보 추출 중...")
             
             # 1단계: 금리 및 이율 탭으로 이동
             if not self.go_to_interest_rate_tab():
-                print("        오류: 금리 및 이율 탭을 찾을 수 없음")
+                self.logger.info("        오류: 금리 및 이율 탭을 찾을 수 없음")
                 return info
             
             time.sleep(3)
@@ -275,34 +276,34 @@ class KBProductCrawler:
             interest_item_found = self.check_interest_item_exists()
             
             if interest_item_found:
-                print("        금리 항목 존재 확인 - 자세히보기 버튼 찾기")
+                self.logger.info("        금리 항목 존재 확인 - 자세히보기 버튼 찾기")
                 # 금리 항목이 있으면 무조건 자세히보기 버튼이 있다고 가정하고 찾기
                 detail_button_found = self.find_and_click_detail_button_aggressive()
                 
                 if detail_button_found:
-                    print("        자세히보기 버튼 클릭 성공")
+                    self.logger.info("        자세히보기 버튼 클릭 성공")
                     # 기존 팝업 처리 로직
                     info = self.handle_interest_rate_popup()
                 else:
-                    print("        오류: 자세히보기 버튼을 찾을 수 없음 - 대안 방식 시도")
+                    self.logger.info("        오류: 자세히보기 버튼을 찾을 수 없음 - 대안 방식 시도")
                     # 대안 방식: '계약기간 중 금리' 정확 매칭으로 테이블 추출
                     info = self.extract_interest_rate_tables_alternative()
             else:
-                print("        오류: 금리 항목 없음 - 대안 방식 시도")
+                self.logger.info("        오류: 금리 항목 없음 - 대안 방식 시도")
                 # 대안 방식: '계약기간 중 금리' 정확 매칭으로 테이블 추출
                 info = self.extract_interest_rate_tables_alternative()
             
-            print(f"        이율 정보 추출 완료: {list(info.keys())}")
+            self.logger.info(f"        이율 정보 추출 완료: {list(info.keys())}")
             
         except Exception as e:
-            print(f"        오류: 기본이율/우대이율 추출 실패: {e}")
+            self.logger.info(f"        오류: 기본이율/우대이율 추출 실패: {e}")
         
         return info
     
     # '금리' 텍스트와 완전 일치하는 항목이 페이지에 존재하는지 확인
     def check_interest_item_exists(self):
         try:
-            print("        금리 완전 일치 항목 존재 여부 확인 중...")
+            self.logger.info("        금리 완전 일치 항목 존재 여부 확인 중...")
             
             # 방법 1: strong 태그에서 '금리' 완전 일치만 찾기
             strong_elements = self.driver.find_elements(By.TAG_NAME, 'strong')
@@ -310,7 +311,7 @@ class KBProductCrawler:
                 try:
                     text = strong.text.strip()
                     if text == '금리':  # 완전 일치만
-                        print(f"        strong에서 금리 완전 일치 발견")
+                        self.logger.info(f"        strong에서 금리 완전 일치 발견")
                         return True
                 except:
                     continue
@@ -321,7 +322,7 @@ class KBProductCrawler:
                 try:
                     text = th.text.strip()
                     if text == '금리':  # 완전 일치만
-                        print(f"        th에서 금리 완전 일치 발견")
+                        self.logger.info(f"        th에서 금리 완전 일치 발견")
                         return True
                 except:
                     continue
@@ -332,22 +333,22 @@ class KBProductCrawler:
                 try:
                     text = dt.text.strip()
                     if text == '금리':  # 완전 일치만
-                        print(f"        dt에서 금리 완전 일치 발견")
+                        self.logger.info(f"        dt에서 금리 완전 일치 발견")
                         return True
                 except:
                     continue
             
-            print("        금리 완전 일치 항목을 찾을 수 없음")
+            self.logger.info("        금리 완전 일치 항목을 찾을 수 없음")
             return False
             
         except Exception as e:
-            print(f"        오류: 금리 항목 확인 실패: {e}")
+            self.logger.info(f"        오류: 금리 항목 확인 실패: {e}")
             return False
     
     # '금리' 항목 근처의 자세히보기 버튼을 적극적으로 찾아서 클릭
     def find_and_click_detail_button_aggressive(self):
         try:
-            print("        자세히보기 버튼 적극적 검색 중...")
+            self.logger.info("        자세히보기 버튼 적극적 검색 중...")
             
             # 전략 1: '금리'가 포함된 요소 근처에서 자세히보기 버튼 찾기
             detail_button = self.find_detail_button_near_interest_text()
@@ -362,13 +363,13 @@ class KBProductCrawler:
             return False
             
         except Exception as e:
-            print(f"        오류: 자세히보기 버튼 찾기 실패: {e}")
+            self.logger.info(f"        오류: 자세히보기 버튼 찾기 실패: {e}")
             return False
     
     # '금리' 완전 일치 텍스트 근처의 자세히보기 버튼 찾기
     def find_detail_button_near_interest_text(self):
         try:
-            print("        금리 완전 일치 요소 근처에서 자세히보기 버튼 검색...")
+            self.logger.info("        금리 완전 일치 요소 근처에서 자세히보기 버튼 검색...")
             
             # '금리'와 완전 일치하는 요소만 찾기
             all_elements = self.driver.find_elements(By.XPATH, "//*")
@@ -377,12 +378,12 @@ class KBProductCrawler:
                 try:
                     element_text = element.text.strip()
                     if element_text == '금리':  # 완전 일치만
-                        print(f"        금리 완전 일치 요소 발견")
+                        self.logger.info(f"        금리 완전 일치 요소 발견")
                         
                         # 1. 같은 요소 내에서 버튼 찾기
                         button = self.find_detail_button_in_element_improved(element)
                         if button:
-                            print(f"        같은 요소 내에서 자세히보기 버튼 발견")
+                            self.logger.info(f"        같은 요소 내에서 자세히보기 버튼 발견")
                             return button
                         
                         # 2. 부모 요소에서 버튼 찾기
@@ -390,7 +391,7 @@ class KBProductCrawler:
                             parent = element.find_element(By.XPATH, "..")
                             button = self.find_detail_button_in_element_improved(parent)
                             if button:
-                                print(f"        부모 요소에서 자세히보기 버튼 발견")
+                                self.logger.info(f"        부모 요소에서 자세히보기 버튼 발견")
                                 return button
                         except:
                             pass
@@ -401,7 +402,7 @@ class KBProductCrawler:
                                 ancestor = element.find_element(By.XPATH, f"./ancestor::*[{i}]")
                                 button = self.find_detail_button_in_element_improved(ancestor)
                                 if button:
-                                    print(f"        조상({i}단계) 요소에서 자세히보기 버튼 발견")
+                                    self.logger.info(f"        조상({i}단계) 요소에서 자세히보기 버튼 발견")
                                     return button
                         except:
                             pass
@@ -409,17 +410,17 @@ class KBProductCrawler:
                 except Exception:
                     continue
             
-            print("        금리 완전 일치 요소 근처에서 자세히보기 버튼을 찾을 수 없음")
+            self.logger.info("        금리 완전 일치 요소 근처에서 자세히보기 버튼을 찾을 수 없음")
             return None
             
         except Exception as e:
-            print(f"        오류: 금리 텍스트 근처 버튼 찾기 실패: {e}")
+            self.logger.info(f"        오류: 금리 텍스트 근처 버튼 찾기 실패: {e}")
             return None
         
 # 페이지의 모든 자세히보기 버튼 찾기
     def find_any_detail_button_on_page(self):
         try:
-            print("        페이지 전체에서 자세히보기 버튼 검색...")
+            self.logger.info("        페이지 전체에서 자세히보기 버튼 검색...")
             
             # 자세히보기 관련 텍스트 패턴
             detail_patterns = ['자세히보기', '상세보기', '자세히 보기', '상세 보기', '자세히', '상세']
@@ -430,7 +431,7 @@ class KBProductCrawler:
                     buttons = self.driver.find_elements(By.XPATH, f"//*[contains(text(), '{pattern}')]")
                     for button in buttons:
                         if button.tag_name in ['a', 'button'] or button.get_attribute('onclick'):
-                            print(f"        자세히보기 버튼 발견")
+                            self.logger.info(f"        자세히보기 버튼 발견")
                             return button
                 except:
                     continue
@@ -444,7 +445,7 @@ class KBProductCrawler:
                     
                     if ('자세히' in onclick or 'detail' in onclick.lower() or 
                         'popup' in onclick.lower() or '자세히' in button_text):
-                        print(f"        onclick 자세히보기 버튼 발견")
+                        self.logger.info(f"        onclick 자세히보기 버튼 발견")
                         return button
             except:
                 pass
@@ -452,7 +453,7 @@ class KBProductCrawler:
             return None
             
         except Exception as e:
-            print(f"        오류: 전체 페이지 버튼 찾기 실패: {e}")
+            self.logger.info(f"        오류: 전체 페이지 버튼 찾기 실패: {e}")
             return None
     
     # 특정 요소 내에서 자세히보기 버튼 찾기 (개선된 버전)
@@ -510,7 +511,7 @@ class KBProductCrawler:
             button_text = button.text.strip()
             onclick = button.get_attribute('onclick') or ''
             
-            print(f"        버튼 클릭 시도")
+            self.logger.info(f"        버튼 클릭 시도")
             
             # 클릭 실행
             try:
@@ -525,19 +526,19 @@ class KBProductCrawler:
             try:
                 alert = self.driver.switch_to.alert
                 alert_text = alert.text
-                print(f"        오류: 알럿 발생: '{alert_text}'")
+                self.logger.info(f"        오류: 알럿 발생: '{alert_text}'")
                 alert.dismiss()  # 알럿 닫기
-                print("        알럿으로 인해 버튼 클릭 실패")
+                self.logger.info("        알럿으로 인해 버튼 클릭 실패")
                 return False
             except:
                 # 알럿이 없으면 정상
                 pass
             
-            print("        자세히보기 버튼 클릭 성공")
+            self.logger.info("        자세히보기 버튼 클릭 성공")
             return True
             
         except Exception as e:
-            print(f"        오류: 버튼 클릭 실패: {e}")
+            self.logger.info(f"        오류: 버튼 클릭 실패: {e}")
             
             # 혹시 알럿이 남아있다면 처리
             try:
@@ -554,16 +555,16 @@ class KBProductCrawler:
         original_window = self.driver.current_window_handle
         
         try:
-            print("        팝업방식 사용: 금리 팝업창 처리")
+            self.logger.info("        팝업방식 사용: 금리 팝업창 처리")
             time.sleep(5)  # 팝업 로딩 대기
             
             # 먼저 알럿이 있는지 확인
             try:
                 alert = self.driver.switch_to.alert
                 alert_text = alert.text
-                print(f"        오류: 예상치 못한 알럿 발생: '{alert_text}'")
+                self.logger.info(f"        오류: 예상치 못한 알럿 발생: '{alert_text}'")
                 alert.dismiss()
-                print("        알럿으로 인해 팝업 처리 불가")
+                self.logger.info("        알럿으로 인해 팝업 처리 불가")
                 return info
             except:
                 # 알럿이 없으면 정상 진행
@@ -579,7 +580,7 @@ class KBProductCrawler:
                         self.driver.switch_to.window(window)
                         break
                 
-                print("        팝업창으로 전환 성공")
+                self.logger.info("        팝업창으로 전환 성공")
                 time.sleep(3)
                 
                 # 기본이율 및 우대이율 데이터 추출
@@ -593,22 +594,22 @@ class KBProductCrawler:
                 info.update(basic_rate_info)
                 info.update(preferential_rate_info)
                 
-                print(f"        팝업방식 처리 완료: {list(info.keys())}")
+                self.logger.info(f"        팝업방식 처리 완료: {list(info.keys())}")
                 
                 # 원래 창으로 복귀
                 self.driver.close()
                 self.driver.switch_to.window(original_window)
             else:
-                print("        오류: 팝업창이 열리지 않음")
+                self.logger.info("        오류: 팝업창이 열리지 않음")
         
         except Exception as e:
-            print(f"        오류: 팝업 처리 실패: {e}")
+            self.logger.info(f"        오류: 팝업 처리 실패: {e}")
             try:
                 # 알럿 처리
                 try:
                     alert = self.driver.switch_to.alert
                     alert.dismiss()
-                    print("        알럿 처리 완료")
+                    self.logger.info("        알럿 처리 완료")
                 except:
                     pass
                 
@@ -627,7 +628,7 @@ class KBProductCrawler:
         info = {}
         
         try:
-            print("        대안 방식: 계약기간 중 금리 완전 일치 테이블 검색...")
+            self.logger.info("        대안 방식: 계약기간 중 금리 완전 일치 테이블 검색...")
             
             # 정확한 텍스트 매칭 (완전 일치만)
             target_text = '계약기간 중 금리'
@@ -644,14 +645,14 @@ class KBProductCrawler:
                         
                         # 완전 일치 텍스트 매칭
                         if strong_text == target_text:
-                            print(f"        완전 일치 항목 발견: '{strong_text}'")
-                            print("        대안 방식 사용: 테이블 직접 크롤링")
+                            self.logger.info(f"        완전 일치 항목 발견: '{strong_text}'")
+                            self.logger.info("        대안 방식 사용: 테이블 직접 크롤링")
                             
                             # 2단계: 해당 항목 주변에서 테이블 찾기
                             tables = self.find_tables_in_scope_precise(li, strong)
                             
                             if tables:
-                                print(f"        {len(tables)}개 테이블 발견")
+                                self.logger.info(f"        {len(tables)}개 테이블 발견")
                                 
                                 # 모든 테이블을 기본이율로 분류 (계약기간 중 금리는 기본이율)
                                 for j, table in enumerate(tables):
@@ -663,21 +664,21 @@ class KBProductCrawler:
                                             'source': strong_text,
                                             'method': '대안방식'  # 디버깅용
                                         }
-                                        print(f"        대안방식 테이블 추출 완료: {len(table_data)}행")
+                                        self.logger.info(f"        대안방식 테이블 추출 완료: {len(table_data)}행")
                                         break  # 첫 번째 테이블만 사용
                                 
                                 # 정확한 매칭을 찾았으므로 더 이상 검색하지 않음
-                                print(f"        '{target_text}' 항목 처리 완료")
+                                self.logger.info(f"        '{target_text}' 항목 처리 완료")
                                 return info
                             else:
-                                print(f"        오류: '{strong_text}' 주변에 테이블 없음")
+                                self.logger.info(f"        오류: '{strong_text}' 주변에 테이블 없음")
                 except Exception:
                     continue
             
-            print(f"        오류: '{target_text}' 완전 일치 항목을 찾을 수 없음")
+            self.logger.info(f"        오류: '{target_text}' 완전 일치 항목을 찾을 수 없음")
             
         except Exception as e:
-            print(f"        오류: 대안 방식 실패: {e}")
+            self.logger.info(f"        오류: 대안 방식 실패: {e}")
         
         return info
     
@@ -687,7 +688,7 @@ class KBProductCrawler:
         found_tables = set()
         
         try:
-            print("        테이블 검색 중...")
+            self.logger.info("        테이블 검색 중...")
             
             # 방법 1: 같은 li 요소 내의 테이블
             try:
@@ -696,7 +697,7 @@ class KBProductCrawler:
                     if table.is_displayed() and id(table) not in found_tables:
                         tables.append(table)
                         found_tables.add(id(table))
-                        print("        방법1: li 내부에서 테이블 발견")
+                        self.logger.info("        방법1: li 내부에서 테이블 발견")
             except Exception:
                 pass
             
@@ -713,7 +714,7 @@ class KBProductCrawler:
                             if table.is_displayed() and id(table) not in found_tables:
                                 tables.append(table)
                                 found_tables.add(id(table))
-                                print(f"        방법2: 부모({depth+1}단계)에서 테이블 발견")
+                                self.logger.info(f"        방법2: 부모({depth+1}단계)에서 테이블 발견")
                         
                         parent = parent.find_element(By.XPATH, "..")
                         depth += 1
@@ -750,7 +751,7 @@ class KBProductCrawler:
                     if id(table) not in found_tables:
                         tables.append(table)
                         found_tables.add(id(table))
-                        print("        방법3: 형제 요소에서 테이블 발견")
+                        self.logger.info("        방법3: 형제 요소에서 테이블 발견")
             except Exception:
                 pass
             
@@ -762,15 +763,15 @@ class KBProductCrawler:
                     if table.is_displayed() and id(table) not in found_tables:
                         tables.append(table)
                         found_tables.add(id(table))
-                        print("        방법4: strong 부모에서 테이블 발견")
+                        self.logger.info("        방법4: strong 부모에서 테이블 발견")
             except Exception:
                 pass
             
-            print(f"        총 {len(tables)}개 테이블 발견")
+            self.logger.info(f"        총 {len(tables)}개 테이블 발견")
             return tables
             
         except Exception as e:
-            print(f"        오류: 테이블 검색 실패: {e}")
+            self.logger.info(f"        오류: 테이블 검색 실패: {e}")
             return []
     
     # 테이블 데이터 종합 추출 - 개선된 버전
@@ -798,14 +799,14 @@ class KBProductCrawler:
                 except Exception:
                     continue
             
-            print(f"        테이블 데이터 추출: {len(table_data)}행")
+            self.logger.info(f"        테이블 데이터 추출: {len(table_data)}행")
             if table_data:
-                print(f"        첫 번째 행: {table_data[0]}")
+                self.logger.info(f"        첫 번째 행: {table_data[0]}")
             
             return table_data
             
         except Exception as e:
-            print(f"        오류: 테이블 데이터 추출 실패: {e}")
+            self.logger.info(f"        오류: 테이블 데이터 추출 실패: {e}")
             return []
     
     # 금리 및 이율 탭으로 이동
@@ -831,11 +832,11 @@ class KBProductCrawler:
                         if element.is_displayed():
                             try:
                                 element.click()
-                                print("        금리 및 이율 탭 클릭 완료")
+                                self.logger.info("        금리 및 이율 탭 클릭 완료")
                                 return True
                             except:
                                 self.driver.execute_script("arguments[0].click();", element)
-                                print("        금리 및 이율 탭 클릭 완료 (JS)")
+                                self.logger.info("        금리 및 이율 탭 클릭 완료 (JS)")
                                 return True
                 except:
                     continue
@@ -843,7 +844,7 @@ class KBProductCrawler:
             return False
             
         except Exception as e:
-            print(f"        오류: 금리 탭 이동 실패: {e}")
+            self.logger.info(f"        오류: 금리 탭 이동 실패: {e}")
             return False
         
 # 기본이율 데이터 추출 - 지수연동예금 지원 강화
@@ -851,7 +852,7 @@ class KBProductCrawler:
         info = {}
         
         try:
-            print("        기본이율 데이터 추출 중...")
+            self.logger.info("        기본이율 데이터 추출 중...")
             
             # 1단계: 일반적인 기본이율 테이블 찾기 (기존 방식)
             tables = self.driver.find_elements(By.TAG_NAME, 'table')
@@ -870,7 +871,7 @@ class KBProductCrawler:
                         ('이율' in table_text or '금리' in table_text) and
                         any(char.isdigit() for char in table_text)):
                         
-                        print("        일반 기본이율 테이블 발견")
+                        self.logger.info("        일반 기본이율 테이블 발견")
                         
                         table_data = []
                         for row in rows:
@@ -885,14 +886,14 @@ class KBProductCrawler:
                             'data': table_data
                         }
                         
-                        print(f"        일반 기본이율 테이블: {len(table_data)}행 추출")
+                        self.logger.info(f"        일반 기본이율 테이블: {len(table_data)}행 추출")
                         return info
                         
                 except Exception as e:
                     continue
             
             # 2단계: 지수연동예금 특화 방식 - 모든 테이블 검사
-            print("        지수연동예금 방식으로 테이블 재검색...")
+            self.logger.info("        지수연동예금 방식으로 테이블 재검색...")
             
             for table in tables:
                 try:
@@ -907,7 +908,7 @@ class KBProductCrawler:
                         ('금리' in table_text or '%' in table_text or '이율' in table_text) and
                         len(table_text.strip()) > 10):
                         
-                        print(f"        지수연동예금 테이블 발견")
+                        self.logger.info(f"        지수연동예금 테이블 발견")
                         
                         table_data = []
                         for row in rows:
@@ -924,14 +925,14 @@ class KBProductCrawler:
                                 'source': '지수연동예금'
                             }
                             
-                            print(f"        지수연동예금 테이블: {len(table_data)}행 추출")
+                            self.logger.info(f"        지수연동예금 테이블: {len(table_data)}행 추출")
                             return info
                         
                 except Exception as e:
                     continue
             
             # 3단계: 테이블이 없으면 텍스트 방식으로 정보 추출
-            print("        테이블 없음 - 텍스트 방식으로 금리 정보 추출...")
+            self.logger.info("        테이블 없음 - 텍스트 방식으로 금리 정보 추출...")
             
             # 금리 관련 텍스트 수집
             rate_texts = self.extract_rate_texts_from_popup()
@@ -942,13 +943,13 @@ class KBProductCrawler:
                     'data': rate_texts,
                     'source': '텍스트추출'
                 }
-                print(f"        텍스트 방식으로 {len(rate_texts)}개 금리 정보 추출")
+                self.logger.info(f"        텍스트 방식으로 {len(rate_texts)}개 금리 정보 추출")
                 return info
             
-            print("        오류: 기본이율 정보를 찾을 수 없음")
+            self.logger.info("        오류: 기본이율 정보를 찾을 수 없음")
             
         except Exception as e:
-            print(f"        오류: 기본이율 추출 실패: {e}")
+            self.logger.info(f"        오류: 기본이율 추출 실패: {e}")
         
         return info
     
@@ -1006,7 +1007,7 @@ class KBProductCrawler:
             return unique_rates[:10]  # 최대 10개까지만
             
         except Exception as e:
-            print(f"        오류: 텍스트 추출 실패: {e}")
+            self.logger.info(f"        오류: 텍스트 추출 실패: {e}")
             return []
     
     # 우대이율 데이터 추출
@@ -1014,13 +1015,13 @@ class KBProductCrawler:
         info = {}
         
         try:
-            print("        우대이율 데이터 추출 중...")
+            self.logger.info("        우대이율 데이터 추출 중...")
             
             # 우대이율 탭 찾기 및 클릭
             preferential_tab = self.find_preferential_rate_tab()
             
             if preferential_tab:
-                print("        우대이율 탭 클릭")
+                self.logger.info("        우대이율 탭 클릭")
                 
                 # 탭 클릭 전 현재 내용 기록
                 before_content = self.driver.execute_script("return document.body.innerText;")
@@ -1036,12 +1037,12 @@ class KBProductCrawler:
                 
                 if preferential_data:
                     info['우대이율'] = preferential_data
-                    print(f"        우대이율 데이터: {preferential_data['type']} 형태")
+                    self.logger.info(f"        우대이율 데이터: {preferential_data['type']} 형태")
             else:
-                print("        오류: 우대이율 탭을 찾을 수 없음")
+                self.logger.info("        오류: 우대이율 탭을 찾을 수 없음")
             
         except Exception as e:
-            print(f"        오류: 우대이율 추출 실패: {e}")
+            self.logger.info(f"        오류: 우대이율 추출 실패: {e}")
         
         return info
     
@@ -1091,7 +1092,7 @@ class KBProductCrawler:
                     )
                     
                     if is_preferential_table:
-                        print("        우대이율 테이블 발견")
+                        self.logger.info("        우대이율 테이블 발견")
                         
                         for row in rows:
                             cells = row.find_elements(By.CSS_SELECTOR, 'td, th')
@@ -1106,7 +1107,7 @@ class KBProductCrawler:
             
             # 2. 텍스트 데이터 추출 (테이블이 없는 경우에만)
             if not result['tableData']:
-                print("        우대이율 텍스트 추출 중...")
+                self.logger.info("        우대이율 텍스트 추출 중...")
                 
                 # 탭 전환 전후 비교
                 before_lines = set(line.strip() for line in before_content.split('\n'))
@@ -1152,18 +1153,18 @@ class KBProductCrawler:
             if result['tableData']:
                 result['type'] = 'table'
                 result['data'] = result['tableData']
-                print(f"        우대이율 테이블: {len(result['tableData'])}행")
+                self.logger.info(f"        우대이율 테이블: {len(result['tableData'])}행")
             elif result['textData']:
                 result['type'] = 'text'
                 result['data'] = result['textData']
-                print(f"        우대이율 텍스트: {len(result['textData'])}개")
+                self.logger.info(f"        우대이율 텍스트: {len(result['textData'])}개")
             else:
                 result['type'] = 'none'
                 result['data'] = None
-                print("        오류: 우대이율 데이터 없음")
+                self.logger.info("        오류: 우대이율 데이터 없음")
             
         except Exception as e:
-            print(f"        오류: 우대이율 데이터 추출 오류: {e}")
+            self.logger.info(f"        오류: 우대이율 데이터 추출 오류: {e}")
         
         return result
     
@@ -1172,7 +1173,7 @@ class KBProductCrawler:
         info = {}
         
         try:
-            print("        상품안내 탭 정보 추출 중...")
+            self.logger.info("        상품안내 탭 정보 추출 중...")
             
             # 상품안내 탭이 활성화되어 있는지 확인 및 클릭
             self.ensure_product_guide_tab_active()
@@ -1222,10 +1223,10 @@ class KBProductCrawler:
                     info[keyword_obj['key']] = found_content
                     continue
             
-            print(f"        상품안내 탭 추출 완료: {list(info.keys())}")
+            self.logger.info(f"        상품안내 탭 추출 완료: {list(info.keys())}")
             
         except Exception as e:
-            print(f"        오류: 상품안내 탭 추출 실패: {e}")
+            self.logger.info(f"        오류: 상품안내 탭 추출 실패: {e}")
         
         return info
     
@@ -1247,17 +1248,17 @@ class KBProductCrawler:
                         if element.is_displayed():
                             element.click()
                             time.sleep(2)
-                            print("        상품안내 탭 클릭 완료")
+                            self.logger.info("        상품안내 탭 클릭 완료")
                             return True
                 except:
                     continue
             
             # 이미 상품안내 탭이 활성화되어 있을 수 있음
-            print("        상품안내 탭 버튼 없음 (이미 활성화된 것으로 추정)")
+            self.logger.info("        상품안내 탭 버튼 없음 (이미 활성화된 것으로 추정)")
             return True
             
         except Exception as e:
-            print(f"        오류: 상품안내 탭 활성화 실패: {e}")
+            self.logger.info(f"        오류: 상품안내 탭 활성화 실패: {e}")
             return False
     
     # li > strong 구조로 정보 추출
@@ -1275,7 +1276,7 @@ class KBProductCrawler:
                         # 키워드 매칭 확인
                         for pattern in keyword_obj['patterns']:
                             if pattern in strong_text:
-                                print(f"        li>strong에서 {keyword_obj['key']} 발견: {strong_text}")
+                                self.logger.info(f"        li>strong에서 {keyword_obj['key']} 발견: {strong_text}")
                                 
                                 # 여러 방법으로 내용 추출
                                 content = self.extract_content_from_strong(strong, li)
@@ -1297,7 +1298,7 @@ class KBProductCrawler:
                 th_text = th.text.strip()
                 for pattern in keyword_obj['patterns']:
                     if pattern in th_text:
-                        print(f"        테이블에서 {keyword_obj['key']} 발견: {th_text}")
+                        self.logger.info(f"        테이블에서 {keyword_obj['key']} 발견: {th_text}")
                         
                         # 같은 행의 td 찾기
                         try:
@@ -1334,7 +1335,7 @@ class KBProductCrawler:
                         element_text = element.text.strip()
                         for pattern in keyword_obj['patterns']:
                             if pattern in element_text:
-                                print(f"        {tag}에서 {keyword_obj['key']} 발견: {element_text[:30]}...")
+                                self.logger.info(f"        {tag}에서 {keyword_obj['key']} 발견: {element_text[:30]}...")
                                 
                                 # 같은 요소 내에서 키워드 이후 텍스트 추출
                                 if len(element_text) > len(pattern) + 5:
@@ -1366,7 +1367,7 @@ class KBProductCrawler:
             
             for pattern in keyword_obj['patterns']:
                 if pattern in body_text:
-                    print(f"        텍스트 패턴에서 {keyword_obj['key']} 발견")
+                    self.logger.info(f"        텍스트 패턴에서 {keyword_obj['key']} 발견")
                     
                     # 패턴 이후 텍스트 추출
                     lines = body_text.split('\n')
@@ -1453,13 +1454,13 @@ class KBProductCrawler:
         info = {}
         
         try:
-            print("        유의사항 탭으로 이동 중...")
+            self.logger.info("        유의사항 탭으로 이동 중...")
             
             # 유의사항 탭 클릭
             tab_clicked = self.click_notice_tab()
             
             if not tab_clicked:
-                print("        오류: 유의사항 탭을 찾을 수 없음")
+                self.logger.info("        오류: 유의사항 탭을 찾을 수 없음")
                 return info
             
             time.sleep(4)  # 탭 로딩 대기 시간 증가
@@ -1505,10 +1506,10 @@ class KBProductCrawler:
                     info[keyword_obj['key']] = found_content
                     continue
             
-            print(f"        유의사항 탭 추출 완료: {list(info.keys())}")
+            self.logger.info(f"        유의사항 탭 추출 완료: {list(info.keys())}")
             
         except Exception as e:
-            print(f"        오류: 유의사항 탭 추출 실패: {e}")
+            self.logger.info(f"        오류: 유의사항 탭 추출 실패: {e}")
         
         return info
     
@@ -1533,7 +1534,7 @@ class KBProductCrawler:
                                 element.click()
                             except:
                                 self.driver.execute_script("arguments[0].click();", element)
-                            print("        유의사항 탭 클릭 완료")
+                            self.logger.info("        유의사항 탭 클릭 완료")
                             return True
                 except:
                     continue
@@ -1541,13 +1542,13 @@ class KBProductCrawler:
             return False
             
         except Exception as e:
-            print(f"        오류: 유의사항 탭 클릭 실패: {e}")
+            self.logger.info(f"        오류: 유의사항 탭 클릭 실패: {e}")
             return False
     
     # 적금 탭으로 이동
     def click_savings_tab(self):
         try:
-            print("적금 탭으로 전환...")
+            self.logger.info("적금 탭으로 전환...")
             
             # 직접 적금 URL로 이동
             self.driver.get(self.savings_url)
@@ -1556,7 +1557,7 @@ class KBProductCrawler:
             # 적금 키워드 확인
             body_text = self.driver.find_element(By.TAG_NAME, 'body').text
             if any(keyword in body_text for keyword in ['KB내맘대로적금', '청년도약계좌', '직장인우대적금']):
-                print("    적금 페이지 확인됨")
+                self.logger.info("    적금 페이지 확인됨")
                 return True
             
             # 버튼 클릭 방식 시도
@@ -1579,25 +1580,25 @@ class KBProductCrawler:
             return False
             
         except Exception as e:
-            print(f"오류: 적금 탭 전환 실패: {e}")
+            self.logger.info(f"오류: 적금 탭 전환 실패: {e}")
             return False
     
     # 모든 상품 수집 - 알럿 처리 강화
     def collect_all_products(self):
         try:
-            print("전체 상품 수집 시작")
+            self.logger.info("전체 상품 수집 시작")
             
             # 예금 상품 수집
-            print("예금 상품 수집 중...")
+            self.logger.info("예금 상품 수집 중...")
             self.driver.get(self.base_url)
             time.sleep(5)
             
             deposit_products = self.get_products_from_page('예금')
             
             if deposit_products:
-                print(f"예금 상품 상세정보 수집...")
+                self.logger.info(f"예금 상품 상세정보 수집...")
                 for i, product in enumerate(deposit_products):
-                    print(f"[{i+1}/{len(deposit_products)}] {product['name']} (예금) 처리 중...")
+                    self.logger.info(f"[{i+1}/{len(deposit_products)}] {product['name']} (예금) 처리 중...")
                     
                     try:
                         detail_info = self.extract_detail_info(
@@ -1613,7 +1614,7 @@ class KBProductCrawler:
                         # 수집된 필드 개수 확인
                         collected_fields = len([v for k, v in detail_info.items() 
                                               if k not in ['raw_data', 'url'] and v])
-                        print(f"    수집 완료: {collected_fields}/7개 필드")
+                        self.logger.info(f"    수집 완료: {collected_fields}/7개 필드")
                         
                         # 목록으로 복귀 전 알럿 확인
                         self.dismiss_any_alerts()
@@ -1624,7 +1625,7 @@ class KBProductCrawler:
                             time.sleep(3)
                     
                     except Exception as e:
-                        print(f"    오류: 상품 처리 중 오류: {e}")
+                        self.logger.info(f"    오류: 상품 처리 중 오류: {e}")
                         # 알럿 처리
                         self.dismiss_any_alerts()
                         # 목록으로 복귀
@@ -1636,17 +1637,17 @@ class KBProductCrawler:
                         continue
                 
                 self.all_products.extend(deposit_products)
-                print(f"예금 상품 수집 완료: {len(deposit_products)}개")
+                self.logger.info(f"예금 상품 수집 완료: {len(deposit_products)}개")
             
             # 적금 상품 수집
             if self.click_savings_tab():
-                print("적금 상품 수집 중...")
+                self.logger.info("적금 상품 수집 중...")
                 savings_products = self.get_products_from_page('적금')
                 
                 if savings_products:
-                    print(f"적금 상품 상세정보 수집...")
+                    self.logger.info(f"적금 상품 상세정보 수집...")
                     for i, product in enumerate(savings_products):
-                        print(f"[{i+1}/{len(savings_products)}] {product['name']} (적금) 처리 중...")
+                        self.logger.info(f"[{i+1}/{len(savings_products)}] {product['name']} (적금) 처리 중...")
                         
                         try:
                             detail_info = self.extract_detail_info(
@@ -1662,7 +1663,7 @@ class KBProductCrawler:
                             # 수집된 필드 개수 확인
                             collected_fields = len([v for k, v in detail_info.items() 
                                                   if k not in ['raw_data', 'url'] and v])
-                            print(f"    수집 완료: {collected_fields}/7개 필드")
+                            self.logger.info(f"    수집 완료: {collected_fields}/7개 필드")
                             
                             # 목록으로 복귀 전 알럿 확인
                             self.dismiss_any_alerts()
@@ -1673,7 +1674,7 @@ class KBProductCrawler:
                                 time.sleep(3)
                         
                         except Exception as e:
-                            print(f"    오류: 상품 처리 중 오류: {e}")
+                            self.logger.info(f"    오류: 상품 처리 중 오류: {e}")
                             # 알럿 처리
                             self.dismiss_any_alerts()
                             # 목록으로 복귀
@@ -1685,12 +1686,12 @@ class KBProductCrawler:
                             continue
                     
                     self.all_products.extend(savings_products)
-                    print(f"적금 상품 수집 완료: {len(savings_products)}개")
+                    self.logger.info(f"적금 상품 수집 완료: {len(savings_products)}개")
             
-            print(f"수집 완료 - 예금: {len([p for p in self.all_products if p.get('category') == '예금'])}개, 적금: {len([p for p in self.all_products if p.get('category') == '적금'])}개, 총: {len(self.all_products)}개")
+            self.logger.info(f"수집 완료 - 예금: {len([p for p in self.all_products if p.get('category') == '예금'])}개, 적금: {len([p for p in self.all_products if p.get('category') == '적금'])}개, 총: {len(self.all_products)}개")
             
         except Exception as e:
-            print(f"오류: 전체 수집 오류: {e}")
+            self.logger.info(f"오류: 전체 수집 오류: {e}")
             # 최종 알럿 처리
             self.dismiss_any_alerts()
     
@@ -1701,7 +1702,7 @@ class KBProductCrawler:
                 try:
                     alert = self.driver.switch_to.alert
                     alert_text = alert.text
-                    print(f"    오류: 알럿 처리: '{alert_text}'")
+                    self.logger.info(f"    오류: 알럿 처리: '{alert_text}'")
                     alert.dismiss()
                     time.sleep(1)
                 except:
@@ -1734,22 +1735,22 @@ class KBProductCrawler:
             
             with open(full_path, 'w', encoding='utf-8') as f:
                 json.dump(clean_products, f, ensure_ascii=False, indent=2)
-            print(f"JSON 데이터가 {filename}에 저장되었습니다.")
+            self.logger.info(f"JSON 데이터가 {filename}에 저장되었습니다.")
             
         except Exception as e:
-            print(f"JSON 저장 오류: {e}")
+            self.logger.info(f"JSON 저장 오류: {e}")
     
     # 수집 결과 요약 출력
-    def print_summary(self):
-        print("수집 결과 요약")
+    def self.logger.info_summary(self):
+        self.logger.info("수집 결과 요약")
         
         total_products = len(self.all_products)
         deposit_count = len([p for p in self.all_products if p.get('category') == '예금'])
         savings_count = len([p for p in self.all_products if p.get('category') == '적금'])
         
-        print(f"전체 상품: {total_products}개")
-        print(f"예금: {deposit_count}개")
-        print(f"적금: {savings_count}개")
+        self.logger.info(f"전체 상품: {total_products}개")
+        self.logger.info(f"예금: {deposit_count}개")
+        self.logger.info(f"적금: {savings_count}개")
         
         successful_details = 0
         field_stats = {
@@ -1765,36 +1766,36 @@ class KBProductCrawler:
                     if detail_info.get(field):
                         field_stats[field] += 1
         
-        print("상세정보 수집 현황:")
-        print(f"성공: {successful_details}개 ({successful_details/total_products*100:.1f}%)")
+        self.logger.info("상세정보 수집 현황:")
+        self.logger.info(f"성공: {successful_details}개 ({successful_details/total_products*100:.1f}%)")
         for field, count in field_stats.items():
-            print(f"{field}: {count}개")
+            self.logger.info(f"{field}: {count}개")
         
         url_count = len([p for p in self.all_products 
                         if p.get('detail_info', {}).get('url')])
-        print(f"URL: {url_count}개")
+        self.logger.info(f"URL: {url_count}개")
     
     # 크롤링 실행
     def run(self):
         try:
             start_time = datetime.now()
             
-            print("국민은행 예금/적금 크롤링 시작")
-            print(f"실행 시간: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
+            self.logger.info("국민은행 예금/적금 크롤링 시작")
+            self.logger.info(f"실행 시간: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
             
             self.collect_all_products()
             
             if not self.all_products:
-                print("상품 목록을 수집하지 못했습니다.")
+                self.logger.info("상품 목록을 수집하지 못했습니다.")
                 return None
             
             end_time = datetime.now()
             duration = (end_time - start_time).total_seconds()
             
-            print("크롤링 완료")
-            print(f"소요 시간: {duration:.1f}초")
+            self.logger.info("크롤링 완료")
+            self.logger.info(f"소요 시간: {duration:.1f}초")
             
-            self.print_summary()
+            self.self.logger.info_summary()
             
             self.save_data()
             
@@ -1807,22 +1808,22 @@ class KBProductCrawler:
             }
             
         except Exception as e:
-            print(f"크롤링 오류: {str(e)}")
+            self.logger.info(f"크롤링 오류: {str(e)}")
             return None
         finally:
             self.driver.quit()
 
     def start(self):
-        print("국민은행 예금/적금 크롤러 v2.0")
-        print("예금 + 적금 전체 수집")
-        print("7개 필수 항목 구조화 추출")
+        self.logger.info("국민은행 예금/적금 크롤러 v2.0")
+        self.logger.info("예금 + 적금 전체 수집")
+        self.logger.info("7개 필수 항목 구조화 추출")
 
         result = self.run()
 
         if result:
-            print("크롤링 성공")
-            print(f"파일: kb_products.json")
-            print(f"예금 {result['deposit_count']}개 + 적금 {result['savings_count']}개 = 총 {result['total_products']}개")
+            self.logger.info("크롤링 성공")
+            self.logger.info(f"파일: kb_products.json")
+            self.logger.info(f"예금 {result['deposit_count']}개 + 적금 {result['savings_count']}개 = 총 {result['total_products']}개")
         else:
-            print("크롤링 실패")
+            self.logger.info("크롤링 실패")
 

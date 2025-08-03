@@ -35,6 +35,7 @@ class SuhyupBankCategoryCrawler:
         self.wait = WebDriverWait(self.driver, 10)
         self.all_products = []
         self.processed_products = set()
+        self.logger = logging.getLogger(__name__)
 
         # 크롤링할 카테고리 정의
         self.categories = [
@@ -928,16 +929,16 @@ class SuhyupBankCategoryCrawler:
             products = self.crawl_all_categories()
             saved_file = self.save_to_json()
 
-            print(f"\n🎉 크롤링 완료!")
-            print(f"📁 저장된 파일: {saved_file}")
-            print(f"📊 수집된 상품 수: {len(products)}개")
+            self.logger.info(f"\n🎉 크롤링 완료!")
+            self.logger.info(f"📁 저장된 파일: {saved_file}")
+            self.logger.info(f"📊 수집된 상품 수: {len(products)}개")
 
             if products:
-                print(f"\n📋 샘플 상품:")
-                print(f"상품명: {products[0].get('상품명')}")
-                print(f"상품카테고리: {products[0].get('상품카테고리')}")
-                print(f"기본금리: {products[0].get('기본금리')}")
-                print(f"최대금리: {products[0].get('최대금리')}")
+                self.logger.info(f"\n📋 샘플 상품:")
+                self.logger.info(f"상품명: {products[0].get('상품명')}")
+                self.logger.info(f"상품카테고리: {products[0].get('상품카테고리')}")
+                self.logger.info(f"기본금리: {products[0].get('기본금리')}")
+                self.logger.info(f"최대금리: {products[0].get('최대금리')}")
 
         except Exception as e:
             self.logger.error(f"❌ 실행 중 오류: {e}")

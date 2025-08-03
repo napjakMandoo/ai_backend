@@ -1,3 +1,5 @@
+import logging
+
 from selenium import webdriver
 from selenium.common import NoSuchElementException, TimeoutException
 from selenium.webdriver.chrome.options import Options
@@ -18,6 +20,7 @@ class JejuBankDepositSavingsOnlyCrawler:
         self.timeout = timeout
         self.driver = self._create_driver()
         self.base_url = base_url
+        self.logger = logging.getLogger(__name__)
 
     def _create_driver(self) -> webdriver.Chrome:
         options = Options()
@@ -318,7 +321,7 @@ class JejuBankDepositSavingsOnlyCrawler:
             return enhanced_text.strip()
             
         except Exception as e:
-            print(f"불릿포인트 처리 오류: {e}")
+            self.logger.info(f"불릿포인트 처리 오류: {e}")
             # 오류 시 기본 innerText 반환
             try:
                 return self.driver.execute_script("return arguments[0].innerText;", element).strip()
@@ -622,7 +625,7 @@ class JejuBankDepositSavingsOnlyCrawler:
         products = []
         
         for idx, product_data in enumerate(all_products_info):
-            print(f"[{idx + 1}/{len(all_products_info)}] {product_data['name']} ({product_data['product_type']}) 크롤링 중...")
+            self.logger.info(f"[{idx + 1}/{len(all_products_info)}] {product_data['name']} ({product_data['product_type']}) 크롤링 중...")
             
             # 기본 상세 정보 크롤링
             detail_info = {}
@@ -700,7 +703,7 @@ class JejuBankDepositSavingsOnlyCrawler:
         with open(file_path, 'w', encoding='utf-8') as f:
             json.dump(products, f, ensure_ascii=False, indent=2)
         
-        print(f"결과 저장: {filename}")
+        self.logger.info(f"결과 저장: {filename}")
         return filename
 
 
@@ -709,7 +712,7 @@ class JejuBankDepositSavingsOnlyCrawler:
             # 예금/적금만 크롤링 (각각 5개씩 테스트)
             products = self.fetch_deposit_and_savings_products(limit_per_type=None)
 
-            print(f"크롤링 완료! 총 {len(products)}개 상품")
+            self.logger.info(f"크롤링 완료! 총 {len(products)}개 상품")
 
             # JSON으로 저장
             filename = self.save_to_json(products)
@@ -717,7 +720,7 @@ class JejuBankDepositSavingsOnlyCrawler:
             return products
 
         except Exception as e:
-            print(e)
+            self.logger.info(e)
             return []
         finally:
             self.driver.quit()

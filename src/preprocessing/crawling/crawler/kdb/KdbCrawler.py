@@ -113,4 +113,4 @@ class KdbCrawler:
             time.sleep(5)
             self.wait.until(lambda d: d.execute_script("return document.readyState") == "complete")
         except Exception as e:
-            print(e)
+            self.logger.info(e)

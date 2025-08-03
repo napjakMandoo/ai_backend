@@ -1,3 +1,4 @@
+import logging
 
 import requests
 
@@ -23,6 +24,7 @@ class NHBankCrawler:
         self.base_url = BankLink.NH_BANK_LINK.value
         self.driver = self.setup_driver(headless)
         self.all_products = []
+        self.logger = logging.getLogger(__name__)
 
     # Chrome 브라우저 설정
     def setup_driver(self, headless=True):
@@ -41,62 +43,62 @@ class NHBankCrawler:
     # 현재 페이지 상태 디버깅
     def debug_current_page(self):
         try:
-            print("현재 페이지 디버깅")
-            print(f"URL: {self.driver.current_url}")
-            print(f"제목: {self.driver.title}")
+            self.logger.info("현재 페이지 디버깅")
+            self.logger.info(f"URL: {self.driver.current_url}")
+            self.logger.info(f"제목: {self.driver.title}")
 
             all_links = self.driver.find_elements(By.CSS_SELECTOR, "a")[:15]
-            print("주요 링크들:")
+            self.logger.info("주요 링크들:")
             for i, link in enumerate(all_links):
                 try:
                     text = link.text.strip()
                     href = link.get_attribute('href') or ''
                     if text and len(text) < 30:
-                        print(f"  [{i}] '{text}' - {href[:50]}")
+                        self.logger.info(f"  [{i}] '{text}' - {href[:50]}")
                 except:
                     continue
 
             none_links = self.driver.find_elements(By.CSS_SELECTOR, 'a[href*="#none"]')
-            print(f"#none 링크: {len(none_links)}개")
+            self.logger.info(f"#none 링크: {len(none_links)}개")
             for i, link in enumerate(none_links[:10]):
                 try:
                     text = link.text.strip()
                     if text:
-                        print(f"  [{i}] '{text}'")
+                        self.logger.info(f"  [{i}] '{text}'")
                 except:
                     continue
 
         except Exception as e:
-            print(f"디버깅 오류: {str(e)}")
+            self.logger.info(f"디버깅 오류: {str(e)}")
 
     # 예금과 적금 모든 상품 크롤링
     def crawl_all_products(self):
         try:
-            print("농협은행 예금/적금 전체 크롤링 시작")
+            self.logger.info("농협은행 예금/적금 전체 크롤링 시작")
 
             self.driver.get(self.base_url)
-            print("페이지 로딩 중...")
+            self.logger.info("페이지 로딩 중...")
             time.sleep(10)
 
             WebDriverWait(self.driver, 30).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "a[href*='#none']"))
             )
-            print("페이지 로딩 완료")
+            self.logger.info("페이지 로딩 완료")
 
-            print("예금 상품 수집 중...")
+            self.logger.info("예금 상품 수집 중...")
             deposit_products = self.crawl_product_type("예금")
 
-            print("적금 상품 수집 중...")
+            self.logger.info("적금 상품 수집 중...")
             savings_products = self.crawl_product_type("적금")
 
             self.all_products = deposit_products + savings_products
 
-            print(f"수집 완료 - 예금: {len(deposit_products)}개, 적금: {len(savings_products)}개, 총: {len(self.all_products)}개")
+            self.logger.info(f"수집 완료 - 예금: {len(deposit_products)}개, 적금: {len(savings_products)}개, 총: {len(self.all_products)}개")
 
             return self.all_products
 
         except Exception as e:
-            print(f"전체 크롤링 오류: {str(e)}")
+            self.logger.info(f"전체 크롤링 오류: {str(e)}")
             return []
 
     # 특정 상품 타입(예금/적금) 크롤링
@@ -105,10 +107,10 @@ class NHBankCrawler:
             tab_moved = self.navigate_to_tab(product_type)
 
             if not tab_moved:
-                print(f"    {product_type} 탭 이동 실패 - 전체 상품에서 필터링 시도")
+                self.logger.info(f"    {product_type} 탭 이동 실패 - 전체 상품에서 필터링 시도")
                 return self.crawl_from_all_products(product_type)
 
-            print(f"    {product_type} 탭 이동 성공")
+            self.logger.info(f"    {product_type} 탭 이동 성공")
 
             time.sleep(3)
 
@@ -117,31 +119,31 @@ class NHBankCrawler:
                     EC.presence_of_element_located((By.CSS_SELECTOR, "a[href*='#none']"))
                 )
             except TimeoutException:
-                print(f"    {product_type} 상품 로딩 실패")
+                self.logger.info(f"    {product_type} 상품 로딩 실패")
                 return []
 
             total_pages = self.get_total_pages()
-            print(f"    {product_type} 총 페이지: {total_pages}페이지")
+            self.logger.info(f"    {product_type} 총 페이지: {total_pages}페이지")
 
             all_products_data = []
 
             for page_num in range(1, total_pages + 1):
                 try:
-                    print(f"    {page_num}페이지 처리 중...")
+                    self.logger.info(f"    {page_num}페이지 처리 중...")
 
                     if not self.navigate_to_page(page_num):
-                        print(f"    오류: {page_num}페이지 이동 실패")
+                        self.logger.info(f"    오류: {page_num}페이지 이동 실패")
                         continue
 
                     page_success = self.process_page_products(product_type, page_num, all_products_data)
 
                     if not page_success:
-                        print(f"    오류: {page_num}페이지 처리 중 문제 발생")
+                        self.logger.info(f"    오류: {page_num}페이지 처리 중 문제 발생")
                         self.navigate_to_tab(product_type)
                         time.sleep(3)
 
                 except Exception as e:
-                    print(f"    오류: {page_num}페이지 오류: {str(e)}")
+                    self.logger.info(f"    오류: {page_num}페이지 오류: {str(e)}")
                     try:
                         self.navigate_to_tab(product_type)
                         time.sleep(3)
@@ -149,18 +151,18 @@ class NHBankCrawler:
                         pass
                     continue
 
-            print(f"    {product_type} 총 수집 상품: {len(all_products_data)}개")
+            self.logger.info(f"    {product_type} 총 수집 상품: {len(all_products_data)}개")
             return all_products_data
 
         except Exception as e:
-            print(f"    {product_type} 크롤링 오류: {str(e)}")
+            self.logger.info(f"    {product_type} 크롤링 오류: {str(e)}")
             return []
 
 # 한 페이지의 모든 상품 처리
     def process_page_products(self, product_type, page_num, all_products_data):
         try:
             page_products = self.get_page_product_links(product_type)
-            print(f"        {len(page_products)}개 상품 발견")
+            self.logger.info(f"        {len(page_products)}개 상품 발견")
 
             if len(page_products) == 0:
                 return True
@@ -169,7 +171,7 @@ class NHBankCrawler:
                 try:
                     product_name = product_info['name']
 
-                    print(f"    [{i+1}/{len(page_products)}] {product_name} ({product_type}) 처리 중...")
+                    self.logger.info(f"    [{i+1}/{len(page_products)}] {product_name} ({product_type}) 처리 중...")
 
                     detailed_info = self.collect_product_details_enhanced(
                         product_name,
@@ -182,18 +184,18 @@ class NHBankCrawler:
                         collected_fields = len([v for k, v in detailed_info.get('product_details', {}).items() if v])
                         collected_fields += len([v for k, v in detailed_info.get('rate_details', {}).items() if v])
                         all_products_data.append(detailed_info)
-                        print(f"        수집 완료: {collected_fields}/8개 필드")
+                        self.logger.info(f"        수집 완료: {collected_fields}/8개 필드")
                     else:
-                        print(f"        오류: 수집 실패")
+                        self.logger.info(f"        오류: 수집 실패")
 
                 except Exception as e:
-                    print(f"        오류: {str(e)}")
+                    self.logger.info(f"        오류: {str(e)}")
                     continue
 
             return True
 
         except Exception as e:
-            print(f"    페이지 상품 처리 오류: {str(e)}")
+            self.logger.info(f"    페이지 상품 처리 오류: {str(e)}")
             return False
 
     # 개별 상품 상세정보 수집
@@ -205,13 +207,13 @@ class NHBankCrawler:
                 return None
 
             try:
-                print(f"        상세페이지 접근 중...")
+                self.logger.info(f"        상세페이지 접근 중...")
                 self.driver.execute_script("arguments[0].click();", product_link)
                 time.sleep(3)
             except Exception as e:
                 return None
 
-            print(f"        데이터 추출 중...")
+            self.logger.info(f"        데이터 추출 중...")
             detailed_info = self.extract_complete_product_info(product_name, product_type, index)
 
             try:
@@ -270,7 +272,7 @@ class NHBankCrawler:
             return product_info
 
         except Exception as e:
-            print(f"        완전한 상품 정보 추출 오류: {str(e)}")
+            self.logger.info(f"        완전한 상품 정보 추출 오류: {str(e)}")
             return None
 
     # 상품설명 탭 정보 추출
@@ -319,7 +321,7 @@ class NHBankCrawler:
                 pass
 
         except Exception as e:
-            print(f"        상품설명 탭 추출 오류: {str(e)}")
+            self.logger.info(f"        상품설명 탭 추출 오류: {str(e)}")
 
     # 금리조회 탭으로 이동 후 만기지급금리 테이블 추출
     def extract_rate_inquiry_info(self, product_info):
@@ -570,7 +572,7 @@ class NHBankCrawler:
             return unique_products
 
         except Exception as e:
-            print(f"상품 링크 수집 오류: {str(e)}")
+            self.logger.info(f"상품 링크 수집 오류: {str(e)}")
             return []
 
     # 전체 상품에서 특정 타입만 필터링하여 크롤링
@@ -615,7 +617,7 @@ class NHBankCrawler:
             return products_data
 
         except Exception as e:
-            print(f"    전체 상품 필터링 오류: {str(e)}")
+            self.logger.info(f"    전체 상품 필터링 오류: {str(e)}")
             return []
 
 # 예금/적금 탭으로 이동
@@ -739,7 +741,7 @@ class NHBankCrawler:
             return unique_products
 
         except Exception as e:
-            print(f"상품명 수집 오류: {str(e)}")
+            self.logger.info(f"상품명 수집 오류: {str(e)}")
             return []
 
     # JSON 파일로 저장
@@ -756,23 +758,23 @@ class NHBankCrawler:
         try:
             with open(full_path, 'w', encoding='utf-8') as f:
                 json.dump(self.all_products, f, ensure_ascii=False, indent=2)
-            print(f"JSON 데이터가 {full_path}에 저장되었습니다.")
+            self.logger.info(f"JSON 데이터가 {full_path}에 저장되었습니다.")
             return full_path
         except Exception as e:
-            print(f"JSON 저장 오류: {str(e)}")
+            self.logger.info(f"JSON 저장 오류: {str(e)}")
             return None
 
     # 수집 결과 요약 출력
-    def print_summary(self):
-        print("수집 결과 요약")
+    def self.logger.info_summary(self):
+        self.logger.info("수집 결과 요약")
 
         total_products = len(self.all_products)
         deposit_count = len([p for p in self.all_products if p['product_type'] == '예금'])
         savings_count = len([p for p in self.all_products if p['product_type'] == '적금'])
 
-        print(f"전체 상품: {total_products}개")
-        print(f"예금: {deposit_count}개")
-        print(f"적금: {savings_count}개")
+        self.logger.info(f"전체 상품: {total_products}개")
+        self.logger.info(f"예금: {deposit_count}개")
+        self.logger.info(f"적금: {savings_count}개")
 
         successful_details = 0
         field_stats = {
@@ -793,35 +795,35 @@ class NHBankCrawler:
                 if rate_info.get('만기지급금리_테이블'):
                     field_stats['만기지급금리_테이블'] += 1
 
-        print("상세정보 수집 현황:")
-        print(f"성공: {successful_details}개 ({successful_details/total_products*100:.1f}%)")
+        self.logger.info("상세정보 수집 현황:")
+        self.logger.info(f"성공: {successful_details}개 ({successful_details/total_products*100:.1f}%)")
         for field, count in field_stats.items():
-            print(f"{field}: {count}개")
+            self.logger.info(f"{field}: {count}개")
 
         url_count = len([p for p in self.all_products])
-        print(f"URL: {url_count}개")
+        self.logger.info(f"URL: {url_count}개")
 
     # 크롤링 실행
     def run(self):
         try:
             start_time = datetime.now()
 
-            print("농협은행 예금/적금 크롤링 시작")
-            print(f"실행 시간: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
+            self.logger.info("농협은행 예금/적금 크롤링 시작")
+            self.logger.info(f"실행 시간: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
             self.crawl_all_products()
 
             if not self.all_products:
-                print("상품 목록을 수집하지 못했습니다.")
+                self.logger.info("상품 목록을 수집하지 못했습니다.")
                 return None
 
             end_time = datetime.now()
             duration = (end_time - start_time).total_seconds()
 
-            print("크롤링 완료")
-            print(f"소요 시간: {duration:.1f}초")
+            self.logger.info("크롤링 완료")
+            self.logger.info(f"소요 시간: {duration:.1f}초")
 
-            self.print_summary()
+            self.self.logger.info_summary()
 
             self.save_to_json()
 
@@ -834,22 +836,22 @@ class NHBankCrawler:
             }
 
         except Exception as e:
-            print(f"크롤링 오류: {str(e)}")
+            self.logger.info(f"크롤링 오류: {str(e)}")
             return None
         finally:
             self.driver.quit()
 
     def start(self):
-        print("농협은행 예금/적금 크롤러 v2.0")
-        print("예금 + 적금 전체 수집")
-        print("8개 필수 항목 구조화 추출")
+        self.logger.info("농협은행 예금/적금 크롤러 v2.0")
+        self.logger.info("예금 + 적금 전체 수집")
+        self.logger.info("8개 필수 항목 구조화 추출")
 
         result = self.run()
 
         if result:
-            print("크롤링 성공")
-            print(f"파일: nh_bank_products.json")
-            print(f"예금 {result['deposit_count']}개 + 적금 {result['savings_count']}개 = 총 {result['total_products']}개")
+            self.logger.info("크롤링 성공")
+            self.logger.info(f"파일: nh_bank_products.json")
+            self.logger.info(f"예금 {result['deposit_count']}개 + 적금 {result['savings_count']}개 = 총 {result['total_products']}개")
         else:
-            print("크롤링 실패")
+            self.logger.info("크롤링 실패")
 

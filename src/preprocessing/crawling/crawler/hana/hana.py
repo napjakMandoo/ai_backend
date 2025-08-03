@@ -12,6 +12,7 @@ from datetime import datetime
 import dotenv
 import os
 from src.preprocessing.crawling.BankLink import BankLink
+import logging
 
 
 class HanaBankCrawler:
@@ -20,7 +21,8 @@ class HanaBankCrawler:
         self.base_url =BankLink.HANA_BANK_LINK.value
         self.driver = self.setup_driver(headless)
         self.all_products = []
-        
+        self.logger = logging.getLogger(__name__)
+
         # 크롤링 순서에 맞는 탭 매핑
         self.tabs = {
             '정기예금': None,
@@ -48,18 +50,18 @@ class HanaBankCrawler:
             tab_id = self.tabs[tab_name]
             
             if tab_id is None:
-                print(f"{tab_name} - 기본 상태 (전환 불필요)")
+                self.logger.info(f"{tab_name} - 기본 상태 (전환 불필요)")
                 return True
             else:
-                print(f"{tab_name} 탭으로 전환 중...")
+                self.logger.info(f"{tab_name} 탭으로 전환 중...")
                 script = f"doTab('{tab_id}')"
                 self.driver.execute_script(script)
                 time.sleep(5)
-                print(f"{tab_name} 탭 활성화 완료")
+                self.logger.info(f"{tab_name} 탭 활성화 완료")
                 return True
                 
         except Exception as e:
-            print(f"{tab_name} 탭 전환 오류: {str(e)}")
+            self.logger.info(f"{tab_name} 탭 전환 오류: {str(e)}")
             return False
     
     # 상품 목록에서 가입방법 추출
@@ -123,14 +125,14 @@ class HanaBankCrawler:
             return ""
                 
         except Exception as e:
-            print(f"      가입방법 추출 오류: {e}")
+            self.logger.info(f"      가입방법 추출 오류: {e}")
             return ""
 
 # 현재 탭의 상품명 링크와 가입방법을 함께 수집
     def get_current_tab_products(self, tab_name):
         products = []
         try:
-            print(f"\n=== {tab_name} 상품 수집 중 ===")
+            self.logger.info(f"\n=== {tab_name} 상품 수집 중 ===")
             
             # 페이지 로드 대기
             time.sleep(3)
@@ -141,7 +143,7 @@ class HanaBankCrawler:
                 "//em/a[contains(@href, 'mall080')]"
             )
             
-            print(f"발견된 상품명 링크: {len(product_links)}개")
+            self.logger.info(f"발견된 상품명 링크: {len(product_links)}개")
             
             for i, link in enumerate(product_links):
                 try:
@@ -162,19 +164,19 @@ class HanaBankCrawler:
                         })
                         
                         join_method_display = join_method if join_method else "키워드 없음"
-                        print(f"  {i+1}. {product_name} → {join_method_display}")
+                        self.logger.info(f"  {i+1}. {product_name} → {join_method_display}")
                     else:
-                        print(f"  제외: {product_name} (길이: {len(product_name)})")
+                        self.logger.info(f"  제외: {product_name} (길이: {len(product_name)})")
                 
                 except Exception as e:
-                    print(f"  링크 {i+1} 처리 오류: {str(e)}")
+                    self.logger.info(f"  링크 {i+1} 처리 오류: {str(e)}")
                     continue
             
-            print(f"{tab_name}: {len(products)}개 상품 수집 완료")
+            self.logger.info(f"{tab_name}: {len(products)}개 상품 수집 완료")
             return products
             
         except Exception as e:
-            print(f"{tab_name} 상품 수집 오류: {str(e)}")
+            self.logger.info(f"{tab_name} 상품 수집 오류: {str(e)}")
             return []
     
     # 페이지네이션을 처리하여 모든 상품 수집
@@ -184,21 +186,21 @@ class HanaBankCrawler:
         page_number = 1
         
         while True:
-            print(f"{tab_name} 페이지 {page_number} 수집 중...")
+            self.logger.info(f"{tab_name} 페이지 {page_number} 수집 중...")
             
             # 현재 페이지 상품 수집
             page_products = self.get_current_tab_products(tab_name)
             
             if page_products:
                 all_products.extend(page_products)
-                print(f"페이지 {page_number}: {len(page_products)}개 상품 수집")
+                self.logger.info(f"페이지 {page_number}: {len(page_products)}개 상품 수집")
                 
                 # 상품이 10개 미만이면 마지막 페이지
                 if len(page_products) < 10:
-                    print(f"페이지 {page_number}가 마지막 페이지 (상품 {len(page_products)}개)")
+                    self.logger.info(f"페이지 {page_number}가 마지막 페이지 (상품 {len(page_products)}개)")
                     break
             else:
-                print(f"페이지 {page_number}: 상품 없음 - 마지막 페이지")
+                self.logger.info(f"페이지 {page_number}: 상품 없음 - 마지막 페이지")
                 break
             
             # 다음 페이지로 이동
@@ -210,20 +212,20 @@ class HanaBankCrawler:
             
             time.sleep(3)
         
-        print(f"{tab_name} 총 {len(all_products)}개 상품 수집 완료 ({page_number}페이지)")
+        self.logger.info(f"{tab_name} 총 {len(all_products)}개 상품 수집 완료 ({page_number}페이지)")
         return all_products
     
     # 특정 페이지로 이동
     def go_to_page(self, page_index):
         try:
-            print(f"doPaging('{page_index}')로 페이지 이동...")
+            self.logger.info(f"doPaging('{page_index}')로 페이지 이동...")
             script = f"doPaging('{page_index}')"
             self.driver.execute_script(script)
             time.sleep(3)
-            print(f"페이지 {page_index//10 + 1}로 이동 완료")
+            self.logger.info(f"페이지 {page_index//10 + 1}로 이동 완료")
             return True
         except Exception as e:
-            print(f"페이지 이동 오류 (무시): {str(e)[:50]}...")
+            self.logger.info(f"페이지 이동 오류 (무시): {str(e)[:50]}...")
             return True
 
     # 다음 페이지가 있는지 확인
@@ -238,12 +240,12 @@ class HanaBankCrawler:
             for next_btn in next_elements:
                 if next_btn.is_displayed():
                     is_disabled = next_btn.get_attribute("disabled")
-                    print(f"다음 버튼 상태: {'비활성화' if is_disabled else '활성화'}")
+                    self.logger.info(f"다음 버튼 상태: {'비활성화' if is_disabled else '활성화'}")
                     return not is_disabled
             
             return False
         except Exception as e:
-            print(f"다음 페이지 확인 오류: {e}")
+            self.logger.info(f"다음 페이지 확인 오류: {e}")
             return False
 
 # 상품 상세정보 추출
@@ -261,9 +263,9 @@ class HanaBankCrawler:
         main_window = self.driver.current_window_handle
         
         try:
-            print(f"    상세정보 수집: {product_name}")
+            self.logger.info(f"    상세정보 수집: {product_name}")
             if join_method_from_list:
-                print(f"    목록 가입방법: {join_method_from_list}")
+                self.logger.info(f"    목록 가입방법: {join_method_from_list}")
             
             # 새 탭에서 상세페이지 열기
             self.driver.execute_script(f"window.open('{product_url}', '_blank');")
@@ -282,10 +284,10 @@ class HanaBankCrawler:
                 self.driver.switch_to.window(main_window)
                 
                 extracted_count = len([v for v in detail_info.values() if v])
-                print(f"    {extracted_count}개 항목 추출 완료")
+                self.logger.info(f"    {extracted_count}개 항목 추출 완료")
             
         except Exception as e:
-            print(f"    상세정보 추출 오류: {str(e)}")
+            self.logger.info(f"    상세정보 추출 오류: {str(e)}")
             detail_info['error'] = str(e)
             
             try:
@@ -314,11 +316,11 @@ class HanaBankCrawler:
                     text = elem.text.strip()
                     if any(pattern in text for pattern in ["인터넷뱅킹", "스마트폰뱅킹"]) and len(text) < 100:
                         detail_info['가입방법'] = text
-                        print(f"      가입방법: {text}")
+                        self.logger.info(f"      가입방법: {text}")
                         break
                         
             except Exception as e:
-                print(f"      가입방법 추출 오류: {e}")
+                self.logger.info(f"      가입방법 추출 오류: {e}")
         
         # 2-5. DT/DD 구조로 기본 정보 추출
         try:
@@ -336,30 +338,30 @@ class HanaBankCrawler:
                     # 라벨에 따른 매핑
                     if '가입금액' in label or '최저가입금액' in label or '납입금액' in label:
                         detail_info['가입금액'] = value
-                        print(f"      가입금액: {value}")
+                        self.logger.info(f"      가입금액: {value}")
                     
                     elif '가입대상' in label or '대상' in label:
                         detail_info['가입대상'] = value
-                        print(f"      가입대상: {value}")
+                        self.logger.info(f"      가입대상: {value}")
                     
                     elif '가입기간' in label or '기간' in label:
                         detail_info['가입기간'] = value
-                        print(f"      가입기간: {value}")
+                        self.logger.info(f"      가입기간: {value}")
                     
                     elif '세제혜택' in label or '세금' in label:
                         detail_info['세제혜택'] = value
-                        print(f"      세제혜택: {value}")
+                        self.logger.info(f"      세제혜택: {value}")
                 
                 except Exception as e:
                     continue
         
         except Exception as e:
-            print(f"      DT/DD 추출 오류: {e}")
+            self.logger.info(f"      DT/DD 추출 오류: {e}")
         
         # 6. 금리 테이블 추출
         try:
             tables = self.driver.find_elements(By.TAG_NAME, "table")
-            print(f"      총 {len(tables)}개 테이블 발견")
+            self.logger.info(f"      총 {len(tables)}개 테이블 발견")
             
             for i, table in enumerate(tables):
                 if not table.is_displayed():
@@ -391,16 +393,16 @@ class HanaBankCrawler:
                     
                     if is_preferential:
                         detail_info['우대금리'] = table_data
-                        print(f"      우대금리 테이블 추출: {caption_text}")
+                        self.logger.info(f"      우대금리 테이블 추출: {caption_text}")
                     
                     else:
                         # 기본금리 테이블
                         if not detail_info['기본금리'] or len(table_data.get('data', [])) > len(detail_info['기본금리'].get('data', [])):
                             detail_info['기본금리'] = table_data
-                            print(f"      기본금리 테이블 추출: {caption_text}")
+                            self.logger.info(f"      기본금리 테이블 추출: {caption_text}")
         
         except Exception as e:
-            print(f"      금리 테이블 추출 오류: {e}")
+            self.logger.info(f"      금리 테이블 추출 오류: {e}")
     
     # 테이블 데이터를 완전히 구조화하여 추출
     def extract_table_data_complete(self, table):
@@ -461,13 +463,13 @@ class HanaBankCrawler:
             return table_data
             
         except Exception as e:
-            print(f"테이블 데이터 추출 오류: {e}")
+            self.logger.info(f"테이블 데이터 추출 오류: {e}")
             return {'headers': [], 'data': [], 'caption': '', 'class': '', 'summary': ''}
         
 # 모든 상품 수집
     def collect_all_products(self):
         try:
-            print("전체 상품 수집 시작")
+            self.logger.info("전체 상품 수집 시작")
             
             # 메인 페이지 접속 (기본 상태: 정기예금)
             self.driver.get(self.base_url)
@@ -478,7 +480,7 @@ class HanaBankCrawler:
             
             for tab_name in tab_order:
                 try:
-                    print(f"\n{tab_name} 탭 처리 시작")
+                    self.logger.info(f"\n{tab_name} 탭 처리 시작")
                     
                     # 탭 전환
                     if not self.click_tab(tab_name):
@@ -494,45 +496,45 @@ class HanaBankCrawler:
                     
                     if tab_products:
                         self.all_products.extend(tab_products)
-                        print(f"{tab_name}: 총 {len(tab_products)}개 상품 수집 완료")
+                        self.logger.info(f"{tab_name}: 총 {len(tab_products)}개 상품 수집 완료")
                         
                         # 수집된 상품 목록 미리보기
-                        print(f"{tab_name} 상품 목록:")
+                        self.logger.info(f"{tab_name} 상품 목록:")
                         for i, product in enumerate(tab_products[:3]):
-                            print(f"   {i+1}. {product['name']}")
+                            self.logger.info(f"   {i+1}. {product['name']}")
                         if len(tab_products) > 3:
-                            print(f"   ... 외 {len(tab_products)-3}개")
+                            self.logger.info(f"   ... 외 {len(tab_products)-3}개")
                     else:
-                        print(f"{tab_name}: 상품을 찾을 수 없음")
+                        self.logger.info(f"{tab_name}: 상품을 찾을 수 없음")
                     
                     time.sleep(2)
                     
                 except Exception as e:
-                    print(f"{tab_name} 처리 오류: {str(e)}")
+                    self.logger.info(f"{tab_name} 처리 오류: {str(e)}")
                     continue
             
             total_count = len(self.all_products)
-            print(f"\n수집 완료 - 정기예금: {len([p for p in self.all_products if p['category'] == '정기예금'])}개, 적금: {len([p for p in self.all_products if p['category'] == '적금'])}개, 입출금: {len([p for p in self.all_products if p['category'] == '입출금이 자유로운 예금'])}개, 총: {total_count}개")
+            self.logger.info(f"\n수집 완료 - 정기예금: {len([p for p in self.all_products if p['category'] == '정기예금'])}개, 적금: {len([p for p in self.all_products if p['category'] == '적금'])}개, 입출금: {len([p for p in self.all_products if p['category'] == '입출금이 자유로운 예금'])}개, 총: {total_count}개")
             
             # 상세정보 수집 호출
             if self.all_products:
                 self.collect_detail_info()
             else:
-                print("수집된 상품이 없어 상세정보 수집을 건너뜁니다.")
+                self.logger.info("수집된 상품이 없어 상세정보 수집을 건너뜁니다.")
             
         except Exception as e:
-            print(f"전체 수집 오류: {str(e)}")
+            self.logger.info(f"전체 수집 오류: {str(e)}")
     
     # 모든 상품의 상세정보 수집
     def collect_detail_info(self):
         try:
-            print(f"\n상품별 상세정보 수집 시작")
+            self.logger.info(f"\n상품별 상세정보 수집 시작")
             
             success_count = 0
             
             for i, product in enumerate(self.all_products):
                 try:
-                    print(f"\n[{i+1}/{len(self.all_products)}] {product['name']} ({product['category']}) 처리 중...")
+                    self.logger.info(f"\n[{i+1}/{len(self.all_products)}] {product['name']} ({product['category']}) 처리 중...")
                     
                     # 목록에서 추출한 가입방법
                     join_method_from_list = product.get('join_method_from_list', '')
@@ -551,20 +553,20 @@ class HanaBankCrawler:
                         
                         # 추출된 정보 간단 요약
                         extracted_fields = [k for k, v in detail_info.items() if v]
-                        print(f"    수집 완료: {len(extracted_fields)}/7개 필드")
+                        self.logger.info(f"    수집 완료: {len(extracted_fields)}/7개 필드")
                     
                     # 요청 간격 조절
                     time.sleep(2)
                 
                 except Exception as e:
-                    print(f"    오류: {str(e)}")
+                    self.logger.info(f"    오류: {str(e)}")
                     product['detail_info'] = {'error': str(e)}
                     continue
             
-            print("모든 상품 상세정보 수집 완료")
+            self.logger.info("모든 상품 상세정보 수집 완료")
             
         except Exception as e:
-            print(f"상세정보 수집 오류: {str(e)}")
+            self.logger.info(f"상세정보 수집 오류: {str(e)}")
     
     # JSON 파일로 저장
     def save_data(self, filename="HANA.json"):
@@ -577,23 +579,23 @@ class HanaBankCrawler:
         try:
             with open(full_path, 'w', encoding='utf-8') as f:
                 json.dump(self.all_products, f, ensure_ascii=False, indent=2)
-            print(f"JSON 데이터가 {filename}에 저장되었습니다.")
+            self.logger.info(f"JSON 데이터가 {filename}에 저장되었습니다.")
         except Exception as e:
-            print(f"JSON 저장 오류: {str(e)}")
+            self.logger.info(f"JSON 저장 오류: {str(e)}")
     
     # 수집 결과 요약 출력
     def print_summary(self):
-        print("수집 결과 요약")
+        self.logger.info("수집 결과 요약")
         
         total_products = len(self.all_products)
         deposit_count = len([p for p in self.all_products if p['category'] == '정기예금'])
         savings_count = len([p for p in self.all_products if p['category'] == '적금'])
         checking_count = len([p for p in self.all_products if p['category'] == '입출금이 자유로운 예금'])
         
-        print(f"전체 상품: {total_products}개")
-        print(f"정기예금: {deposit_count}개")
-        print(f"적금: {savings_count}개")
-        print(f"입출금이 자유로운 예금: {checking_count}개")
+        self.logger.info(f"전체 상품: {total_products}개")
+        self.logger.info(f"정기예금: {deposit_count}개")
+        self.logger.info(f"적금: {savings_count}개")
+        self.logger.info(f"입출금이 자유로운 예금: {checking_count}개")
         
         successful_details = 0
         field_stats = {
@@ -609,14 +611,14 @@ class HanaBankCrawler:
                     if detail_info.get(field):
                         field_stats[field] += 1
         
-        print("상세정보 수집 현황:")
-        print(f"성공: {successful_details}개 ({successful_details/total_products*100:.1f}%)")
+        self.logger.info("상세정보 수집 현황:")
+        self.logger.info(f"성공: {successful_details}개 ({successful_details/total_products*100:.1f}%)")
         for field, count in field_stats.items():
-            print(f"{field}: {count}개")
+            self.logger.info(f"{field}: {count}개")
         
         url_count = len([p for p in self.all_products 
                         if p.get('detail_info', {}).get('가입방법')])
-        print(f"가입방법: {url_count}개")
+        self.logger.info(f"가입방법: {url_count}개")
     
     # 크롤링 실행
     def run(self):
@@ -624,20 +626,20 @@ class HanaBankCrawler:
             from datetime import datetime
             start_time = datetime.now()
             
-            print("하나은행 예금/적금 크롤링 시작")
-            print(f"실행 시간: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
+            self.logger.info("하나은행 예금/적금 크롤링 시작")
+            self.logger.info(f"실행 시간: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
             
             self.collect_all_products()
             
             if not self.all_products:
-                print("상품 목록을 수집하지 못했습니다.")
+                self.logger.info("상품 목록을 수집하지 못했습니다.")
                 return None
             
             end_time = datetime.now()
             duration = (end_time - start_time).total_seconds()
             
-            print("크롤링 완료")
-            print(f"소요 시간: {duration:.1f}초")
+            self.logger.info("크롤링 완료")
+            self.logger.info(f"소요 시간: {duration:.1f}초")
             
             self.print_summary()
             
@@ -653,7 +655,7 @@ class HanaBankCrawler:
             }
             
         except Exception as e:
-            print(f"크롤링 오류: {str(e)}")
+            self.logger.info(f"크롤링 오류: {str(e)}")
             return None
         finally:
             self.driver.quit()
@@ -662,22 +664,22 @@ class HanaBankCrawler:
     def close_driver(self):
         try:
             self.driver.quit()
-            print("브라우저가 종료되었습니다.")
+            self.logger.info("브라우저가 종료되었습니다.")
         except Exception as e:
-            print(f"브라우저 종료 오류: {str(e)}")
+            self.logger.info(f"브라우저 종료 오류: {str(e)}")
 
     def start(self):
-        print("하나은행 예금/적금 크롤러 v2.0")
-        print("정기예금 + 적금 + 입출금이 자유로운 예금 전체 수집")
-        print("7개 필수 항목 구조화 추출")
+        self.logger.info("하나은행 예금/적금 크롤러 v2.0")
+        self.logger.info("정기예금 + 적금 + 입출금이 자유로운 예금 전체 수집")
+        self.logger.info("7개 필수 항목 구조화 추출")
 
         result = self.run()
 
         if result:
-            print("크롤링 성공")
-            print(f"파일: hana_bank_products.json")
-            print(
+            self.logger.info("크롤링 성공")
+            self.logger.info(f"파일: hana_bank_products.json")
+            self.logger.info(
                 f"정기예금 {result['deposit_count']}개 + 적금 {result['savings_count']}개 + 입출금 {result['checking_count']}개 = 총 {result['total_products']}개")
         else:
-            print("크롤링 실패")
+            self.logger.info("크롤링 실패")
 

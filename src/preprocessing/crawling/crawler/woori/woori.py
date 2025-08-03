@@ -1,3 +1,4 @@
+import logging
 import os
 
 import requests
@@ -23,6 +24,7 @@ class WooriBankCrawler:
         self.savings_url =   BankLink.WOORI_BANK_SAVINGS_LINK.value# 목돈모으기상품
         self.driver = self.setup_driver(headless)
         self.all_products = []
+        self.logger = logging.getLogger(__name__)
         
     # Chrome 브라우저 설정
     def setup_driver(self, headless=True):
@@ -41,20 +43,20 @@ class WooriBankCrawler:
     # 예금과 적금 상품 목록 수집
     def collect_all_products(self):
         try:
-            print("전체 상품 수집 시작")
+            self.logger.info("전체 상품 수집 시작")
             
-            print("예금 상품 수집 중...")
+            self.logger.info("예금 상품 수집 중...")
             deposit_products = self.collect_products_by_type("예금", self.deposit_url)
             
-            print("적금 상품 수집 중...")
+            self.logger.info("적금 상품 수집 중...")
             savings_products = self.collect_products_by_type("적금", self.savings_url)
             
             self.all_products = deposit_products + savings_products
             
-            print(f"수집 완료 - 예금: {len(deposit_products)}개, 적금: {len(savings_products)}개, 총: {len(self.all_products)}개")
+            self.logger.info(f"수집 완료 - 예금: {len(deposit_products)}개, 적금: {len(savings_products)}개, 총: {len(self.all_products)}개")
             
         except Exception as e:
-            print(f"상품 수집 오류: {str(e)}")
+            self.logger.info(f"상품 수집 오류: {str(e)}")
     
     # 특정 타입 상품들 페이지별 수집
     def collect_products_by_type(self, product_type, url):
@@ -79,7 +81,7 @@ class WooriBankCrawler:
                 time.sleep(2)
             
         except Exception as e:
-            print(f"{product_type} 수집 오류: {str(e)}")
+            self.logger.info(f"{product_type} 수집 오류: {str(e)}")
         
         return products
     
@@ -132,7 +134,7 @@ class WooriBankCrawler:
                     products.append(info)
             
         except Exception as e:
-            print(f"현재 페이지 상품 수집 오류: {str(e)}")
+            self.logger.info(f"현재 페이지 상품 수집 오류: {str(e)}")
         
         return products
     
@@ -216,11 +218,11 @@ class WooriBankCrawler:
     # 각 상품의 상세정보 수집
     def collect_all_detail_info(self):
         try:
-            print("상품별 상세정보 수집 시작")
+            self.logger.info("상품별 상세정보 수집 시작")
             
             for i, product in enumerate(self.all_products):
                 try:
-                    print(f"[{i+1}/{len(self.all_products)}] {product['name']} ({product['product_type']}) 처리 중...")
+                    self.logger.info(f"[{i+1}/{len(self.all_products)}] {product['name']} ({product['product_type']}) 처리 중...")
                     
                     if product['product_type'] == "예금":
                         self.driver.get(self.deposit_url)
@@ -237,20 +239,20 @@ class WooriBankCrawler:
                         # 수집된 필드 개수 확인
                         collected_fields = len([v for k, v in detail_info.items() 
                                               if k not in ['raw_data', 'url'] and v])
-                        print(f"    수집 완료: {collected_fields}/7개 필드")
+                        self.logger.info(f"    수집 완료: {collected_fields}/7개 필드")
                     else:
-                        print(f"    오류: 상세보기 버튼 찾기 실패")
+                        self.logger.info(f"    오류: 상세보기 버튼 찾기 실패")
                         product['detail_info'] = {'error': 'detail button not found'}
                         
                 except Exception as e:
-                    print(f"    오류: {str(e)}")
+                    self.logger.info(f"    오류: {str(e)}")
                     product['detail_info'] = {'error': str(e)}
                     continue
             
-            print("모든 상품 상세정보 수집 완료")
+            self.logger.info("모든 상품 상세정보 수집 완료")
             
         except Exception as e:
-            print(f"상세정보 수집 오류: {str(e)}")
+            self.logger.info(f"상세정보 수집 오류: {str(e)}")
     
     # 특정 onclick 속성을 가진 상세보기 버튼 찾기
     def find_detail_button_by_onclick(self, target_onclick):
@@ -275,14 +277,14 @@ class WooriBankCrawler:
         main_window = self.driver.current_window_handle
         
         try:
-            print(f"    상세페이지 접근 중... (코드: {product_code})")
+            self.logger.info(f"    상세페이지 접근 중... (코드: {product_code})")
             self.driver.execute_script("arguments[0].click();", detail_button)
             time.sleep(3)
             
             windows = self.driver.window_handles
             
             if len(windows) > 1:
-                print("    새 창에서 데이터 추출 중...")
+                self.logger.info("    새 창에서 데이터 추출 중...")
                 for window in windows:
                     if window != main_window:
                         self.driver.switch_to.window(window)
@@ -294,12 +296,12 @@ class WooriBankCrawler:
                 self.driver.switch_to.window(main_window)
                 
             else:
-                print("    모달창에서 데이터 추출 중...")
+                self.logger.info("    모달창에서 데이터 추출 중...")
                 time.sleep(2)
                 detail_info = self.extract_required_detail_info()
             
         except Exception as e:
-            print(f"    추출 실패: {str(e)}")
+            self.logger.info(f"    추출 실패: {str(e)}")
             detail_info = {'error': str(e)}
             
             try:
@@ -566,21 +568,21 @@ class WooriBankCrawler:
         try:
             with open(full_path, 'w', encoding='utf-8') as f:
                 json.dump(self.all_products, f, ensure_ascii=False, indent=2)
-            print(f"JSON 데이터가 {filename}에 저장되었습니다.")
+            self.logger.info(f"JSON 데이터가 {filename}에 저장되었습니다.")
         except Exception as e:
-            print(f"JSON 저장 오류: {str(e)}")
+            self.logger.info(f"JSON 저장 오류: {str(e)}")
     
     # 수집 결과 요약 출력
     def print_summary(self):
-        print("수집 결과 요약")
+        self.logger.info("수집 결과 요약")
         
         total_products = len(self.all_products)
         deposit_count = len([p for p in self.all_products if p['product_type'] == '예금'])
         savings_count = len([p for p in self.all_products if p['product_type'] == '적금'])
         
-        print(f"전체 상품: {total_products}개")
-        print(f"예금: {deposit_count}개")
-        print(f"적금: {savings_count}개")
+        self.logger.info(f"전체 상품: {total_products}개")
+        self.logger.info(f"예금: {deposit_count}개")
+        self.logger.info(f"적금: {savings_count}개")
         
         successful_details = 0
         field_stats = {
@@ -596,14 +598,14 @@ class WooriBankCrawler:
                     if detail_info.get(field):
                         field_stats[field] += 1
         
-        print("상세정보 수집 현황:")
-        print(f"성공: {successful_details}개 ({successful_details/total_products*100:.1f}%)")
+        self.logger.info("상세정보 수집 현황:")
+        self.logger.info(f"성공: {successful_details}개 ({successful_details/total_products*100:.1f}%)")
         for field, count in field_stats.items():
-            print(f"{field}: {count}개")
+            self.logger.info(f"{field}: {count}개")
         
         url_count = len([p for p in self.all_products 
                         if p.get('detail_info', {}).get('url')])
-        print(f"URL: {url_count}개")
+        self.logger.info(f"URL: {url_count}개")
     
     # 크롤링 실행
     def run(self):
@@ -611,13 +613,13 @@ class WooriBankCrawler:
             from datetime import datetime
             start_time = datetime.now()
             
-            print("우리은행 예금/적금 크롤링 시작")
-            print(f"실행 시간: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
+            self.logger.info("우리은행 예금/적금 크롤링 시작")
+            self.logger.info(f"실행 시간: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
             
             self.collect_all_products()
             
             if not self.all_products:
-                print("상품 목록을 수집하지 못했습니다.")
+                self.logger.info("상품 목록을 수집하지 못했습니다.")
                 return None
             
             self.collect_all_detail_info()
@@ -625,8 +627,8 @@ class WooriBankCrawler:
             end_time = datetime.now()
             duration = (end_time - start_time).total_seconds()
             
-            print("크롤링 완료")
-            print(f"소요 시간: {duration:.1f}초")
+            self.logger.info("크롤링 완료")
+            self.logger.info(f"소요 시간: {duration:.1f}초")
             
             self.print_summary()
             
@@ -641,21 +643,21 @@ class WooriBankCrawler:
             }
             
         except Exception as e:
-            print(f"크롤링 오류: {str(e)}")
+            self.logger.info(f"크롤링 오류: {str(e)}")
             return None
         finally:
             self.driver.quit()
 
     def start(self):
-        print("우리은행 예금/적금 크롤러 v2.0")
-        print("예금(목돈굴리기) + 적금(목돈모으기) 전체 수집")
-        print("7개 필수 항목 구조화 추출")
+        self.logger.info("우리은행 예금/적금 크롤러 v2.0")
+        self.logger.info("예금(목돈굴리기) + 적금(목돈모으기) 전체 수집")
+        self.logger.info("7개 필수 항목 구조화 추출")
 
         result = self.run()
 
         if result:
-            print("크롤링 성공")
-            print(f"파일: woori_bank_products.json")
-            print(f"예금 {result['deposit_count']}개 + 적금 {result['savings_count']}개 = 총 {result['total_products']}개")
+            self.logger.info("크롤링 성공")
+            self.logger.info(f"파일: woori_bank_products.json")
+            self.logger.info(f"예금 {result['deposit_count']}개 + 적금 {result['savings_count']}개 = 총 {result['total_products']}개")
         else:
-            print("크롤링 실패")
+            self.logger.info("크롤링 실패")

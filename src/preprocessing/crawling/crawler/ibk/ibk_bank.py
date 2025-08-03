@@ -15,13 +15,14 @@ import os
 import dotenv
 import os
 from src.preprocessing.crawling.BankLink import BankLink
+import logging
 
 warnings.filterwarnings('ignore')
 
 class IBKFullCrawler:
     def __init__(self):
         self.base_url = BankLink.IBK_BANK_LINK.value
-        
+        self.logger = logging.getLogger(__name__)
         # 적금 상품 (목돈모으기) - 3페이지, 28개 상품
         self.savings_url = BankLink.IBK_BANK_SAVINGS_LINK.value
         self.savings_pages = 3
@@ -65,18 +66,18 @@ class IBKFullCrawler:
             
             self.driver.implicitly_wait(5)
             
-            print("✅ WebDriver 설정 완료")
+            self.logger.info("✅ WebDriver 설정 완료")
             return True
             
         except Exception as e:
-            print(f"❌ WebDriver 설정 실패: {e}")
+            self.logger.info(f"❌ WebDriver 설정 실패: {e}")
             return False
 
     def crawl_all_products(self):
         """적금과 예금 상품 모두 크롤링"""
-        print("🚀 === ibk 적금/예금 전체 크롤러 (기간별 금리 포함) ===")
-        print("📋 목돈모으기(적금) 28개 + 목돈굴리기(예금) 17개 = 총 45개")
-        print("🎯 수집 정보: 가입금액, 가입대상, 가입방법, 가입기간, 금리, 우대조건, 기간별금리 등\n")
+        self.logger.info("🚀 === ibk 적금/예금 전체 크롤러 (기간별 금리 포함) ===")
+        self.logger.info("📋 목돈모으기(적금) 28개 + 목돈굴리기(예금) 17개 = 총 45개")
+        self.logger.info("🎯 수집 정보: 가입금액, 가입대상, 가입방법, 가입기간, 금리, 우대조건, 기간별금리 등\n")
         
         if not self.setup_driver():
             return {}
@@ -95,7 +96,7 @@ class IBKFullCrawler:
             }
             
             # 1. 적금 상품 크롤링 (목돈모으기)
-            print("💰 === 적금 상품 크롤링 시작 ===")
+            self.logger.info("💰 === 적금 상품 크롤링 시작 ===")
             savings_products = self.crawl_product_category(
                 category_name="적금",
                 base_url=self.savings_url,
@@ -103,7 +104,7 @@ class IBKFullCrawler:
             )
             
             # 2. 예금 상품 크롤링 (목돈굴리기)
-            print("\n🏦 === 예금 상품 크롤링 시작 ===")
+            self.logger.info("\n🏦 === 예금 상품 크롤링 시작 ===")
             deposits_products = self.crawl_product_category(
                 category_name="예금",
                 base_url=self.deposits_url,
@@ -117,15 +118,15 @@ class IBKFullCrawler:
             results['crawl_info']['savings_count'] = len(savings_products)
             results['crawl_info']['deposits_count'] = len(deposits_products)
             
-            print(f"\n🎉 전체 크롤링 완료!")
-            print(f"📊 적금 상품: {len(savings_products)}개")
-            print(f"📊 예금 상품: {len(deposits_products)}개")
-            print(f"📊 총합: {len(all_products)}개")
+            self.logger.info(f"\n🎉 전체 크롤링 완료!")
+            self.logger.info(f"📊 적금 상품: {len(savings_products)}개")
+            self.logger.info(f"📊 예금 상품: {len(deposits_products)}개")
+            self.logger.info(f"📊 총합: {len(all_products)}개")
             
             return results
             
         except Exception as e:
-            print(f"❌ 크롤링 중 오류: {e}")
+            self.logger.info(f"❌ 크롤링 중 오류: {e}")
             return {}
         finally:
             if self.driver:
@@ -137,15 +138,15 @@ class IBKFullCrawler:
         seen_products = set()
         
         for page_num in range(1, max_pages + 1):
-            print(f"\n{'='*60}")
-            print(f"📄 {category_name} 페이지 {page_num}/{max_pages}")
-            print(f"{'='*60}")
+            self.logger.info(f"\n{'='*60}")
+            self.logger.info(f"📄 {category_name} 페이지 {page_num}/{max_pages}")
+            self.logger.info(f"{'='*60}")
             
             # 페이지 이동
             success = self.navigate_to_page(category_name, base_url, page_num)
             
             if not success:
-                print(f"❌ 페이지 {page_num} 이동 실패")
+                self.logger.info(f"❌ 페이지 {page_num} 이동 실패")
                 continue
             
             # 페이지 로딩 완료 대기
@@ -156,10 +157,10 @@ class IBKFullCrawler:
                 page_products = self.extract_products_from_current_page()
                 
                 if not page_products:
-                    print(f"❌ 페이지 {page_num}에서 상품을 찾을 수 없습니다")
+                    self.logger.info(f"❌ 페이지 {page_num}에서 상품을 찾을 수 없습니다")
                     continue
                 
-                print(f"📦 페이지 {page_num}에서 {len(page_products)}개 상품 발견")
+                self.logger.info(f"📦 페이지 {page_num}에서 {len(page_products)}개 상품 발견")
                 
                 # 중복 상품 필터링
                 new_products = []
@@ -169,19 +170,19 @@ class IBKFullCrawler:
                         seen_products.add(product_key)
                         new_products.append(product)
                     else:
-                        print(f"    ⚠️ 중복 상품 스킵: {product_key}")
+                        self.logger.info(f"    ⚠️ 중복 상품 스킵: {product_key}")
                 
                 if not new_products:
-                    print(f"⚠️ 페이지 {page_num}에 새로운 상품이 없습니다!")
+                    self.logger.info(f"⚠️ 페이지 {page_num}에 새로운 상품이 없습니다!")
                 
                 # 각 상품의 상세 정보 수집
                 for i, product in enumerate(new_products, 1):
                     global_index = len(category_products) + 1
-                    print(f"\n[{category_name} {global_index}] {product['name']}")
+                    self.logger.info(f"\n[{category_name} {global_index}] {product['name']}")
                     
                     # 상품 간 대기 (첫 번째 제외)
                     if i > 1:
-                        print(f"    ⏳ 상품 간 대기...")
+                        self.logger.info(f"    ⏳ 상품 간 대기...")
                         time.sleep(2)
                     
                     # 상세 정보 수집
@@ -189,27 +190,27 @@ class IBKFullCrawler:
                     
                     if detail_info:
                         category_products.append(detail_info)
-                        print(f"    ✅ 상세 정보 수집 완료")
+                        self.logger.info(f"    ✅ 상세 정보 수집 완료")
                         
                         # 기간별 금리 수집 결과 요약
                         if detail_info.get('기간별금리'):
-                            print(f"    📊 기간별금리 {len(detail_info['기간별금리'])}개 수집")
+                            self.logger.info(f"    📊 기간별금리 {len(detail_info['기간별금리'])}개 수집")
                         else:
-                            print(f"    📋 기간별금리: 없음")
+                            self.logger.info(f"    📋 기간별금리: 없음")
                             
                         # 우대조건 수집 결과 요약
                         if detail_info.get('우대조건'):
-                            print(f"    🎯 우대조건 {len(detail_info['우대조건'])}개 수집")
+                            self.logger.info(f"    🎯 우대조건 {len(detail_info['우대조건'])}개 수집")
                         else:
-                            print(f"    📝 우대조건: 없음")
+                            self.logger.info(f"    📝 우대조건: 없음")
                     else:
-                        print(f"    ❌ 상세 정보 수집 실패")
+                        self.logger.info(f"    ❌ 상세 정보 수집 실패")
                 
-                print(f"✅ {category_name} 페이지 {page_num} 완료: {len(new_products)}개 신규 상품")
+                self.logger.info(f"✅ {category_name} 페이지 {page_num} 완료: {len(new_products)}개 신규 상품")
                 time.sleep(2)  # 페이지 간 대기
                 
             except Exception as e:
-                print(f"❌ {category_name} 페이지 {page_num} 처리 실패: {e}")
+                self.logger.info(f"❌ {category_name} 페이지 {page_num} 처리 실패: {e}")
                 continue
         
         return category_products
@@ -220,13 +221,13 @@ class IBKFullCrawler:
             if page_num == 1:
                 # 첫 페이지는 직접 접속
                 page_url = self.base_url + base_url
-                print(f"🌐 첫 페이지 접속: {page_url}")
+                self.logger.info(f"🌐 첫 페이지 접속: {page_url}")
                 self.driver.get(page_url)
                 time.sleep(3)
                 return True
             
             # 2페이지 이상일 경우 페이지네이션 버튼 클릭
-            print(f"🔍 페이지 {page_num} 버튼 찾는 중...")
+            self.logger.info(f"🔍 페이지 {page_num} 버튼 찾는 중...")
             
             # 페이지네이션 버튼 찾기
             pagination_selectors = [
@@ -246,7 +247,7 @@ class IBKFullCrawler:
                     for element in elements:
                         if element.is_displayed() and element.is_enabled():
                             page_button = element
-                            print(f"      ✅ 페이지 {page_num} 버튼 발견!")
+                            self.logger.info(f"      ✅ 페이지 {page_num} 버튼 발견!")
                             break
                     
                     if page_button:
@@ -257,7 +258,7 @@ class IBKFullCrawler:
             
             # 페이지 버튼을 찾지 못한 경우 JavaScript로 페이지 이동 시도
             if not page_button:
-                print(f"      🔍 JavaScript 페이지 이동 시도...")
+                self.logger.info(f"      🔍 JavaScript 페이지 이동 시도...")
                 
                 js_functions = [
                     f"goPage({page_num})",
@@ -272,34 +273,34 @@ class IBKFullCrawler:
                         time.sleep(3)
                         
                         if self.verify_page_change(page_num):
-                            print(f"      ✅ JavaScript로 페이지 {page_num} 이동 성공!")
+                            self.logger.info(f"      ✅ JavaScript로 페이지 {page_num} 이동 성공!")
                             return True
                             
                     except Exception as e:
                         continue
                 
-                print(f"      ❌ 페이지 {page_num} 이동 실패")
+                self.logger.info(f"      ❌ 페이지 {page_num} 이동 실패")
                 return False
             
             # 페이지 버튼 클릭
             try:
-                print(f"      🖱️ 페이지 {page_num} 버튼 클릭...")
+                self.logger.info(f"      🖱️ 페이지 {page_num} 버튼 클릭...")
                 page_button.click()
                 time.sleep(3)
                 
                 if self.verify_page_change(page_num):
-                    print(f"      ✅ 페이지 {page_num} 이동 성공!")
+                    self.logger.info(f"      ✅ 페이지 {page_num} 이동 성공!")
                     return True
                 else:
-                    print(f"      ❌ 페이지 {page_num} 이동 실패")
+                    self.logger.info(f"      ❌ 페이지 {page_num} 이동 실패")
                     return False
                 
             except Exception as e:
-                print(f"      ❌ 페이지 버튼 클릭 오류: {e}")
+                self.logger.info(f"      ❌ 페이지 버튼 클릭 오류: {e}")
                 return False
                 
         except Exception as e:
-            print(f"❌ 페이지 {page_num} 이동 전체 오류: {e}")
+            self.logger.info(f"❌ 페이지 {page_num} 이동 전체 오류: {e}")
             return False
 
     def verify_page_change(self, expected_page):
@@ -314,11 +315,11 @@ class IBKFullCrawler:
                     first_product = products[0].get_attribute('textContent').strip()
                     if hasattr(self, 'last_first_product'):
                         if first_product != self.last_first_product:
-                            print(f"      ✅ 상품 목록 변화 확인: '{first_product}'")
+                            self.logger.info(f"      ✅ 상품 목록 변화 확인: '{first_product}'")
                             self.last_first_product = first_product
                             return True
                         else:
-                            print(f"      ⚠️ 동일한 첫 상품: '{first_product}'")
+                            self.logger.info(f"      ⚠️ 동일한 첫 상품: '{first_product}'")
                             return False
                     else:
                         self.last_first_product = first_product
@@ -329,7 +330,7 @@ class IBKFullCrawler:
             return True
             
         except Exception as e:
-            print(f"      ❌ 페이지 변경 확인 오류: {e}")
+            self.logger.info(f"      ❌ 페이지 변경 확인 오류: {e}")
             return True
 
     def extract_products_from_current_page(self):
@@ -356,7 +357,7 @@ class IBKFullCrawler:
             return products
             
         except Exception as e:
-            print(f"❌ 상품 추출 오류: {e}")
+            self.logger.info(f"❌ 상품 추출 오류: {e}")
             return []
 
     def parse_onclick_params(self, onclick_str):
@@ -381,7 +382,7 @@ class IBKFullCrawler:
             params = product['params']
             original_url = self.driver.current_url
             
-            print(f"    🔍 상세 정보 수집 중...")
+            self.logger.info(f"    🔍 상세 정보 수집 중...")
             
             # JavaScript 실행하여 상세 페이지 접속
             script = f"""
@@ -398,7 +399,7 @@ class IBKFullCrawler:
             js_result = self.driver.execute_script(script)
             
             if not js_result:
-                print(f"    ❌ JavaScript 실행 실패")
+                self.logger.info(f"    ❌ JavaScript 실행 실패")
                 return None
             
             # 페이지 변화 대기
@@ -413,7 +414,7 @@ class IBKFullCrawler:
             return detail_info
                 
         except Exception as e:
-            print(f"    ❌ 상세 정보 수집 오류: {str(e)[:50]}...")
+            self.logger.info(f"    ❌ 상세 정보 수집 오류: {str(e)[:50]}...")
             return None
 
     def extract_detail_info(self, product_name, category_name, original_url):
@@ -482,7 +483,7 @@ class IBKFullCrawler:
             return product_info
             
         except Exception as e:
-            print(f"    ❌ 정보 추출 실패: {e}")
+            self.logger.info(f"    ❌ 정보 추출 실패: {e}")
             return None
 
     def extract_period_rates_with_popup(self, soup):
@@ -1203,55 +1204,55 @@ class IBKFullCrawler:
             with open(file_path, 'w', encoding='utf-8') as f:
                 json.dump(results, f, ensure_ascii=False, indent=2)
             
-            print(f"✅ 저장 완료: {filename}")
+            self.logger.info(f"✅ 저장 완료: {filename}")
             
             products = results.get('products', [])
             crawl_info = results.get('crawl_info', {})
             
-            print(f"\n📊 === 최종 크롤링 통계 ===")
-            print(f"크롤링 일시: {crawl_info.get('crawl_date', 'N/A')}")
-            print(f"총 수집 상품: {len(products)}개")
-            print(f"  • 적금 상품: {crawl_info.get('savings_count', 0)}개")
-            print(f"  • 예금 상품: {crawl_info.get('deposits_count', 0)}개")
-            print(f"목표 대비: {len(products)}/{crawl_info.get('total_expected', 45)}개")
+            self.logger.info(f"\n📊 === 최종 크롤링 통계 ===")
+            self.logger.info(f"크롤링 일시: {crawl_info.get('crawl_date', 'N/A')}")
+            self.logger.info(f"총 수집 상품: {len(products)}개")
+            self.logger.info(f"  • 적금 상품: {crawl_info.get('savings_count', 0)}개")
+            self.logger.info(f"  • 예금 상품: {crawl_info.get('deposits_count', 0)}개")
+            self.logger.info(f"목표 대비: {len(products)}/{crawl_info.get('total_expected', 45)}개")
             
             products_with_conditions = [p for p in products if p.get('우대조건')]
             products_with_period_rates = [p for p in products if p.get('기간별금리')]
             
-            print(f"우대조건 보유 상품: {len(products_with_conditions)}개")
-            print(f"기간별금리 보유 상품: {len(products_with_period_rates)}개")
+            self.logger.info(f"우대조건 보유 상품: {len(products_with_conditions)}개")
+            self.logger.info(f"기간별금리 보유 상품: {len(products_with_period_rates)}개")
             
             if products:
-                print(f"\n📋 === 첫 3개 상품 샘플 ===")
+                self.logger.info(f"\n📋 === 첫 3개 상품 샘플 ===")
                 for i, product in enumerate(products[:3], 1):
-                    print(f"{i}. {product['상품명']} ({product['상품유형']})")
-                    print(f"   기본금리: {product.get('기본금리', 'N/A')}%, 최대금리: {product.get('최대금리', 'N/A')}%")
-                    print(f"   계약기간: {product.get('계약기간', 'N/A')}")
+                    self.logger.info(f"{i}. {product['상품명']} ({product['상품유형']})")
+                    self.logger.info(f"   기본금리: {product.get('기본금리', 'N/A')}%, 최대금리: {product.get('최대금리', 'N/A')}%")
+                    self.logger.info(f"   계약기간: {product.get('계약기간', 'N/A')}")
                     
                     if product.get('기간별금리'):
-                        print(f"   기간별금리: {len(product['기간별금리'])}개")
+                        self.logger.info(f"   기간별금리: {len(product['기간별금리'])}개")
                         for rate in product['기간별금리'][:2]:
-                            print(f"     - {rate['기간']}: {rate['금리']}%")
+                            self.logger.info(f"     - {rate['기간']}: {rate['금리']}%")
                     else:
-                        print(f"   기간별금리: 없음")
+                        self.logger.info(f"   기간별금리: 없음")
                         
                     if product.get('우대조건'):
-                        print(f"   우대조건: {len(product['우대조건'])}개")
+                        self.logger.info(f"   우대조건: {len(product['우대조건'])}개")
                         for condition in product['우대조건'][:2]:
-                            print(f"     - {condition['조건']}: +{condition['추가금리']}%p")
+                            self.logger.info(f"     - {condition['조건']}: +{condition['추가금리']}%p")
                     else:
-                        print(f"   우대조건: 없음")
+                        self.logger.info(f"   우대조건: 없음")
             
             return True
             
         except Exception as e:
-            print(f"❌ 저장 실패: {e}")
+            self.logger.info(f"❌ 저장 실패: {e}")
             return False
 
     def start(self):
-        print("🚀 ibk 적금/예금 전체 크롤러 (기간별 금리 포함)")
-        print("📋 목돈모으기(적금) 28개 + 목돈굴리기(예금) 17개 = 총 45개 상품")
-        print("🎯 기간별 금리, 우대조건 등 모든 정보 포함 크롤링\n")
+        self.logger.info("🚀 ibk 적금/예금 전체 크롤러 (기간별 금리 포함)")
+        self.logger.info("📋 목돈모으기(적금) 28개 + 목돈굴리기(예금) 17개 = 총 45개 상품")
+        self.logger.info("🎯 기간별 금리, 우대조건 등 모든 정보 포함 크롤링\n")
 
         try:
             results = self.crawl_all_products()
@@ -1260,14 +1261,14 @@ class IBKFullCrawler:
                 success = self.save_results(results)
 
                 if success:
-                    print(f"\n🎉 전체 크롤링 및 저장 완료!")
-                    print(f"📄 JSON 파일에 {len(results['products'])}개 상품 정보가 저장되었습니다.")
-                    print(f"📊 기간별 금리 정보도 포함되어 있습니다.")
+                    self.logger.info(f"\n🎉 전체 크롤링 및 저장 완료!")
+                    self.logger.info(f"📄 JSON 파일에 {len(results['products'])}개 상품 정보가 저장되었습니다.")
+                    self.logger.info(f"📊 기간별 금리 정보도 포함되어 있습니다.")
             else:
-                print("❌ 크롤링 실패 - 수집된 상품이 없습니다")
+                self.logger.info("❌ 크롤링 실패 - 수집된 상품이 없습니다")
 
         except KeyboardInterrupt:
-            print("\n⏹️ 사용자가 중단했습니다")
+            self.logger.info("\n⏹️ 사용자가 중단했습니다")
         except Exception as e:
-            print(f"\n💥 오류 발생: {e}")
+            self.logger.info(f"\n💥 오류 발생: {e}")
 

@@ -11,6 +11,7 @@ import datetime
 from typing import List, Dict, Optional
 import os
 import dotenv
+import logging
 
 class SCBankCleanCrawler:
     def __init__(self, headless: bool = True, timeout: int = 15, base_url:str="", detail_url_base:str=""):
@@ -20,6 +21,7 @@ class SCBankCleanCrawler:
         self.wait = WebDriverWait(self.driver, timeout)
         self.base_url= base_url
         self.detail_url_base= detail_url_base
+        self.logger =logging.getLogger(__name__)
 
     def _create_driver(self):
         """Chrome 드라이버 생성"""
@@ -642,13 +644,13 @@ class SCBankCleanCrawler:
     
     def crawl_tab_products(self, tab_name: str, limit: int = None) -> List[Dict]:
         """특정 탭의 상품들 크롤링"""
-        print(f"=== {tab_name} 크롤링 시작 ===")
+        self.logger.info(f"=== {tab_name} 크롤링 시작 ===")
         
         self.driver.get(self.base_url)
         time.sleep(3)
         
         if not self.click_tab_by_name(tab_name):
-            print(f"'{tab_name}' 탭 클릭 실패")
+            self.logger.info(f"'{tab_name}' 탭 클릭 실패")
             return []
         
         product_links = self.extract_product_links_from_current_page()
@@ -656,11 +658,11 @@ class SCBankCleanCrawler:
         if limit:
             product_links = product_links[:limit]
         
-        print(f"{tab_name}에서 {len(product_links)}개 상품 발견")
+        self.logger.info(f"{tab_name}에서 {len(product_links)}개 상품 발견")
         
         products = []
         for i, product in enumerate(product_links):
-            print(f"[{i+1}/{len(product_links)}] {product['Name']} 크롤링 중...")
+            self.logger.info(f"[{i+1}/{len(product_links)}] {product['Name']} 크롤링 중...")
             
             detail_info = self.extract_product_detail(product['product_id'], product['Name'])
             
@@ -706,9 +708,9 @@ class SCBankCleanCrawler:
             try:
                 products = self.crawl_tab_products(tab_name, limit=limit_per_tab)
                 all_products.extend(products)  # 리스트에 직접 추가
-                print(f"{tab_name}: {len(products)}개 상품 완료")
+                self.logger.info(f"{tab_name}: {len(products)}개 상품 완료")
             except Exception as e:
-                print(f"{tab_name} 탭 크롤링 실패: {e}")
+                self.logger.info(f"{tab_name} 탭 크롤링 실패: {e}")
         
         return all_products
     
@@ -726,7 +728,7 @@ class SCBankCleanCrawler:
         with open(file_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
         
-        print(f"결과 저장: {filename}")
+        self.logger.info(f"결과 저장: {filename}")
         return filename
     
     def close(self):
@@ -736,7 +738,7 @@ class SCBankCleanCrawler:
 
     def start(self):
         """메인 실행 함수"""
-        print("SC제일은행 예/적금 크롤링 시작...")
+        self.logger.info("SC제일은행 예/적금 크롤링 시작...")
 
         try:
             # 모든 상품 크롤링
@@ -744,13 +746,13 @@ class SCBankCleanCrawler:
 
             # 결과 출력
             total_products = len(all_products)
-            print(f"\n=== 크롤링 완료 ===")
-            print(f"총 {total_products}개 상품 수집")
+            self.logger.info(f"\n=== 크롤링 완료 ===")
+            self.logger.info(f"총 {total_products}개 상품 수집")
 
             # 카테고리별 개수 출력
             deposit_count = sum(1 for p in all_products if p.get('type') == '예금')
             savings_count = sum(1 for p in all_products if p.get('type') == '적금')
-            print(f"예금: {deposit_count}개, 적금: {savings_count}개")
+            self.logger.info(f"예금: {deposit_count}개, 적금: {savings_count}개")
 
             # JSON 저장
             filename = self.save_to_json(all_products)
@@ -758,7 +760,7 @@ class SCBankCleanCrawler:
             return all_products
 
         except Exception as e:
-            print(f"크롤링 오류: {e}")
+            self.logger.info(f"크롤링 오류: {e}")
             return {}
         finally:
             self.close()
