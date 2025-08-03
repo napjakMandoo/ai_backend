@@ -1,3 +1,4 @@
+import datetime
 import logging
 import uuid
 from src.preprocessing.db.bank.BankRepository import BankRepository
@@ -28,6 +29,33 @@ class ProductRepository:
         mysql_connection.close()
         self.logger.info("상품 관련 데이터 삭제 끝")
 
+    def check_is_deleted(self, bank_name:str, new_products_name:set, connection):
+
+        self.logger.info("=====삭제 작업 시작=====")
+
+
+        cursor = connection.cursor()
+        try:
+            bank_uuid = self.BankRepository.get_uuid_by_bank_name(bank_name=bank_name)
+            if bank_uuid is None:
+                self.logger.error(f"Bank UUID 가 없음: {bank_name}")
+                return
+
+            bank_uuid_bytes = bank_uuid.bytes
+            existing_products_name = set()
+
+            cursor.execute("select name from bank_product where bank_uuid=%s", (bank_uuid_bytes,))
+            for row in cursor.fetchall():
+                existing_products_name.add(row[0])
+
+            deleted_target_set = existing_products_name.difference(new_products_name)
+            self.logger.info(f"중복된 상품 수 : {len(deleted_target_set)}")
+            if deleted_target_set:
+                cursor.execute("update bank_product set deleted_at = %s where name in %s",
+                               (datetime.datetime.now(), tuple(deleted_target_set)))
+        finally:
+            cursor.close()
+            self.logger.info("=====삭제 작업 끝=====")
 
     def check_duplicate_product(self, product_name, connection):
         cursor = connection.cursor()
@@ -39,7 +67,6 @@ class ProductRepository:
             return False
 
     def save_one_product(self, product_data, bank_name, connection):
-
         self.logger.info("상품 데이터 삽입 시작")
 
         product_name:str = product_data.product_name
@@ -77,7 +104,13 @@ class ProductRepository:
             connection.begin()
             cursor = connection.cursor()
             product_uuid = uuid.uuid4().bytes
-            bank_uuid = self.BankRepository.get_uuid_by_bank_name(bank_name=bank_name).bytes
+            bank_uuid = self.BankRepository.get_uuid_by_bank_name(bank_name=bank_name)
+            if bank_uuid is None:
+                error_msg = f"Bank UUID가 존재하지 않음: {bank_name}"
+                self.logger.error(error_msg)
+                raise ValueError(error_msg)
+
+            bank_uuid_bytes = bank_uuid.bytes
 
             self.logger.info("bank_product 테이블 데이터 삽입 시작")
             product_insert_sql = (
@@ -94,7 +127,7 @@ class ProductRepository:
             )
 
             params = (
-                product_uuid, bank_uuid, product_basic_rate, product_max_rate,
+                product_uuid, bank_uuid_bytes, product_basic_rate, product_max_rate,
                 product_maximum_amount, product_maximum_amount_per_day,
                 product_maximum_amount_per_month, product_minimum_amount,
                 product_minimum_amount_per_day, product_minimum_amount_per_month,
