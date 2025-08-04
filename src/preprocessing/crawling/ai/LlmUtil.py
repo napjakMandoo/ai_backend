@@ -71,35 +71,36 @@ class LlmUtil:
         )
 
         self.logger.info("상품 하나 전처리 시작")
-        try:
-            max_retry = 10
-            for i in range(max_retry):
-                try:
-                    response = self.client.models.generate_content(
-                        model="gemini-2.5-flash",
-                        contents=prompt,
-                        config=config,
+        max_retry = 6  # 10회 → 6회로 축소(지수 백오프 한계 ≈ 2분)
+        for attempt in range(1, max_retry + 1):
+            try:
+                response = self.client.models.generate_content(
+                    model="gemini-2.5-flash",
+                    contents=prompt,
+                    config=config,
+                )
+                break  # 성공 → 즉시 탈출
+            except ServerError as e:
+                # 503 (과부하)만 잡아서 재시도, 그 외 오류는 즉시 전파
+                if getattr(e, "status_code", None) == 503:
+                    wait = min(60, 2 ** (attempt - 1)) + random.random()  # 캡 60s + 지터
+                    self.logger.warning(
+                        f"[503] 모델 과부하: {attempt}/{max_retry}회차 재시도 → {wait:.1f}s 대기"
                     )
-                    break
-                except ServerError as e:
-                    self.logger.error(f"전처리 도중 에러 발생: {e}")
-                    error_dict = e.args[0] if e.args else {}
-                    if isinstance(error_dict, dict) and error_dict.get('error', {}).get('code') == 503:
-                        time.sleep(2 ** i + random.random())
-                        continue
-                    raise
+                    time.sleep(wait)
+                    continue
+                raise
 
-            else:
-                raise RuntimeError("Gemini API 503 계속 발생")
+        else:
+            # flash 모델 6회 모두 실패 → 더 안정적인 모델로 1회 페일오버
+            self.logger.warning("gemini-2.5-flash 6회 실패, gemini-pro로 전환")
+            response = self.client.models.generate_content(
+                model="gemini-pro",
+                contents=prompt,
+                config=config,
+            )
 
-            parsed: Preferential = response.parsed
-            self.logger.info("상품 하나 전처리 끝")
-            return parsed
+        parsed: Preferential = response.parsed
+        self.logger.info("상품 하나 전처리 끝")
+        return parsed
 
-        except ValueError as e:
-            self.logger.error(f"스키마 매칭 오류: {e}")
-            raise
-
-        except Exception as e:
-            self.logger.error(f"예상치 못한 오류: {e}")
-            raise

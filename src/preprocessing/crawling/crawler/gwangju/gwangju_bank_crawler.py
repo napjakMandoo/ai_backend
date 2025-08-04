@@ -29,7 +29,7 @@ class KJBankCompleteCrawler:
         
         self.driver = webdriver.Chrome(options=chrome_options)
         self.wait = WebDriverWait(self.driver, 10)
-        self.logger = loging.getLogger(__name__)
+        self.logger = logging.getLogger(__name__)
         
         # 로깅 설정 - 간결하게
         logging.basicConfig(
