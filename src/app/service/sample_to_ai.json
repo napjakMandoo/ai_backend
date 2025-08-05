@@ -1,0 +1,90 @@
+{
+  "tax_rate": 15.4,
+  "products": [
+    {
+      "uuid": "어쩌구 저쩌구",
+      "name": "청년 도약 적금",
+      "base_rate" : 2.4,
+      "max_rate" : 5.2,
+      "type" : "Savings" ,
+      "max_amount" : 500000000,
+      "min_amount" : 1000000,
+      "max_amount_per_month" : -1,
+      "min_amount_per_month" : -1,
+      "max_amount_per_day" : 5000000,
+      "min_amount_per_day": 10000,
+      "tax_benefit" : "비과세종합저축",
+      "product_period": [
+        {
+          "period" : "[-,3]",
+          "basic_rate" : 2.2
+        },
+        {
+          "period" : "[3,6]",
+          "basic_rate" : 2.3
+        },
+        {
+          "period" : "[6, -]",
+          "basic_rate" : 2.4
+        }
+      ]
+    },
+    {
+      "uuid": "어쩌구 저쩌구",
+      "name": "청년 도약 적금",
+      "base_rate" : 2.4,
+      "max_rate" : 5.2,
+      "type" : "Savings" ,
+      "max_amount" : 500000000,
+      "min_amount" : 1000000,
+      "max_amount_per_month" : -1,
+      "min_amount_per_month" : -1,
+      "max_amount_per_day" : 5000000,
+      "min_amount_per_day": 10000,
+      "tax_benefit" : "비과세종합저축",
+      "product_period": [
+        {
+          "period" : "[-,3]",
+          "basic_rate" : 2.2
+        },
+        {
+          "period" : "[3,6]",
+          "basic_rate" : 2.3
+        },
+        {
+          "period" : "[6, -]",
+          "basic_rate" : 2.4
+        }
+      ]
+    },
+    {
+      "uuid": "어쩌구 저쩌구",
+      "name": "청년 도약 적금",
+      "base_rate" : 2.4,
+      "max_rate" : 5.2,
+      "type" : "Savings" ,
+      "max_amount" : 500000000,
+      "min_amount" : 1000000,
+      "max_amount_per_month" : -1,
+      "min_amount_per_month" : -1,
+      "max_amount_per_day" : 5000000,
+      "min_amount_per_day": 10000,
+      "tax_benefit" : "비과세종합저축",
+      "product_period": [
+        {
+          "period" : "[-,3]",
+          "basic_rate" : 2.2
+        },
+        {
+          "period" : "[3,6]",
+          "basic_rate" : 2.3
+        },
+        {
+          "period" : "[6, -]",
+          "basic_rate" : 2.4
+        }
+      ]
+    }
+  ]
+
+}
