@@ -1,4 +1,4 @@
-from src.preprocessing.crawling.ai.LlmUtil import LlmUtil
+from src.shared.ai.LlmUtil import LlmUtil
 
 util = LlmUtil()
 

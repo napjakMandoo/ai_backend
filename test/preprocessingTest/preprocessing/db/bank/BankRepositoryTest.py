@@ -1,7 +1,7 @@
-from src.preprocessing.db.bank.BankRepository import BankRepository
+from src.shared.db.bank.BankRepository import BankRepository
 import logging
 
-from src.preprocessing.db.util.MysqlUtil import MysqlUtil
+from src.shared.db.util.MysqlUtil import MysqlUtil
 
 class BankRepositoryTest:
     

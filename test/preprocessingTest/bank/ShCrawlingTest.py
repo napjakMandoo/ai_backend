@@ -1,4 +1,4 @@
-from src.preprocessing.crawling.crawler.sh.sh import SuhyupBankCategoryCrawler
+from src.crawler.bank_crawler.sh.sh import SuhyupBankCategoryCrawler
 import logging
 
 # 로깅 설정

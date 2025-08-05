@@ -1,6 +1,6 @@
 import json
 
-file_path = "/home/jeonggiju/hanium/ai_backend/src/preprocessing/crawling/resultData/JEJU.json"      # 읽을 JSON 파일
+file_path = "/src/crawler/resultData/JEJU.json"  # 읽을 JSON 파일
 with open(file_path, "r", encoding="utf-8") as f:
     data = json.load(f)              # dict 또는 list 로 로드
 

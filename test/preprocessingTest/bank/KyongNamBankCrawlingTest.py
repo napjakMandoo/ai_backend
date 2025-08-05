@@ -1,6 +1,6 @@
-from src.preprocessing.crawling.ai.LlmUtil import LlmUtil
-from src.preprocessing.crawling.crawler.kyongnam.KyongNamBankCrawler import KyongNamBankCrawler
-from src.preprocessing.crawling.BankLink import BankLink
+from src.shared.ai.LlmUtil import LlmUtil
+from src.crawler.bank_crawler.kyongnam.KyongNamBankCrawler import KyongNamBankCrawler
+from src.crawler.util.BankLink import BankLink
 import logging
 
 if __name__ == '__main__':

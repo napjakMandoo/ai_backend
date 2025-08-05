@@ -1,30 +1,12 @@
 from datetime import datetime
 import logging
-import schedule
-import time
 import json
 import os
 from logging.handlers import RotatingFileHandler
-from src.preprocessing.crawling.ai.LlmUtil import LlmUtil
-from src.preprocessing.crawling.BankLink import BankLink
-from src.preprocessing.crawling.crawler.busan.busan_bank_crawler import BusanBankUnifiedCrawler
-from src.preprocessing.crawling.crawler.gwangju.gwangju_bank_crawler import KJBankCompleteCrawler
-from src.preprocessing.crawling.crawler.hana.hana import HanaBankCrawler
-from src.preprocessing.crawling.crawler.ibk.ibk_bank import IBKFullCrawler
-from src.preprocessing.crawling.crawler.im.IM import IMBankCompleteCrawler
-from src.preprocessing.crawling.crawler.jeju.jeju_bank_crawler import JejuBankDepositSavingsOnlyCrawler
-from src.preprocessing.crawling.crawler.kb.kb import KBProductCrawler
-from src.preprocessing.crawling.crawler.kdb.KdbCrawler import KdbCrawler
-from src.preprocessing.crawling.crawler.kyongnam.KyongNamBankCrawler import KyongNamBankCrawler
-from src.preprocessing.crawling.crawler.nh.nh import NHBankCrawler
-from src.preprocessing.crawling.crawler.post.PostBankCrawler import PostBankCrawler
-from src.preprocessing.crawling.crawler.sc.sc_bank_crawler import SCBankCleanCrawler
-from src.preprocessing.crawling.crawler.sh.sh import SuhyupBankCategoryCrawler
-from src.preprocessing.crawling.crawler.sinhan.SinHanBankCrawler import SinHanBankCrawler
-from src.preprocessing.crawling.crawler.woori.woori import WooriBankCrawler
-from src.preprocessing.db.bank.BankRepository import BankRepository
-from src.preprocessing.db.product.productRepository import ProductRepository
-from src.preprocessing.db.util.MysqlUtil import MysqlUtil
+from src.shared.ai.LlmUtil import LlmUtil
+from src.shared.db.bank.BankRepository import BankRepository
+from src.shared.db.product.productRepository import ProductRepository
+from src.shared.db.util.MysqlUtil import MysqlUtil
 
 class App:
     def __init__(self):

@@ -1,4 +1,4 @@
-from src.preprocessing.crawling.crawler.nh.nh import NHBankCrawler
+from src.crawler.bank_crawler.nh.nh import NHBankCrawler
 
 # start로 시작하기 통일
 # 저장 경로 변경
