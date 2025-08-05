@@ -133,14 +133,14 @@ class App:
             self.logger.info("=====크롤링 끝=====")
 
             # #######
-            # self.logger.info("=====전처리 시작=====")
-            # after_preprocessed_products = self.preprocessed(before_preprocessed_products)
-            # self.logger.info("=====전처리 끝=====")
+            self.logger.info("=====전처리 시작=====")
+            after_preprocessed_products = self.preprocessed(before_preprocessed_products)
+            self.logger.info("=====전처리 끝=====")
             #
             # #######
-            # self.logger.info("=====DB에 저장 시작=====")
-            # self.save_to_db(after_preprocessed_products, bank_name=bank_name)
-            # self.logger.info("=====DB에 끝=====")
+            self.logger.info("=====DB에 저장 시작=====")
+            self.save_to_db(after_preprocessed_products, bank_name=bank_name)
+            self.logger.info("=====DB에 끝=====")
 
         end_time = datetime.now()
         elapsed_time = end_time - start_time
