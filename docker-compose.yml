@@ -1,0 +1,24 @@
+version: "1.0"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: flask
+    command: src/app/app.py
+    ports:
+      - "5000:5000"
+    env_file: .env
+
+  crawler:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: crawler
+    command: src/crawler/crawling.py
+    restart: unless-stopped
+    env_file: .env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
