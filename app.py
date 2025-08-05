@@ -25,8 +25,10 @@ from src.preprocessing.crawling.crawler.woori.woori import WooriBankCrawler
 from src.preprocessing.db.bank.BankRepository import BankRepository
 from src.preprocessing.db.product.productRepository import ProductRepository
 from src.preprocessing.db.util.MysqlUtil import MysqlUtil
+from flask import Flask, jsonify, request
 
-class App:
+
+class Crawling:
     def __init__(self):
         self.productRepository = ProductRepository()
         self.logger = logging.getLogger(__name__)
@@ -268,8 +270,23 @@ class App:
             self.logger.error(f"애플리케이션 실행 중 오류 발생: {e}")
             raise
 
+app = Flask(__name__)
+
+@app.route('/ping', methods=['GET'])
+def ping():
+    return jsonify({"message": "pong"})
+
+@app.route('/echo', methods=['POST'])
+def echo():
+    data = request.get_json(force=True)
+    return jsonify(data), 201
+
+@app.route('/')
+def hello_world():  # put application's code here
+    return 'Hello World!'
 
 if __name__ == "__main__":
-    app = App()
-    app.setup_logging()
-    app.start()
+    crawling = Crawling()
+    crawling.setup_logging()
+    crawling.start()
+    app.run(host='0.0.0.0', port=5000, debug=True)

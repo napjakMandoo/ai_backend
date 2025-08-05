@@ -88,3 +88,5 @@ websockets==15.0.1
 wheel==0.46.1
 wsproto==1.2.0
 zstandard==0.23.0
+
+Flask~=3.1.1
