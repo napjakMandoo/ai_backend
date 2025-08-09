@@ -64,12 +64,12 @@ class App:
     def crawling(self, bank_name: str = ""):
         before_preprocessed_products = []
 
-        if bank_name == "BNK_BUSAN":
-            data = self.read_json("BNK_BUSAN")
-            for i in data:
-                before_preprocessed_products.append(i)
+        # if bank_name == "BNK_BUSAN":
+        #     data = self.read_json("BNK_BUSAN")
+        #     for i in data:
+        #         before_preprocessed_products.append(i)
 
-        elif bank_name == "SC_JEIL":
+        if bank_name == "SC_JEIL":
             data = self.read_json("SC_JEIL")
             for i in data:
                 before_preprocessed_products.append(i)

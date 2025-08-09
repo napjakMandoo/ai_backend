@@ -11,13 +11,16 @@ class product_dto(BaseModel):
     base_rate: float
     max_rate: float
     type: str
-    max_amount: int
-    min_amount: int
-    max_amount_per_month: int
-    min_amount_per_month: int
-    max_amount_per_day: int
-    min_amount_per_day: int
+    maximum_amount: int
+    minimum_amount: int
+    maximum_amount_per_month: int
+    minimum_amount_per_month: int
+    maximum_amount_per_day: int
+    minimum_amount_per_day: int
     tax_benefit: str
+    preferential_info: str
+    sub_amount: str
+    sub_term: str
     product_period: List[product_period_dto]
 
 class ai_payload_dto(BaseModel):

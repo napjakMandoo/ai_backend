@@ -1,9 +1,44 @@
 import datetime
 import logging
 import uuid
+
+from src.app.dto.request.request_ai_dto import ai_payload_dto, product_dto, product_period_dto
 from src.shared.db.bank.BankRepository import BankRepository
 from src.shared.db.util.MysqlUtil import MysqlUtil
+from typing import List, Dict
+from pymysql.cursors import DictCursor
 
+'''
+  "products": [
+    {
+      "uuid": "어쩌구 저쩌구",
+      "name": "청년 도약 적금",
+      "base_rate" : 2.4,
+      "max_rate" : 5.2,
+      "type" : "Savings" ,
+      "max_amount" : 500000000,
+      "min_amount" : 1000000,
+      "max_amount_per_month" : -1,
+      "min_amount_per_month" : -1,
+      "max_amount_per_day" : 5000000,
+      "min_amount_per_day": 10000,
+      "tax_benefit" : "비과세종합저축",
+      "product_period": [
+        {
+          "period" : "[-,3]",
+          "basic_rate" : 2.2
+        },
+        {
+          "period" : "[3,6]",
+          "basic_rate" : 2.3
+        },
+        {
+          "period" : "[6, -]",
+          "basic_rate" : 2.4
+        }
+      ]
+    },
+'''
 
 class ProductRepository:
 
@@ -11,6 +46,98 @@ class ProductRepository:
         self.logger = logging.getLogger(__name__)
         self.mysqlUtil = MysqlUtil()
         self.BankRepository = BankRepository()
+
+    def build_ai_payload(self, connection, top_n: int = 20) -> ai_payload_dto:
+        SQL = """
+              WITH topN AS (SELECT bp.product_uuid, \
+                                   bp.name, \
+                                   bp.basic_rate, \
+                                   bp.max_rate, \
+                                   bp.type, \
+                                   bp.maximum_amount, \
+                                   bp.maximum_amount_per_month, \
+                                   bp.maximum_amount_per_day, \
+                                   bp.minimum_amount, \
+                                   bp.minimum_amount_per_month, \
+                                   bp.minimum_amount_per_day, \
+                                   bp.tax_benefit, \
+                                   bp.preferential_info, \
+                                   bp.sub_amount, \
+                                   bp.sub_target, \
+                                   bp.sub_term, \
+                                   bp.sub_way \
+                            FROM bank_product bp \
+                            WHERE bp.deleted_at IS NULL \
+                            ORDER BY bp.max_rate DESC
+                  LIMIT %s
+                  )
+              SELECT t.product_uuid, \
+                     t.name, \
+                     t.basic_rate, \
+                     t.max_rate, \
+                     t.type, \
+                     t.maximum_amount, \
+                     t.maximum_amount_per_month, \
+                     t.maximum_amount_per_day, \
+                     t.minimum_amount, \
+                     t.minimum_amount_per_month, \
+                     t.minimum_amount_per_day, \
+                     t.tax_benefit, \
+                     t.preferential_info, \
+                     t.sub_amount, \
+                     t.sub_target, \
+                     t.sub_term, \
+                     t.sub_way, \
+                     pp.period     AS product_period, \
+                     pp.bank_rate AS product_basic_rate
+              FROM topN t
+                       JOIN product_period pp
+                            ON pp.product_uuid = t.product_uuid
+              ORDER BY t.maximum_rate DESC, t.product_uuid, pp.period \
+              """
+
+        with connection.cursor(DictCursor) as cursor:
+            cursor.execute(SQL, (top_n,))
+            rows = cursor.fetchall()
+
+        products: Dict[str, product_dto] = {}
+
+        for r in rows:
+            pid = r["product_uuid"]
+
+            if pid not in products:
+                products[pid] = product_dto(
+                    uuid=pid,
+                    name=r["name"],
+                    base_rate=float(r["basic_rate"]),
+                    max_rate=float(r["max_rate"]),
+                    type=r["type"],
+                    max_amount=int(r["max_amount"]),
+                    min_amount=int(r["min_amount"]),
+                    max_amount_per_month=int(r["max_amount_per_month"]) if r[
+                                                                               "max_amount_per_month"] is not None else -1,
+                    min_amount_per_month=int(r["min_amount_per_month"]) if r["min_amount_per_month"] is not None else 0,
+                    max_amount_per_day=int(r["max_amount_per_day"]),
+                    min_amount_per_day=int(r["min_amount_per_day"]),
+                    tax_benefit=r["tax_benefit"] or "",
+                    preferential_info=r["preferential_info"] or "",
+                    sub_amount=r["sub_amount"] or "",
+                    sub_term=r["sub_term"] or "",
+                    product_period=[],
+                )
+
+            products[pid].product_period.append(
+                product_period_dto(
+                    period=r["product_period"],
+                    basic_rate=float(r["product_basic_rate"]),
+                )
+            )
+
+        return ai_payload_dto(
+            tax_rate=15.0,  # 고정
+            products=list(products.values())
+        )
+
 
     # 테스트 용도
     def delete_all_product(self):
