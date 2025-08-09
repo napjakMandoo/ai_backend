@@ -9,9 +9,7 @@ from google.genai import types
 from google.genai.errors import ServerError
 
 from src.app.dto.ai.prompt import PROMPT_ENG
-from src.shared.ai.jsonSchema import Preferential
 from src.app.dto.response.response_ai_dto import response_ai_dto
-
 
 class ai_for_recommend:
 

@@ -103,6 +103,13 @@ class LlmUtil:
             "\"product_maximum_amount_per_month\": Maximum monthly deposit amount. Use -1 if no limit or not specified.\n"
             "\"product_minimum_amount_per_month\": Minimum monthly deposit amount. Use -1 if not specified.\n\n"
 
+            " \"preferential_conditions_detail_header\": Refers to the title of each preferential condition within the financial product.\n"
+            " \"preferential_conditions_detail_detail\": Refers to the detailed information of each preferential condition within the financial product. And it must be a maximum of 250 characters.\n"
+            " \"preferential_conditions_detail_interest_rate\": Refers to the interest rate of each preferential condition within the financial product.\n"
+            " \"preferential_conditions_detail_keyword\": Select an appropriate keyword for each preferential condition within the financial product. "
+            " The keyword must be chosen from the following list: ['ACCOUNT_HOLDING','AGE','AUTOMATIC_TRANSFER','CREDIT_CARD_USE_OR_PERFORMANCE','FIRST_TRANSACTION','LINKED_PRODUCT_JOIN','LONG_TERM_TRANSACTION_OR_PRODUCT','MARKETING_CONSENT','NEW_CUSTOMER','NON_FACE_TO_FACE_JOIN','SALARY_TRANSFER','TARGET_AMOUNT_ACHIEVED_OR_SAVE_SUCCESS']"
+            ".If no suitable keyword applies, label it as 'ETC' In other words, each preferential condition must map to exactly one keyword.\n"
+
             "## AMOUNT NORMALIZATION RULES (APPLY BEFORE OUTPUT)\n"
             "- The following inputs MUST be normalized to -1 (meaning 'no limit' or 'not specified'):\n"
             "  * null/None, empty string, 'N/A', '-', '무제한', '제한 없음', '없음'.\n"
