@@ -73,7 +73,12 @@ SYS_RULE = (
     "   - \"N~M년\"                       → \"[12*N, 12*M]\"\n"
     "   - \"N년제\"                       → \"[12*N, 12*N]\"\n"
     "   - \"1년\" is \"[12, 12]\"; \"3년이상\" is \"[36, -]\"\n\n"
-
+    "   - If the source uses DAYS:\n"
+    "       * \"N일\" (exact)                  → \"[ceil(N/30), ceil(N/30)]\"\n"
+    "       * \"N일 이상\"                      → \"[ceil(N/30), -]\"\n"
+    "       * \"N일 이하\" / \"최대 N일\"         → \"[0, ceil(N/30)]\"\n"
+    "       * \"N~M일\" / \"N일 이상 M일 이하\"    → \"[ceil(N/30), ceil(M/30)]\"\n\n"
+    
     "4) SELF-CORRECTION RULES:\n"
     "   - If you produced two plain numbers like [\"12\",\"36\"] with ONE rate, MERGE them into a single range string: \"[12, 36]\" (Mode B).\n"
     "   - If you produced a list of natural-language labels, REPLACE ALL with properly bracketed range strings per the normalization rules.\n"

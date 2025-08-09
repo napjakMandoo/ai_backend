@@ -8,13 +8,20 @@ class monthly_plan_dto(BaseModel):
 
 class product_dto(BaseModel):
     uuid: str
+    type: str
+    bank_name: str
+    base_rate: float
+    max_rate: float
+    product_name: str
+    product_max_rate: float
+    product_base_rate: float
     start_month: int
     end_month: int
     monthly_plan: List[monthly_plan_dto]
 
 class combination_dto(BaseModel):
     combination_id: str
-    expected_rate: float                # "6.00" 문자열도 float으로 파싱됩니다.
+    expected_rate: float
     expected_interest_after_tax: int
     product: List[product_dto]
 

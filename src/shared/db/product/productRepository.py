@@ -51,6 +51,7 @@ class ProductRepository:
         SQL = """
               WITH topN AS (SELECT bp.product_uuid, \
                                    bp.name, \
+                                   bp.bank_uuid, \
                                    bp.basic_rate, \
                                    bp.max_rate, \
                                    bp.type, \
@@ -72,6 +73,7 @@ class ProductRepository:
                   LIMIT %s
                   )
               SELECT BIN_TO_UUID(t.product_uuid) AS product_uuid,
+                     b.bank_name                     AS bank_name,
                      t.name, \
                      t.basic_rate, \
                      t.max_rate, \
@@ -92,7 +94,9 @@ class ProductRepository:
                      pp.bank_rate                AS product_basic_rate
               FROM topN t
                        JOIN product_period pp
-                            ON pp.product_uuid = t.product_uuid -- 조인은 바이너리끼리
+                            ON pp.product_uuid = t.product_uuid
+                       JOIN bank b
+                            ON b.bank_uuid = t.bank_uuid  
               ORDER BY t.max_rate DESC, t.product_uuid, pp.period \
               """
         with connection.cursor(DictCursor) as cursor:
@@ -106,17 +110,20 @@ class ProductRepository:
 
             if pid not in products:
                 products[pid] = product_dto(
-                    uuid=pid,
+                    product_uuid=pid,
                     name=r["name"],
                     base_rate=float(r["basic_rate"]),
                     max_rate=float(r["max_rate"]),
                     type=r["type"],
-                    max_amount=int(r["maximum_amount"]),
-                    min_amount=int(r["minimum_amount"]),
-                    max_amount_per_month=int(r["maximum_amount_per_month"]) if r["maximum_amount_per_month"] is not None else -1,
-                    min_amount_per_month=int(r["minimum_amount_per_month"]) if r["minimum_amount_per_month"] is not None else 0,
-                    max_amount_per_day=int(r["maximum_amount_per_day"]),
-                    min_amount_per_day=int(r["minimum_amount_per_day"]),
+                    bank_name=r["bank_name"],
+
+                    maximum_amount=int(r["maximum_amount"]),
+                    minimum_amount=int(r["minimum_amount"]),
+                    maximum_amount_per_month=int(r["maximum_amount_per_month"]) if r["maximum_amount_per_month"] is not None else -1,
+                    minimum_amount_per_month=int(r["minimum_amount_per_month"]) if r["minimum_amount_per_month"] is not None else 0,
+                    maximum_amount_per_day=int(r["maximum_amount_per_day"]) if r["maximum_amount_per_day"] is not None else -1,
+                    minimum_amount_per_day=int(r["minimum_amount_per_day"]) if r["minimum_amount_per_day"] is not None else 0,
+
                     tax_benefit=r["tax_benefit"] or "",
                     preferential_info=r["preferential_info"] or "",
                     sub_amount=r["sub_amount"] or "",
@@ -136,6 +143,19 @@ class ProductRepository:
             products=list(products.values())
         )
 
+    # 테스트 용도
+    def print_product_by_uuid(self, product_uuid: str, connection):
+        uid_bytes = uuid.UUID(product_uuid).bytes  # 문자열 UUID -> 16바이트
+        cursor = connection.cursor()
+        try:
+            cursor.execute(
+                "SELECT * FROM bank_product WHERE product_uuid = %s",
+                (uid_bytes,)
+            )
+            for row in cursor.fetchall():
+                print(row)
+        finally:
+            cursor.close()
 
     # 테스트 용도
     def delete_all_product(self):

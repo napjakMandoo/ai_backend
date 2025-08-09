@@ -2,13 +2,14 @@ import logging
 import os
 import time
 import random
+import json
 
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 from google.genai.errors import ServerError
 
-from src.app.dto.ai.prompt import PROMPT_ENG
+from src.app.dto.ai.prompt_eng import PROMPT_ENG
 from src.app.dto.response.response_ai_dto import response_ai_dto
 
 class ai_for_recommend:
@@ -21,16 +22,16 @@ class ai_for_recommend:
             raise RuntimeError("GENAI_API_KEY is not set.")
         self.client = genai.Client(api_key=api_key)
 
-    def create_preferential_json(self, content: str) -> response_ai_dto | ValueError:
+    def create_preferential_json(self, content: dict) -> response_ai_dto | ValueError:
+        content_json = json.dumps(content, ensure_ascii=False)
 
-        prompt = f"{PROMPT_ENG}{content}"
+        prompt = f"{PROMPT_ENG}{content_json}"
 
         config = types.GenerateContentConfig(
             response_mime_type="application/json",
             response_schema=response_ai_dto,
         )
 
-        # 간단한 503 백오프 재시도 (필요시 제거 가능)
         max_retry = 5
         for attempt in range(1, max_retry + 1):
             try:

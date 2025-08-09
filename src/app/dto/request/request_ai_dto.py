@@ -6,8 +6,9 @@ class product_period_dto(BaseModel):
     basic_rate: float
 
 class product_dto(BaseModel):
-    uuid: str
+    product_uuid: str
     name: str
+    bank_name: str
     base_rate: float
     max_rate: float
     type: str
