@@ -8,7 +8,7 @@
       "expected_interest_after_tax" : 76386100,
       "product": [
         {
-          "uuid": "어쩌구 저쩌구",
+          "product_uuid": "어쩌구 저쩌구",
           "bank_name": "JEJU",
           "product_name": "청년 사랑 적금",
           "product_max_rate": 7.0,
@@ -80,7 +80,7 @@
           ]
         },
         {
-          "uuid": "어쩌구 저쩌구",
+          "product_uuid": "어쩌구 저쩌구",
           "bank_name": "JEJU",
           "product_name": "청년 사랑 적금",
           "product_max_rate": 7.0,
@@ -181,7 +181,7 @@
           ]
         },
         {
-          "uuid" : "어쩌구 저쩌구",
+          "product_uuid" : "어쩌구 저쩌구",
           "bank_name": "JEJU",
           "product_name": "청년 사랑 적금",
           "product_max_rate": 7.0,
@@ -259,7 +259,7 @@
       "expected_interest_after_tax" : 76386100,
       "product": [
         {
-          "uuid": "어쩌구 저쩌구",
+          "product_uuid": "어쩌구 저쩌구",
           "bank_name": "JEJU",
           "product_name": "청년 사랑 적금",
           "product_max_rate": 7.0,
@@ -331,7 +331,7 @@
           ]
         },
         {
-          "uuid": "어쩌구 저쩌구",
+          "product_uuid": "어쩌구 저쩌구",
           "bank_name": "JEJU",
           "product_name": "청년 사랑 적금",
           "product_max_rate": 7.0,
@@ -432,7 +432,7 @@
           ]
         },
         {
-          "uuid" : "어쩌구 저쩌구",
+          "product_uuid" : "어쩌구 저쩌구",
           "bank_name": "JEJU",
           "product_name": "청년 사랑 적금",
           "product_max_rate": 7.0,
@@ -510,7 +510,7 @@
       "expected_interest_after_tax" : 76386100,
       "product": [
         {
-          "uuid": "어쩌구 저쩌구",
+          "product_uuid": "어쩌구 저쩌구",
           "bank_name": "JEJU",
           "product_name": "청년 사랑 적금",
           "product_max_rate": 7.0,
@@ -582,7 +582,7 @@
           ]
         },
         {
-          "uuid": "어쩌구 저쩌구",
+          "product_uuid": "어쩌구 저쩌구",
           "bank_name": "JEJU",
           "product_name": "청년 사랑 적금",
           "product_max_rate": 7.0,
@@ -683,7 +683,7 @@
           ]
         },
         {
-          "uuid" : "어쩌구 저쩌구",
+          "product_uuid" : "어쩌구 저쩌구",
           "bank_name": "JEJU",
           "product_name": "청년 사랑 적금",
           "product_max_rate": 7.0,
