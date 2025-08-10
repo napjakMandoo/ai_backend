@@ -3,7 +3,7 @@ import logging
 import json
 import os
 from logging.handlers import RotatingFileHandler
-from src.shared.ai.LlmUtil import LlmUtil
+from src.crawler.ai.LlmUtil import LlmUtil
 from src.crawler.util.BankLink import BankLink
 from src.crawler.bank_crawler.kyongnam.KyongNamBankCrawler import KyongNamBankCrawler
 from src.shared.db.bank.BankRepository import BankRepository

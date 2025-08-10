@@ -11,8 +11,8 @@ from google import genai
 from google.genai import types
 from google.genai.errors import ServerError
 
-from src.shared.ai.jsonSchema import Preferential
-from src.shared.ai.preprocessPrompt import SYS_RULE
+from src.crawler.ai.jsonSchema import Preferential
+from src.crawler.ai.preprocessPrompt import SYS_RULE
 
 
 class LlmUtil:
@@ -34,13 +34,7 @@ class LlmUtil:
             by_alias: bool = True,
             pretty: bool = True,
     ) -> str:
-        """
-        Preferential(Pydantic 모델)을 JSON 파일로 저장.
-        - out_dir: 저장 디렉터리
-        - filename: 파일명(확장자 제외). 없으면 product_name+타임스탬프 기반 자동 생성
-        - by_alias: alias 키 사용 여부
-        - pretty: 들여쓰기 여부
-        """
+
         Path(out_dir).mkdir(parents=True, exist_ok=True)
 
         # 파일명 자동 생성(가능하면 product_name 사용)

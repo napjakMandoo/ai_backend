@@ -1,6 +1,6 @@
 import logging
 
-from src.app.dto.ai.ai_for_recommend import ai_for_recommend
+from src.app.ai.ai_for_recommend import ai_for_recommend
 from src.app.dto.request.request_front_dto import request_combo_dto
 from src.shared.db.product.productRepository import ProductRepository
 from src.shared.db.util.MysqlUtil import MysqlUtil

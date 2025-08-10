@@ -9,7 +9,7 @@ from google import genai
 from google.genai import types
 from google.genai.errors import ServerError
 
-from src.app.dto.ai.prompt_eng import PROMPT_ENG
+from src.app.ai.prompt_eng import PROMPT_ENG
 from src.app.dto.response.response_ai_dto import response_ai_dto
 
 

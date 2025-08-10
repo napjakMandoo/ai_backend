@@ -1,4 +1,4 @@
-from src.shared.ai.LlmUtil import LlmUtil
+from src.crawler.ai.LlmUtil import LlmUtil
 
 util = LlmUtil()
 

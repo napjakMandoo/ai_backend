@@ -3,7 +3,7 @@ import logging
 import json
 import os
 from logging.handlers import RotatingFileHandler
-from src.shared.ai.LlmUtil import LlmUtil
+from src.crawler.ai.LlmUtil import LlmUtil
 from src.shared.db.bank.BankRepository import BankRepository
 from src.shared.db.product.productRepository import ProductRepository
 from src.shared.db.util.MysqlUtil import MysqlUtil
@@ -129,6 +129,7 @@ class App:
 
         for bank_name in bank_name_list:
             self.logger.info("===== 시작=====")
+            self.logger.info("=====크롤링 시작=====")
             before_preprocessed_products = self.crawling(bank_name=bank_name)
             self.logger.info("=====크롤링 끝=====")
 
