@@ -21,7 +21,7 @@ PROMPT_KOR = r"""
 
 - ai_payload_dto:
   - tax_rate: float            # 한국 이자소득세율(예: 15.4). 이 값을 그대로 사용.
-  - products: List[product_dto]
+  - products: List[product_dto] 
 
 - product_dto:
   - uuid: str
