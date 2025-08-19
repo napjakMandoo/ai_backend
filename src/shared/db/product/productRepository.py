@@ -9,7 +9,6 @@ from typing import List, Dict
 from pymysql.cursors import DictCursor
 
 
-
 class ProductRepository:
 
     def __init__(self):
@@ -43,7 +42,7 @@ class ProductRepository:
                   LIMIT %s
                   )
               SELECT BIN_TO_UUID(t.product_uuid) AS product_uuid,
-                     b.bank_name                     AS bank_name,
+                     b.bank_name                 AS bank_name,
                      t.name, \
                      t.basic_rate, \
                      t.max_rate, \
@@ -66,7 +65,7 @@ class ProductRepository:
                        JOIN product_period pp
                             ON pp.product_uuid = t.product_uuid
                        JOIN bank b
-                            ON b.bank_uuid = t.bank_uuid  
+                            ON b.bank_uuid = t.bank_uuid
               ORDER BY t.max_rate DESC, t.product_uuid, pp.period \
               """
         with connection.cursor(DictCursor) as cursor:
@@ -89,10 +88,14 @@ class ProductRepository:
 
                     maximum_amount=int(r["maximum_amount"]),
                     minimum_amount=int(r["minimum_amount"]),
-                    maximum_amount_per_month=int(r["maximum_amount_per_month"]) if r["maximum_amount_per_month"] is not None else -1,
-                    minimum_amount_per_month=int(r["minimum_amount_per_month"]) if r["minimum_amount_per_month"] is not None else 0,
-                    maximum_amount_per_day=int(r["maximum_amount_per_day"]) if r["maximum_amount_per_day"] is not None else -1,
-                    minimum_amount_per_day=int(r["minimum_amount_per_day"]) if r["minimum_amount_per_day"] is not None else 0,
+                    maximum_amount_per_month=int(r["maximum_amount_per_month"]) if r[
+                                                                                       "maximum_amount_per_month"] is not None else -1,
+                    minimum_amount_per_month=int(r["minimum_amount_per_month"]) if r[
+                                                                                       "minimum_amount_per_month"] is not None else 0,
+                    maximum_amount_per_day=int(r["maximum_amount_per_day"]) if r[
+                                                                                   "maximum_amount_per_day"] is not None else -1,
+                    minimum_amount_per_day=int(r["minimum_amount_per_day"]) if r[
+                                                                                   "minimum_amount_per_day"] is not None else 0,
 
                     tax_benefit=r["tax_benefit"] or "",
                     preferential_info=r["preferential_info"] or "",
@@ -144,7 +147,7 @@ class ProductRepository:
         mysql_connection.close()
         self.logger.info("상품 관련 데이터 삭제 끝")
 
-    def check_is_deleted(self, bank_name:str, new_products_name:set, connection):
+    def check_is_deleted(self, bank_name: str, new_products_name: set, connection):
 
         self.logger.info("=====삭제 작업 시작=====")
 
@@ -189,12 +192,10 @@ class ProductRepository:
     def save_one_product(self, product_data, bank_name, connection):
         self.logger.info("상품 데이터 삽입 시작")
 
-        # 🚨 데이터 검증 (에러 발생시 건너뛰기)
         validation_result = self._validate_product_data_safe(product_data)
         if not validation_result['valid']:
             self.logger.warning(f"데이터 검증 실패로 상품 삽입 건너뜀: {validation_result['reason']}")
-            return False  # 건너뛰었음을 표시
-
+            return False
         product_name: str = product_data.product_name
         product_basic_rate: float = product_data.product_basic_rate
         product_max_rate: float = product_data.product_max_rate
@@ -202,6 +203,16 @@ class ProductRepository:
         product_url_links: str = product_data.product_url_links
         product_info: str = "\\".join(product_data.product_info) if isinstance(product_data.product_info,
                                                                                list) else str(product_data.product_info)
+
+        self.logger.info("=== INFO 필드 데이터 로깅 ===")
+        self.logger.info(f"원본 product_info 타입: {type(product_data.product_info)}")
+        self.logger.info(f"원본 product_info 값: {product_data.product_info}")
+        self.logger.info(f"처리된 product_info (DB 저장용): {product_info}")
+        self.logger.info(f"처리된 product_info 길이: {len(product_info) if product_info else 0}자")
+        if product_info and len(product_info) > 100:
+            self.logger.info(f"product_info 미리보기 (처음 100자): {product_info[:100]}...")
+        self.logger.info("=== INFO 필드 로깅 끝 ===")
+
         product_maximum_amount: int = product_data.product_maximum_amount
         product_minimum_amount: int = product_data.product_minimum_amount
 
@@ -217,7 +228,6 @@ class ProductRepository:
         product_tax_benefit: str = product_data.product_tax_benefit
         product_preferential_info: str = product_data.product_preferential_info
 
-        # 검증된 데이터 사용 (안전한 배열들)
         preferential_conditions_detail_header: list[str] = validation_result['safe_preferential']['header']
         preferential_conditions_detail_detail: list[str] = validation_result['safe_preferential']['detail']
         preferential_conditions_detail_interest_rate: list[float] = validation_result['safe_preferential']['rate']
@@ -315,7 +325,7 @@ class ProductRepository:
 
             connection.commit()
             self.logger.info("상품 데이터 삽입 성공")
-            return True  # 성공
+            return True
 
         except Exception as e:
             self.logger.error(f"상품 데이터 삽입 에러 발생: roll back: {e}")
@@ -336,9 +346,6 @@ class ProductRepository:
             cursor.close()
 
     def _validate_product_data_safe(self, product_data) -> dict:
-        """
-        안전한 검증: 에러를 발생시키는 대신 문제가 있는 데이터를 건너뛰고 결과를 반환
-        """
         self.logger.info("상품 데이터 안전 검증 시작")
 
         result = {
@@ -356,7 +363,6 @@ class ProductRepository:
             }
         }
 
-        # 1. 필수 필드 검증
         required_fields = ['product_name', 'product_basic_rate', 'product_max_rate', 'product_type']
         for field in required_fields:
             if not hasattr(product_data, field) or getattr(product_data, field) is None:
@@ -364,7 +370,6 @@ class ProductRepository:
                 result['reason'] = f"필수 필드 누락: {field}"
                 return result
 
-        # 2. 우대조건 배열 처리
         pref_arrays = {
             'header': getattr(product_data, 'preferential_conditions_detail_header', []) or [],
             'detail': getattr(product_data, 'preferential_conditions_detail_detail', []) or [],
@@ -378,7 +383,6 @@ class ProductRepository:
             self.logger.warning(f"우대조건 배열 길이 불일치로 건너뜀: {pref_lengths}")
             self.logger.warning(f"header: {len(pref_arrays['header'])}, detail: {len(pref_arrays['detail'])}")
             self.logger.warning(f"rate: {len(pref_arrays['rate'])}, keyword: {len(pref_arrays['keyword'])}")
-            # 빈 배열로 설정하여 우대조건을 건너뜀
             result['safe_preferential'] = {
                 'header': [],
                 'detail': [],
@@ -386,7 +390,6 @@ class ProductRepository:
                 'keyword': []
             }
         else:
-            # 개별 항목 길이 검증 (200자 초과 시 잘라내기)
             safe_details = []
             for detail in pref_arrays['detail']:
                 if detail and len(detail) > 200:
@@ -403,16 +406,13 @@ class ProductRepository:
                 'keyword': pref_arrays['keyword']
             }
 
-        # 3. 기간/금리 배열 처리
         period_data = getattr(product_data, 'product_period_period', []) or []
         rate_data = getattr(product_data, 'product_period_base_rate', []) or []
 
-        # period_data 정규화
         normalized_period = self._normalize_period_data(period_data)
         period_length = len(normalized_period)
         rate_length = len(rate_data) if rate_data else 0
 
-        # 치명적인 period 형식 검증
         has_korean_words = False
         if normalized_period:
             for i, period in enumerate(normalized_period):
@@ -422,7 +422,6 @@ class ProductRepository:
                     break
 
         if has_korean_words:
-            # 치명적인 형식이므로 전체 기간 데이터를 건너뜀
             result['safe_period'] = {
                 'period': [],
                 'rate': []
@@ -432,7 +431,6 @@ class ProductRepository:
             self.logger.warning(f"기간/금리 배열 길이 불일치로 건너뜀: period={period_length}, rate={rate_length}")
             self.logger.warning(f"period_data: {normalized_period}")
             self.logger.warning(f"rate_data: {rate_data}")
-            # 배열 길이가 다르므로 전체 기간 데이터를 건너뜀
             result['safe_period'] = {
                 'period': [],
                 'rate': []
@@ -596,4 +594,9 @@ class ProductRepository:
         self.logger.error(f"period_base_rate: {product_period_base_rate}")
         self.logger.error("=== 상세 정보 끝 ===")
 
-
+        # ===== 에러 상황에서도 INFO 필드 로깅 =====
+        self.logger.error("=== 에러 발생 시 INFO 필드 상세 로깅 ===")
+        self.logger.error(f"product_info 타입: {type(product_info)}")
+        self.logger.error(f"product_info 길이: {len(product_info) if product_info else 0}자")
+        self.logger.error(f"product_info 전체 내용: {product_info}")
+        self.logger.error("=== 에러 시 INFO 필드 로깅 끝 ===")

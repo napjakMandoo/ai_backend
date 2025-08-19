@@ -64,26 +64,26 @@ class App:
     def crawling(self, bank_name: str = ""):
         before_preprocessed_products = []
 
-        # if bank_name == "BNK_BUSAN":
-        #     data = self.read_json("BNK_BUSAN")
+        if bank_name == "BNK_BUSAN":
+            data = self.read_json("BNK_BUSAN")
+            for i in data:
+                before_preprocessed_products.append(i)
+
+        # if bank_name == "SC_JEIL":
+        #     data = self.read_json("SC_JEIL")
         #     for i in data:
         #         before_preprocessed_products.append(i)
-
-        if bank_name == "SC_JEIL":
-            data = self.read_json("SC_JEIL")
-            for i in data:
-                before_preprocessed_products.append(i)
-
-        elif bank_name == "GWANGJU":
-            data = self.read_json("GWANGJU")
-            for i in data:
-                before_preprocessed_products.append(i)
-
-        elif bank_name == "JEJU":
-            data = self.read_json("JEJU")
-            for i in data:
-                before_preprocessed_products.append(i)
-
+        #
+        # elif bank_name == "GWANGJU":
+        #     data = self.read_json("GWANGJU")
+        #     for i in data:
+        #         before_preprocessed_products.append(i)
+        # #
+        # elif bank_name == "JEJU":
+        #     data = self.read_json("JEJU")
+        #     for i in data:
+        #         before_preprocessed_products.append(i)
+        #
         return before_preprocessed_products
 
     def preprocessed(self, before_preprocessed_products):
@@ -120,17 +120,14 @@ class App:
     def month_task(self):
         start_time = datetime.now()
         bank_repository = BankRepository()
-        bank_data = bank_repository.get_bank_data()
-        bank_name_list = []
-        for bank in bank_data:
-            bank_name_list.append(bank[0])
+        bank_name = bank_repository.get_bank_data()
 
         self.logger.info(f"테스트  진행 시작: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
-        for bank_name in bank_name_list:
+        for b_name in bank_name:
             self.logger.info("===== 시작=====")
             self.logger.info("=====크롤링 시작=====")
-            before_preprocessed_products = self.crawling(bank_name=bank_name)
+            before_preprocessed_products = self.crawling(bank_name=b_name)
             self.logger.info("=====크롤링 끝=====")
 
             # #######
@@ -140,7 +137,7 @@ class App:
             #
             # #######
             self.logger.info("=====DB에 저장 시작=====")
-            self.save_to_db(after_preprocessed_products, bank_name=bank_name)
+            self.save_to_db(after_preprocessed_products, bank_name=b_name)
             self.logger.info("=====DB에 끝=====")
 
         end_time = datetime.now()
