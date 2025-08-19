@@ -43,15 +43,18 @@ def setup_logging():
 def ai_recommend():
     logger = logging.getLogger(__name__)
     logger.info("AI recommendation request received")
-
-    if not request.is_json:
-        logger.warning("Request rejected: Content-Type is not application/json")
-        return jsonify({"error": "Content-Type must be application/json"}), 415
-
+    
     try:
-        request_data = request.get_json()
+        # GET 요청에서 쿼리 파라미터 읽기
+        amount = request.args.get('amount', type=int)
+        period = request.args.get('period')
+        
+        request_data = {
+            'amount': amount,
+            'period': period
+        }
         logger.info(f"Request data parsed successfully: {request_data}")
-
+        
         request_dto = request_combo_dto(**request_data)
         logger.info(f"Request DTO created: amount={request_dto.amount}, period={request_dto.period}")
 
