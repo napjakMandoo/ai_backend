@@ -64,7 +64,7 @@ Output Schema (JSON format only)
             "product_name": str,          # product name from source data
             "product_max_rate": float,    # actual rate you applied in calc for this product (%)
             "product_base_rate": float,   # base rate used as reference (%)
-            "start_month": int,           # 0-based inclusive
+            "start_month": int,           # 1-based inclusive
             "end_month": int,             # inclusive, ≥ start_month
             "monthly_plan": [
               {

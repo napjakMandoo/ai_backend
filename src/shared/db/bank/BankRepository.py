@@ -13,23 +13,22 @@ class BankRepository:
     def get_bank_data(self):
         # 부산, SC, 광주, 제주, 전북, 경남, 우체국, 신한, KDB, 농협, 우리, 하나, 국민, 수협, ibk, im,
         dotenv.load_dotenv()
-        logo_path = os.getenv("LOGO_PATH")
-        busan = ["BNK_BUSAN", f"{logo_path}/kyongnam_logo.png"]
-        sc = ["SC_JEIL", f"{logo_path}/kyongnam_logo.png"]
-        gwangju = ["GWANGJU", f"{logo_path}/kyongnam_logo.png"]
-        jeju = ["JEJU", f"{logo_path}/kyongnam_logo.png"]
-        jeonbuk = ["JEONBUK", f"{logo_path}/kyongnam_logo.png"]
-        gyeongnam = ["BNK_GYEONGNAM", f"{logo_path}/kyongnam_logo.png"]
-        post = ["POST_OFFICE", f"{logo_path}/kyongnam_logo.png"]
-        sinhan = ["SHINHAN", f"{logo_path}/kyongnam_logo.png"]
-        kdb = ["KDB", f"{logo_path}/kyongnam_logo.png"]
-        nonghyup = ["NH", f"{logo_path}/kyongnam_logo.png"]
-        woori = ["WOORI", f"{logo_path}/kyongnam_logo.png"]
-        hana = ["HANA", f"{logo_path}/kyongnam_logo.png"]
-        kookmin = ["KB", f"{logo_path}/kyongnam_logo.png"]
-        suhyup = ["SH_SUHYUP", f"{logo_path}/kyongnam_logo.png"]
-        idk = ["IBK", f"{logo_path}/kyongnam_logo.png"]
-        im = ["IM_BANK", f"{logo_path}/kyongnam_logo.png"]
+        busan = ["BNK_BUSAN"]
+        sc = ["SC_JEIL"]
+        gwangju = ["GWANGJU"]
+        jeju = ["JEJU"]
+        jeonbuk = ["JEONBUK"]
+        gyeongnam = ["BNK_GYEONGNAM"]
+        post = ["POST_OFFICE"]
+        sinhan = ["SHINHAN"]
+        kdb = ["KDB"]
+        nonghyup = ["NH"]
+        woori = ["WOORI"]
+        hana = ["HANA"]
+        kookmin = ["KB"]
+        suhyup = ["SH_SUHYUP"]
+        idk = ["IBK"]
+        im = ["IM_BANK"]
         return [busan, sc, gwangju, jeju, jeonbuk, gyeongnam, post, sinhan, kdb, nonghyup, woori, hana, kookmin, suhyup,
                 idk, im]
 
@@ -52,10 +51,8 @@ class BankRepository:
                     continue
 
                 bank_uuid = uuid.uuid4().bytes
-                with open(bank_path, "rb") as f:
-                    logo_bytes = f.read()
 
-                cursor.execute("insert into bank(bank_uuid ,bank_name, bank_logo) values(%s ,%s, %s)", (bank_uuid, bank_name, logo_bytes))
+                cursor.execute("insert into bank(bank_uuid ,bank_name) values(%s ,%s)", (bank_uuid, bank_name))
 
                 self.logger.info(f"은행 '{bank_name}' 삽입 완료")
             connection.commit()

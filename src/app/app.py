@@ -39,7 +39,7 @@ def setup_logging():
     return root_logger
 
 
-@app.route("/ai/recommend", methods=["POST"])
+@app.route("/recommendations", methods=["GET"])
 def ai_recommend():
     logger = logging.getLogger(__name__)
     logger.info("AI recommendation request received")

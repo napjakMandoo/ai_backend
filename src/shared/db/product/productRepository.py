@@ -8,37 +8,7 @@ from src.shared.db.util.MysqlUtil import MysqlUtil
 from typing import List, Dict
 from pymysql.cursors import DictCursor
 
-'''
-  "products": [
-    {
-      "uuid": "어쩌구 저쩌구",
-      "name": "청년 도약 적금",
-      "base_rate" : 2.4,
-      "max_rate" : 5.2,
-      "type" : "Savings" ,
-      "max_amount" : 500000000,
-      "min_amount" : 1000000,
-      "max_amount_per_month" : -1,
-      "min_amount_per_month" : -1,
-      "max_amount_per_day" : 5000000,
-      "min_amount_per_day": 10000,
-      "tax_benefit" : "비과세종합저축",
-      "product_period": [
-        {
-          "period" : "[-,3]",
-          "basic_rate" : 2.2
-        },
-        {
-          "period" : "[3,6]",
-          "basic_rate" : 2.3
-        },
-        {
-          "period" : "[6, -]",
-          "basic_rate" : 2.4
-        }
-      ]
-    },
-'''
+
 
 class ProductRepository:
 
@@ -219,18 +189,27 @@ class ProductRepository:
     def save_one_product(self, product_data, bank_name, connection):
         self.logger.info("상품 데이터 삽입 시작")
 
-        product_name:str = product_data.product_name
-        product_basic_rate:float = product_data.product_basic_rate
-        product_max_rate:float = product_data.product_max_rate
-        product_type:str = product_data.product_type
-        product_url_links:str = product_data.product_url_links
-        product_info: str = "\\".join(product_data.product_info) # list[str] 형태로 반환되나 "\"로 합쳐서 넣음
-        product_maximum_amount:int = product_data.product_maximum_amount
-        product_minimum_amount:int = product_data.product_minimum_amount
-        product_maximum_amount_per_day:int= product_data.product_maximum_amount_per_day
-        product_minimum_amount_per_day:int = product_data.product_minimum_amount_per_day
-        product_maximum_amount_per_month:int = product_data.product_maximum_amount_per_day
-        product_minimum_amount_per_month:int = product_data.product_minimum_amount_per_day
+        # 🚨 데이터 검증 (에러 발생시 건너뛰기)
+        validation_result = self._validate_product_data_safe(product_data)
+        if not validation_result['valid']:
+            self.logger.warning(f"데이터 검증 실패로 상품 삽입 건너뜀: {validation_result['reason']}")
+            return False  # 건너뛰었음을 표시
+
+        product_name: str = product_data.product_name
+        product_basic_rate: float = product_data.product_basic_rate
+        product_max_rate: float = product_data.product_max_rate
+        product_type: str = product_data.product_type
+        product_url_links: str = product_data.product_url_links
+        product_info: str = "\\".join(product_data.product_info) if isinstance(product_data.product_info,
+                                                                               list) else str(product_data.product_info)
+        product_maximum_amount: int = product_data.product_maximum_amount
+        product_minimum_amount: int = product_data.product_minimum_amount
+
+        product_maximum_amount_per_day: int = product_data.product_maximum_amount_per_day
+        product_minimum_amount_per_day: int = product_data.product_minimum_amount_per_day
+        product_maximum_amount_per_month: int = product_data.product_maximum_amount_per_month
+        product_minimum_amount_per_month: int = product_data.product_minimum_amount_per_month
+
         product_sub_target: str = product_data.product_sub_target
         product_sub_amount: str = product_data.product_sub_amount
         product_sub_way: str = product_data.product_sub_way
@@ -238,17 +217,18 @@ class ProductRepository:
         product_tax_benefit: str = product_data.product_tax_benefit
         product_preferential_info: str = product_data.product_preferential_info
 
-        preferential_conditions_detail_header: list[str] = product_data.preferential_conditions_detail_header
-        preferential_conditions_detail_detail: list[str] = product_data.preferential_conditions_detail_detail
-        preferential_conditions_detail_interest_rate: list[float] = product_data.preferential_conditions_detail_interest_rate
-        preferential_conditions_detail_keyword: list[str] = product_data.preferential_conditions_detail_keyword
+        # 검증된 데이터 사용 (안전한 배열들)
+        preferential_conditions_detail_header: list[str] = validation_result['safe_preferential']['header']
+        preferential_conditions_detail_detail: list[str] = validation_result['safe_preferential']['detail']
+        preferential_conditions_detail_interest_rate: list[float] = validation_result['safe_preferential']['rate']
+        preferential_conditions_detail_keyword: list[str] = validation_result['safe_preferential']['keyword']
 
-        product_period_period: list[str] = product_data.product_period_period
-        product_period_base_rate: list[float] = product_data.product_period_base_rate
+        product_period_period: list[str] = validation_result['safe_period']['period']
+        product_period_base_rate: list[float] = validation_result['safe_period']['rate']
 
         if self.check_duplicate_product(product_name=product_name, connection=connection):
             self.logger.info("이미 존재하는 상품입니다.")
-            return
+            return True  # 중복이므로 성공으로 간주
 
         try:
             connection.begin()
@@ -289,51 +269,331 @@ class ProductRepository:
 
             cursor.execute(product_insert_sql, params)
             self.logger.info("bank_product 테이블 데이터 삽입 끝")
-            ###################################################################################
+
             self.logger.info("preferential_condition_detail 테이블 데이터 삽입 시작")
-            preferential_condition_detail_insert_sql = ("INSERT INTO preferential_condition_detail (detail_uuid, product_uuid, header, detail,  interest_rate, keyword) VALUES (%s, %s, %s, %s, %s, %s)")
 
-            for i in range(len(preferential_conditions_detail_header)):
-                preferential_condition_detail_uuid = uuid.uuid4().bytes
-                header = preferential_conditions_detail_header[i]
-                detail = preferential_conditions_detail_detail[i]
-                interest_rate = preferential_conditions_detail_interest_rate[i]
-                keyword = preferential_conditions_detail_keyword[i]
+            if preferential_conditions_detail_header:
+                preferential_condition_detail_insert_sql = (
+                    "INSERT INTO preferential_condition_detail "
+                    "(detail_uuid, product_uuid, header, detail, interest_rate, keyword) "
+                    "VALUES (%s, %s, %s, %s, %s, %s)"
+                )
 
-                params = (preferential_condition_detail_uuid, product_uuid, header, detail, interest_rate, keyword)
-                cursor.execute(preferential_condition_detail_insert_sql, params)
+                for i in range(len(preferential_conditions_detail_header)):
+                    preferential_condition_detail_uuid = uuid.uuid4().bytes
+                    header = preferential_conditions_detail_header[i]
+                    detail = preferential_conditions_detail_detail[i]
+                    interest_rate = preferential_conditions_detail_interest_rate[i]
+                    keyword = preferential_conditions_detail_keyword[i]
 
-            self.logger.info("preferential_condition_detail 테이블 데이터 삽입 끝")
-            ###################################################################################
+                    params = (preferential_condition_detail_uuid, product_uuid, header, detail, interest_rate, keyword)
+                    cursor.execute(preferential_condition_detail_insert_sql, params)
+
+                self.logger.info(f"preferential_condition_detail {len(preferential_conditions_detail_header)}개 삽입 완료")
+            else:
+                self.logger.info("우대조건이 없어 preferential_condition_detail 삽입 건너뜀")
+
             self.logger.info("product_period 테이블 데이터 삽입 시작")
 
-            period_insert_sql = ("INSERT INTO product_period (period_uuid, product_uuid, period, bank_rate) VALUES (%s, %s, %s, %s)")
+            if product_period_period and product_period_base_rate:
+                period_insert_sql = (
+                    "INSERT INTO product_period (period_uuid, product_uuid, period, bank_rate) "
+                    "VALUES (%s, %s, %s, %s)"
+                )
 
-            for i in range(len(product_period_period)):
-                period_uuid = uuid.uuid4().bytes
-                period = product_period_period[i]
-                base_rate = product_period_base_rate[i]
+                for i in range(len(product_period_period)):
+                    period_uuid = uuid.uuid4().bytes
+                    period = product_period_period[i]
+                    base_rate = product_period_base_rate[i]
 
-                params = (period_uuid, product_uuid, period, base_rate)
-                cursor.execute(period_insert_sql, params)
+                    params = (period_uuid, product_uuid, period, base_rate)
+                    cursor.execute(period_insert_sql, params)
 
-            self.logger.info("product_period 테이블 데이터 삽입 끝")
+                self.logger.info(f"product_period {len(product_period_period)}개 삽입 완료")
+            else:
+                self.logger.info("기간 데이터가 없어 product_period 삽입 건너뜀")
+
             connection.commit()
-
+            self.logger.info("상품 데이터 삽입 성공")
+            return True  # 성공
 
         except Exception as e:
             self.logger.error(f"상품 데이터 삽입 에러 발생: roll back: {e}")
-            self.logger.error(f"product_uuid: {product_uuid}, bank_uuid: {bank_uuid}, product_basic_rate:{product_period_base_rate}")
-            self.logger.error(f"product_maximum_amount: {product_maximum_amount}, product_maximum_amount_per_month: {product_maximum_amount_per_month}, product_maximum_amount_per_day:{product_maximum_amount_per_day}")
-            self.logger.error(f"product_minimum_amount: {product_minimum_amount}, product_minimum_amount_per_month: {product_minimum_amount_per_month}, product_minimum_amount_per_day:{product_minimum_amount_per_day}")
-            self.logger.error(f"product_name: {product_name}, product_info: {product_info}, product_preferential_info:{product_preferential_info}")
-            self.logger.error(f"product_sub_amount: {product_sub_amount}, product_sub_target: {product_sub_target}, product_sub_term:{product_sub_term}")
-            self.logger.error(f"product_sub_way: {product_sub_way}, product_tax_benefit: {product_tax_benefit}, product_url_links:{product_url_links}, product_type:{product_type}")
-            self.logger.error(f"preferential_conditions_detail_header: {preferential_conditions_detail_header}, preferential_conditions_detail_detail: {preferential_conditions_detail_detail}")
-            self.logger.error(f"preferential_conditions_detail_interest_rate: {preferential_conditions_detail_interest_rate}, preferential_conditions_detail_keyword: {preferential_conditions_detail_keyword}")
-            self.logger.error(f"product_period_period: {product_period_period}, product_period_base_rate: {product_period_base_rate}")
-            raise e
+            self._log_detailed_error_info(
+                product_uuid, bank_uuid, product_basic_rate, product_period_base_rate,
+                product_maximum_amount, product_maximum_amount_per_month, product_maximum_amount_per_day,
+                product_minimum_amount, product_minimum_amount_per_month, product_minimum_amount_per_day,
+                product_name, product_info, product_preferential_info,
+                product_sub_amount, product_sub_target, product_sub_term,
+                product_sub_way, product_tax_benefit, product_url_links, product_type,
+                preferential_conditions_detail_header, preferential_conditions_detail_detail,
+                preferential_conditions_detail_interest_rate, preferential_conditions_detail_keyword,
+                product_period_period,
+            )
+            connection.rollback()
+            return False  # 실패
         finally:
             cursor.close()
+
+    def _validate_product_data_safe(self, product_data) -> dict:
+        """
+        안전한 검증: 에러를 발생시키는 대신 문제가 있는 데이터를 건너뛰고 결과를 반환
+        """
+        self.logger.info("상품 데이터 안전 검증 시작")
+
+        result = {
+            'valid': True,
+            'reason': '',
+            'safe_preferential': {
+                'header': [],
+                'detail': [],
+                'rate': [],
+                'keyword': []
+            },
+            'safe_period': {
+                'period': [],
+                'rate': []
+            }
+        }
+
+        # 1. 필수 필드 검증
+        required_fields = ['product_name', 'product_basic_rate', 'product_max_rate', 'product_type']
+        for field in required_fields:
+            if not hasattr(product_data, field) or getattr(product_data, field) is None:
+                result['valid'] = False
+                result['reason'] = f"필수 필드 누락: {field}"
+                return result
+
+        # 2. 우대조건 배열 처리
+        pref_arrays = {
+            'header': getattr(product_data, 'preferential_conditions_detail_header', []) or [],
+            'detail': getattr(product_data, 'preferential_conditions_detail_detail', []) or [],
+            'rate': getattr(product_data, 'preferential_conditions_detail_interest_rate', []) or [],
+            'keyword': getattr(product_data, 'preferential_conditions_detail_keyword', []) or []
+        }
+
+        pref_lengths = [len(arr) for arr in pref_arrays.values()]
+
+        if pref_lengths and not all(length == pref_lengths[0] for length in pref_lengths):
+            self.logger.warning(f"우대조건 배열 길이 불일치로 건너뜀: {pref_lengths}")
+            self.logger.warning(f"header: {len(pref_arrays['header'])}, detail: {len(pref_arrays['detail'])}")
+            self.logger.warning(f"rate: {len(pref_arrays['rate'])}, keyword: {len(pref_arrays['keyword'])}")
+            # 빈 배열로 설정하여 우대조건을 건너뜀
+            result['safe_preferential'] = {
+                'header': [],
+                'detail': [],
+                'rate': [],
+                'keyword': []
+            }
+        else:
+            # 개별 항목 길이 검증 (200자 초과 시 잘라내기)
+            safe_details = []
+            for detail in pref_arrays['detail']:
+                if detail and len(detail) > 200:
+                    truncated = detail[:197] + '...'
+                    self.logger.warning(f"우대조건 상세 내용 자동 잘라내기: {len(detail)} → {len(truncated)}자")
+                    safe_details.append(truncated)
+                else:
+                    safe_details.append(detail)
+
+            result['safe_preferential'] = {
+                'header': pref_arrays['header'],
+                'detail': safe_details,
+                'rate': pref_arrays['rate'],
+                'keyword': pref_arrays['keyword']
+            }
+
+        # 3. 기간/금리 배열 처리
+        period_data = getattr(product_data, 'product_period_period', []) or []
+        rate_data = getattr(product_data, 'product_period_base_rate', []) or []
+
+        # period_data 정규화
+        normalized_period = self._normalize_period_data(period_data)
+        period_length = len(normalized_period)
+        rate_length = len(rate_data) if rate_data else 0
+
+        # 치명적인 period 형식 검증
+        has_korean_words = False
+        if normalized_period:
+            for i, period in enumerate(normalized_period):
+                if any(word in str(period) for word in ['미만', '이상', '이하', '개월', '년']):
+                    self.logger.warning(f"치명적인 period 형식 발견, 전체 기간 데이터를 건너뜀: index={i}, value='{period}'")
+                    has_korean_words = True
+                    break
+
+        if has_korean_words:
+            # 치명적인 형식이므로 전체 기간 데이터를 건너뜀
+            result['safe_period'] = {
+                'period': [],
+                'rate': []
+            }
+            self.logger.warning("치명적인 period 형식으로 인해 기간 데이터 전체 건너뜀")
+        elif period_length != rate_length:
+            self.logger.warning(f"기간/금리 배열 길이 불일치로 건너뜀: period={period_length}, rate={rate_length}")
+            self.logger.warning(f"period_data: {normalized_period}")
+            self.logger.warning(f"rate_data: {rate_data}")
+            # 배열 길이가 다르므로 전체 기간 데이터를 건너뜀
+            result['safe_period'] = {
+                'period': [],
+                'rate': []
+            }
+        else:
+            # 정상적인 경우
+            result['safe_period'] = {
+                'period': normalized_period,
+                'rate': rate_data
+            }
+
+        # 4. 텍스트 길이 검증 (경고만)
+        text_limits = {
+            'product_name': 100,
+            'product_sub_target': 300,
+            'product_sub_amount': 200,
+            'product_sub_way': 200,
+            'product_sub_term': 200,
+            'product_tax_benefit': 500,
+            'product_preferential_info': 1000
+        }
+
+        for field, limit in text_limits.items():
+            if hasattr(product_data, field):
+                value = getattr(product_data, field)
+                if value and isinstance(value, str) and len(value) > limit:
+                    self.logger.warning(f"{field} 길이 초과 (처리는 계속): {len(value)} > {limit}")
+
+        self.logger.info("상품 데이터 안전 검증 완료")
+        return result
+
+    def _validate_product_data(self, product_data) -> None:
+
+        self.logger.info("상품 데이터 검증 시작")
+
+        required_fields = ['product_name', 'product_basic_rate', 'product_max_rate', 'product_type']
+        for field in required_fields:
+            if not hasattr(product_data, field) or getattr(product_data, field) is None:
+                raise ValueError(f"필수 필드 누락: {field}")
+
+        pref_arrays = {
+            'header': getattr(product_data, 'preferential_conditions_detail_header', []) or [],
+            'detail': getattr(product_data, 'preferential_conditions_detail_detail', []) or [],
+            'rate': getattr(product_data, 'preferential_conditions_detail_interest_rate', []) or [],
+            'keyword': getattr(product_data, 'preferential_conditions_detail_keyword', []) or []
+        }
+
+        pref_lengths = [len(arr) for arr in pref_arrays.values()]
+        if not all(length == pref_lengths[0] for length in pref_lengths):
+            self.logger.error(f"우대조건 배열 길이 불일치: {pref_lengths}")
+            self.logger.error(f"header: {len(pref_arrays['header'])}, detail: {len(pref_arrays['detail'])}")
+            self.logger.error(f"rate: {len(pref_arrays['rate'])}, keyword: {len(pref_arrays['keyword'])}")
+            raise ValueError(f"우대조건 배열 길이가 일치하지 않음: {pref_lengths}")
+
+        period_data = getattr(product_data, 'product_period_period', []) or []
+        rate_data = getattr(product_data, 'product_period_base_rate', []) or []
+
+        if isinstance(period_data, str):
+            period_length = 1
+        else:
+            period_length = len(period_data) if period_data else 0
+
+        rate_length = len(rate_data) if rate_data else 0
+
+        if period_length != rate_length:
+            self.logger.error(f"기간/금리 배열 길이 불일치: period={period_length}, rate={rate_length}")
+            self.logger.error(f"period_data: {period_data}")
+            self.logger.error(f"rate_data: {rate_data}")
+            raise ValueError(f"기간/금리 배열 길이가 일치하지 않음: period={period_length}, rate={rate_length}")
+
+        if period_data:
+            if isinstance(period_data, list):
+                for i, period in enumerate(period_data):
+                    if any(word in str(period) for word in ['미만', '이상', '이하', '개월', '년']):
+                        self.logger.error(f"잘못된 period 형식 발견: index={i}, value='{period}'")
+                        raise ValueError(f"period에 한국어 포함됨: '{period}' (index: {i})")
+            elif isinstance(period_data, str):
+                if any(word in period_data for word in ['미만', '이상', '이하', '개월', '년']):
+                    self.logger.error(f"잘못된 period 형식 발견: '{period_data}'")
+                    raise ValueError(f"period에 한국어 포함됨: '{period_data}'")
+
+        text_limits = {
+            'product_name': 100,
+            'product_sub_target': 300,
+            'product_sub_amount': 200,
+            'product_sub_way': 200,
+            'product_sub_term': 200,
+            'product_tax_benefit': 500,
+            'product_preferential_info': 1000
+        }
+
+        for field, limit in text_limits.items():
+            if hasattr(product_data, field):
+                value = getattr(product_data, field)
+                if value and isinstance(value, str) and len(value) > limit:
+                    self.logger.warning(f"{field} 길이 초과: {len(value)} > {limit}")
+                    # 자동 잘라내기 (선택사항)
+                    # setattr(product_data, field, value[:limit-3] + '...')
+
+        # 6. preferential_conditions_detail_detail 개별 항목 길이 검증
+        detail_array = pref_arrays['detail']
+        for i, detail in enumerate(detail_array):
+            if detail and len(detail) > 200:
+                self.logger.error(f"preferential_conditions_detail_detail[{i}] 길이 초과: {len(detail)} > 200")
+                self.logger.error(f"내용: '{detail}'")
+                raise ValueError(f"우대조건 상세 내용이 너무 김 (index {i}): {len(detail)} > 200자")
+
+        self.logger.info("상품 데이터 검증 완료")
+
+    def _normalize_period_data(self, period_data) -> list[str]:
+        if not period_data:
+            return []
+
+        if isinstance(period_data, str):
+            return [period_data]
+        elif isinstance(period_data, list):
+            return period_data
+        else:
+            self.logger.warning(f"예상치 못한 period 데이터 타입: {type(period_data)}")
+            return [str(period_data)]
+
+    def _log_detailed_error_info(self, product_uuid, bank_uuid, product_basic_rate, product_period_base_rate,
+                                 product_maximum_amount, product_maximum_amount_per_month,
+                                 product_maximum_amount_per_day,
+                                 product_minimum_amount, product_minimum_amount_per_month,
+                                 product_minimum_amount_per_day,
+                                 product_name, product_info, product_preferential_info,
+                                 product_sub_amount, product_sub_target, product_sub_term,
+                                 product_sub_way, product_tax_benefit, product_url_links, product_type,
+                                 preferential_conditions_detail_header, preferential_conditions_detail_detail,
+                                 preferential_conditions_detail_interest_rate, preferential_conditions_detail_keyword,
+                                 product_period_period):
+
+        self.logger.error("=== 상품 데이터 삽입 실패 상세 정보 ===")
+        self.logger.error(f"product_uuid: {product_uuid}, bank_uuid: {bank_uuid}")
+        self.logger.error(f"product_basic_rate: {product_basic_rate}, period_base_rate: {product_period_base_rate}")
+        self.logger.error(
+            f"amounts - max: {product_maximum_amount}, max_month: {product_maximum_amount_per_month}, max_day: {product_maximum_amount_per_day}")
+        self.logger.error(
+            f"amounts - min: {product_minimum_amount}, min_month: {product_minimum_amount_per_month}, min_day: {product_minimum_amount_per_day}")
+        self.logger.error(f"기본 정보 - name: '{product_name}', type: '{product_type}', url: '{product_url_links}'")
+        self.logger.error(f"설명 - info: '{product_info}', preferential_info: '{product_preferential_info}'")
+        self.logger.error(
+            f"가입조건 - target: '{product_sub_target}', amount: '{product_sub_amount}', term: '{product_sub_term}', way: '{product_sub_way}'")
+        self.logger.error(f"세제혜택: '{product_tax_benefit}'")
+
+        # 🚨 CRITICAL: 배열 길이 정보 추가
+        self.logger.error("=== 배열 길이 정보 ===")
+        self.logger.error(
+            f"preferential arrays - header: {len(preferential_conditions_detail_header)}, detail: {len(preferential_conditions_detail_detail)}")
+        self.logger.error(
+            f"preferential arrays - rate: {len(preferential_conditions_detail_interest_rate)}, keyword: {len(preferential_conditions_detail_keyword)}")
+        self.logger.error(
+            f"period arrays - period: {len(product_period_period)}, base_rate: {len(product_period_base_rate)}")
+
+        # 배열 내용 출력 (처음 3개만)
+        self.logger.error(f"preferential_header (처음3개): {preferential_conditions_detail_header[:3]}")
+        self.logger.error(
+            f"preferential_detail (처음3개): {[d[:50] + '...' if len(d) > 50 else d for d in preferential_conditions_detail_detail[:3]]}")
+        self.logger.error(f"period_period: {product_period_period}")
+        self.logger.error(f"period_base_rate: {product_period_base_rate}")
+        self.logger.error("=== 상세 정보 끝 ===")
 
 
