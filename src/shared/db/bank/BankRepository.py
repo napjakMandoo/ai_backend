@@ -12,26 +12,11 @@ class BankRepository:
 
     def get_bank_data(self):
         # 부산, SC, 광주, 제주, 전북, 경남, 우체국, 신한, KDB, 농협, 우리, 하나, 국민, 수협, ibk, im,
-        dotenv.load_dotenv()
-        busan = ["BNK_BUSAN"]
-        sc = ["SC_JEIL"]
-        gwangju = ["GWANGJU"]
-        jeju = ["JEJU"]
-        jeonbuk = ["JEONBUK"]
-        gyeongnam = ["BNK_GYEONGNAM"]
-        post = ["POST_OFFICE"]
-        sinhan = ["SHINHAN"]
-        kdb = ["KDB"]
-        nonghyup = ["NH"]
-        woori = ["WOORI"]
-        hana = ["HANA"]
-        kookmin = ["KB"]
-        suhyup = ["SH_SUHYUP"]
-        idk = ["IBK"]
-        im = ["IM_BANK"]
-        return [busan, sc, gwangju, jeju, jeonbuk, gyeongnam, post, sinhan, kdb, nonghyup, woori, hana, kookmin, suhyup,
-                idk, im]
-
+        return [
+            "BNK_BUSAN", "SC_JEIL", "GWANGJU", "JEJU", "JEONBUK",
+            "BNK_GYEONGNAM", "POST_OFFICE", "SHINHAN", "KDB", "NH",
+            "WOORI", "HANA", "KB", "SH_SUHYUP", "IBK", "IM_BANK"
+        ]
     def save_bank(self):
         self.logger.info("은행 데이터 삽입 시작")
 
@@ -45,7 +30,7 @@ class BankRepository:
             cursor.execute("select bank_name from bank")
             existing_banks = {row[0] for row in cursor.fetchall()}
 
-            for bank_name, bank_path in datas:
+            for bank_name in datas:
                 if bank_name in existing_banks:
                     self.logger.info(f"은행 '{bank_name}' 이미 존재하여 건너뜀")
                     continue
