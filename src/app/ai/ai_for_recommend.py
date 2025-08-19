@@ -76,13 +76,15 @@ class ai_for_recommend:
                     raise
                 continue
 
-        self.logger.info("Parsing AI response")
+        #self.logger.info("Parsing AI response")
+        self.logger.info(f"AI Raw Response: {response.text}")  # AI 원본 응답 출력
+
         try:
             parsed: response_ai_dto = response.parsed
-            combinations_count = len(parsed.combination) if parsed.combination else 0
+            combinations_count = len(parsed.combination) if parsed and parsed.combination else 0
             self.logger.info(f"AI response parsed successfully: {combinations_count} combinations generated")
 
-            if parsed.combination:
+            if parsed and parsed.combination:
                 total_payment = parsed.total_payment
                 period_months = parsed.period_months
                 self.logger.info(
