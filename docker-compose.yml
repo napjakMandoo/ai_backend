@@ -18,7 +18,6 @@ services:
       dockerfile: ./Dockerfile
     container_name: crawler
     command: python src/crawler/crawling.py
-    restart: unless-stopped
     env_file: .env
     extra_hosts:
       - "host.docker.internal:host-gateway"

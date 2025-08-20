@@ -26,52 +26,53 @@ class LlmUtil:
             raise RuntimeError("GENAI_API_KEY is not set.")
         self.client = genai.Client(api_key=api_key)
 
-    def save_preferential_to_json(
-            self,
-            obj: Preferential,
-            out_dir: str,
-            filename: str | None = None,
-            by_alias: bool = True,
-            pretty: bool = True,
-    ) -> str:
 
-        Path(out_dir).mkdir(parents=True, exist_ok=True)
-
-        # 파일명 자동 생성(가능하면 product_name 사용)
-        def _slug(s: str) -> str:
-            return re.sub(r"[^a-zA-Z0-9._-]+", "_", s)
-
-        base = None
-        for attr in ("product_name", "name", "title"):
-            if hasattr(obj, attr) and getattr(obj, attr):
-                base = str(getattr(obj, attr))
-                break
-        if not base:
-            base = "preferential"
-
-        if filename is None:
-            ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = f"{_slug(base)}_{ts}.json"
-        if not filename.endswith(".json"):
-            filename += ".json"
-
-        if hasattr(obj, "model_dump"):  # pydantic v2
-            data = obj.model_dump(by_alias=by_alias)
-        else:  # pydantic v1
-            data = obj.dict(by_alias=by_alias)
-
-        json_str = json.dumps(
-            data,
-            ensure_ascii=False,
-            indent=2 if pretty else None,
-        )
-
-        out_path = str(Path(out_dir, filename))
-        with open(out_path, "w", encoding="utf-8") as f:
-            f.write(json_str)
-
-        self.logger.info(f"JSON saved: {out_path}")
-        return out_path
+    # def save_preferential_to_json(
+    #         self,
+    #         obj: Preferential,
+    #         out_dir: str,
+    #         filename: str | None = None,
+    #         by_alias: bool = True,
+    #         pretty: bool = True,
+    # ) -> str:
+    #
+    #     Path(out_dir).mkdir(parents=True, exist_ok=True)
+    #
+    #     # 파일명 자동 생성(가능하면 product_name 사용)
+    #     def _slug(s: str) -> str:
+    #         return re.sub(r"[^a-zA-Z0-9._-]+", "_", s)
+    #
+    #     base = None
+    #     for attr in ("product_name", "name", "title"):
+    #         if hasattr(obj, attr) and getattr(obj, attr):
+    #             base = str(getattr(obj, attr))
+    #             break
+    #     if not base:
+    #         base = "preferential"
+    #
+    #     if filename is None:
+    #         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    #         filename = f"{_slug(base)}_{ts}.json"
+    #     if not filename.endswith(".json"):
+    #         filename += ".json"
+    #
+    #     if hasattr(obj, "model_dump"):  # pydantic v2
+    #         data = obj.model_dump(by_alias=by_alias)
+    #     else:  # pydantic v1
+    #         data = obj.dict(by_alias=by_alias)
+    #
+    #     json_str = json.dumps(
+    #         data,
+    #         ensure_ascii=False,
+    #         indent=2 if pretty else None,
+    #     )
+    #
+    #     out_path = str(Path(out_dir, filename))
+    #     with open(out_path, "w", encoding="utf-8") as f:
+    #         f.write(json_str)
+    #
+    #     self.logger.info(f"JSON saved: {out_path}")
+    #     return out_path
 
     def create_preferential_json(self, content: str) -> Preferential:
         prompt = f"{SYS_RULE}{content}"
@@ -142,14 +143,14 @@ class LlmUtil:
             self.logger.error(f"응답 파싱 실패: {e}")
             raise ValueError(f"API 응답 파싱 실패: {e}") from e
 
-        try:
-            self.save_preferential_to_json(
-                obj=parsed,
-                out_dir="./data/preferential",
-                by_alias=True,
-                pretty=True,
-            )
-        except Exception as e:
-            self.logger.warning(f"JSON 저장 실패 (처리는 계속): {e}")
+        # try:
+        #     self.save_preferential_to_json(
+        #         obj=parsed,
+        #         out_dir="./data/preferential",
+        #         by_alias=True,
+        #         pretty=True,
+        #     )
+        # except Exception as e:
+        #     self.logger.warning(f"JSON 저장 실패 (처리는 계속): {e}")
 
         return parsed

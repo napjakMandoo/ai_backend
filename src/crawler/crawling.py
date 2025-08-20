@@ -4,6 +4,9 @@ import json
 import os
 from logging.handlers import RotatingFileHandler
 from src.crawler.ai.LlmUtil import LlmUtil
+from src.crawler.bank_crawler.post.PostBankCrawler import PostBankCrawler
+from src.crawler.bank_crawler.sc.sc_bank_crawler import SCBankCleanCrawler
+from src.crawler.bank_crawler.sinhan.SinHanBankCrawler import SinHanBankCrawler
 from src.crawler.util.BankLink import BankLink
 from src.crawler.bank_crawler.kyongnam.KyongNamBankCrawler import KyongNamBankCrawler
 from src.shared.db.bank.BankRepository import BankRepository
@@ -54,15 +57,15 @@ class Crawling:
 
         return logger
 
-    def read_json(self, file_name):
-        directory = os.getenv("JSON_RESULT_PATH")
-
-        file_path = directory + "/" + file_name + ".json"
-
-        with open(file_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-
-        return data
+    # def read_json(self, file_name):
+    #     directory = os.getenv("JSON_RESULT_PATH")
+    #
+    #     file_path = directory + "/" + file_name + ".json"
+    #
+    #     with open(file_path, "r", encoding="utf-8") as f:
+    #         data = json.load(f)
+    #
+    #     return data
 
     def crawling(self, bank_name: str = ""):
         before_preprocessed_products = []
@@ -70,30 +73,30 @@ class Crawling:
         if bank_name == "BNK_GYEONGNAM":
             before_preprocessed_products.extend(
                 KyongNamBankCrawler(base_url=BankLink.KYONGNAM_BANK_DEPOSIT_LINK.value).start())
-        # elif bank_name == "POST_OFFICE":
-        #     before_preprocessed_products.extend(PostBankCrawler(base_url=BankLink.POST_BANK_LINK.value).start())
-        # elif bank_name == "SHINHAN":
-        #     before_preprocessed_products.extend(
-        #         SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_ONLINE_LINK.value).start())
-        #     before_preprocessed_products.extend(
-        #         SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_LUMP_LINK.value).start())
-        #     before_preprocessed_products.extend(
-        #         SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_LUMP_ROLL_LINK.value).start())
+        elif bank_name == "POST_OFFICE":
+            before_preprocessed_products.extend(PostBankCrawler(base_url=BankLink.POST_BANK_LINK.value).start())
+        elif bank_name == "SHINHAN":
+            before_preprocessed_products.extend(
+                SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_ONLINE_LINK.value).start())
+            before_preprocessed_products.extend(
+                SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_LUMP_LINK.value).start())
+            before_preprocessed_products.extend(
+                SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_LUMP_ROLL_LINK.value).start())
         # elif bank_name == "KDB":
         #     before_preprocessed_products.extend(KdbCrawler(base_url=BankLink.KDB_LINK.value).start())
-        #
+
         # elif bank_name == "BNK_BUSAN":
         #     BusanBankUnifiedCrawler(base_url=BankLink.BUSAN_BANK_LINK.value).start()
         #     data = self.read_json("BNK_BUSAN")
         #     for i in data:
         #         before_preprocessed_products.append(i)
         #
-        # elif bank_name == "SC_JEIL":
-        #     SCBankCleanCrawler(base_url=BankLink.SC_BANK_LINK.value,
-        #                        detail_url_base=BankLink.SC_BANK_BASE_LINK.value).start()
-        #     data = self.read_json("SC_JEIL")
-        #     for i in data:
-        #         before_preprocessed_products.append(i)
+        elif bank_name == "SC_JEIL":
+            SCBankCleanCrawler(base_url=BankLink.SC_BANK_LINK.value,
+                               detail_url_base=BankLink.SC_BANK_BASE_LINK.value).start()
+            data = self.read_json("SC_JEIL")
+            for i in data:
+                before_preprocessed_products.append(i)
         #
         # elif bank_name == "GWANGJU":
         #     KJBankCompleteCrawler(base_url=BankLink.GWANGJU_BANK_LINK.value,
