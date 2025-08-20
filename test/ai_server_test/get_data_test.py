@@ -90,7 +90,7 @@ def print_formatted_result(data):
         print()
 
 
-def run_case(service: ai_service, case_name: str, payload: dict):
+def run_case(service: ai_service, case_name: str, payload: dict, ai:str):
     """단일 케이스 실행 + 시간 측정 + 결과 출력/에러 출력"""
     print("\n" + "=" * 80)
     print(f"🧪 테스트 케이스: {case_name}")
@@ -104,7 +104,7 @@ def run_case(service: ai_service, case_name: str, payload: dict):
         print(f"DTO 생성 시간: {dto_end - dto_start:.3f}초")
 
         ai_start = time.time()
-        data = service.get_data(dto)
+        data = service.get_data(request=dto, ai=ai)
         ai_end = time.time()
         print(f"AI 처리 시간: {ai_end - ai_start:.3f}초")
 
@@ -149,8 +149,10 @@ if __name__ == "__main__":
         ("Basic-Short-1000만원", {"amount": 10_000_000, "period": "SHORT"}),
     ]
 
+    ai=["gpt"]
+
     for name, payload in cases:
-        run_case(service, name, payload)
+        run_case(service, name, payload, )
 
     total_end_time = time.time()
     print("\n" + "=" * 50)

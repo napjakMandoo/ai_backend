@@ -28,7 +28,7 @@ class ai_gemini:
         self.client = genai.Client(api_key=api_key)
         self.logger.info("GenAI client initialized successfully")
 
-    def create_response(self, content: dict) -> response_ai_dto | ValueError:
+    def create_response(self, content: dict, model:str) -> response_ai_dto | ValueError:
         self.logger.info("Starting AI recommendation generation")
 
         content_json = json.dumps(content, ensure_ascii=False)
@@ -52,7 +52,7 @@ class ai_gemini:
                 start_time = time.time()
 
                 response = self.client.models.generate_content(
-                    model="gemini-2.5-flash",
+                    model=model,
                     contents=prompt,
                     config=config,
                 )

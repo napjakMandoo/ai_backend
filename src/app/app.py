@@ -63,7 +63,7 @@ def ai_recommend_gemini():
         ai_service_instance = ai_service()
 
         logger.info("Calling AI service to get recommendations")
-        result = ai_service_instance.get_data(request_dto, ai="gemini")
+        result = ai_service_instance.get_data(request_dto, model="gemini-2.5-flash")
         logger.info("AI service returned result successfully")
 
         try:
@@ -118,7 +118,7 @@ def ai_recommend_gpt():
         ai_service_instance = ai_service()
 
         logger.info("Calling AI service to get recommendations")
-        result = ai_service_instance.get_data(request_dto, ai="gpt")
+        result = ai_service_instance.get_data(request=request_dto, model="gpt-5")
         logger.info("AI service returned result successfully")
 
         try:
