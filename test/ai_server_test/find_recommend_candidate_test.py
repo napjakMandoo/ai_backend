@@ -16,6 +16,7 @@ if __name__ == "__main__":
         periods = (pd.pop("product_period", []) or [])
         for k, v in pd.items():
             print(f"  {k}: {v}")
+
         if periods:
             print("  product_period:")
             for j, pp in enumerate(periods, 1):

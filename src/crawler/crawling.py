@@ -225,12 +225,12 @@ class Crawling:
             bank_repository.save_bank()
             self.logger.info("===== 은행 데이터 저장 완료 =====")
 
-            # 아래 두 줄은 테스트를 위함
-            self.logger.info("===== 기존 상품 데이터 삭제 시작 (테스트용) =====")
-            self.productRepository.delete_all_product()
-            self.logger.info("===== 기존 상품 데이터 삭제 완료 (테스트용) =====")
-
-            self.month_task()
+            # # 아래 두 줄은 테스트를 위함
+            # self.logger.info("===== 기존 상품 데이터 삭제 시작 (테스트용) =====")
+            # self.productRepository.delete_all_product()
+            # self.logger.info("===== 기존 상품 데이터 삭제 완료 (테스트용) =====")
+            #
+            # self.month_task()
 
             ################### 자동화 코드입니다. 주석을 풀면 됩니다.########################
             # self.logger.info("===== 스케줄러 시작 - 매일 02:00에 실행 =====")

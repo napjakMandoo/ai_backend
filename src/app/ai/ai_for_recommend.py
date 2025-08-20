@@ -52,7 +52,7 @@ class ai_for_recommend:
                 start_time = time.time()
 
                 response = self.client.models.generate_content(
-                    model="gemini-2.5-pro",
+                    model="gemini-2.5-flash",
                     contents=prompt,
                     config=config,
                 )
