@@ -54,6 +54,7 @@ def ai_recommend():
             'period': period
         }
         logger.info(f"Request data parsed successfully: {request_data}")
+        # 수정 GET 메소드 맞게
         
         request_dto = request_combo_dto(**request_data)
         logger.info(f"Request DTO created: amount={request_dto.amount}, period={request_dto.period}")
@@ -76,7 +77,11 @@ def ai_recommend():
                 result_dict = result
                 logger.debug("Result used as-is (already dict)")
 
-        logger.info(f"Returning successful response with {len(result_dict.get('combination', []))} combinations")
+        #logger.info(f"Returning successful response with {len(result_dict.get('combination', []))} combinations")
+        combination_count = len(result_dict.get('combination', [])) if result_dict else 0
+        
+        
+        logger.info(f"Returning successful response with {combination_count} combinations")
         return jsonify({
             "status": "success",
             "data": result_dict

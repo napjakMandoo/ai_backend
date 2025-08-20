@@ -76,13 +76,27 @@ class ai_for_recommend:
                     raise
                 continue
 
-        self.logger.info("Parsing AI response")
+        #self.logger.info("Parsing AI response")
+        # self.logger.info(f"AI Raw Response: {response.text}")  # AI 원본 응답 출력
+        try:
+            if hasattr(response, 'text') and response.text:
+                self.logger.info(f"AI Raw Response (text): {response.text}")
+            elif hasattr(response, 'candidates') and response.candidates:
+                content = response.candidates[0].content.parts[0].text
+                self.logger.info(f"AI Raw Response (candidates): {content}")
+            else:
+                self.logger.info(f"AI Raw Response (full object): {response}")
+                self.logger.info(f"AI Response attributes: {dir(response)}")
+        except Exception as e:
+            self.logger.error(f"Error accessing AI response: {e}")
+            self.logger.info(f"AI Response type: {type(response)}")
+
         try:
             parsed: response_ai_dto = response.parsed
-            combinations_count = len(parsed.combination) if parsed.combination else 0
+            combinations_count = len(parsed.combination) if parsed and parsed.combination else 0
             self.logger.info(f"AI response parsed successfully: {combinations_count} combinations generated")
 
-            if parsed.combination:
+            if parsed and parsed.combination:
                 total_payment = parsed.total_payment
                 period_months = parsed.period_months
                 self.logger.info(
