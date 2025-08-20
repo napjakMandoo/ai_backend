@@ -15,7 +15,7 @@ from src.crawler.bank_crawler.kyongnam.KyongNamBankCrawler import KyongNamBankCr
 from src.shared.db.bank.BankRepository import BankRepository
 from src.shared.db.product.productRepository import ProductRepository
 from src.shared.db.util.MysqlUtil import MysqlUtil
-from test.ai_server_test.get_data_test import run_case, AITestRunner
+from test.ai_server_test.get_data_test import AITestRunner
 
 
 class Crawling:
@@ -251,10 +251,9 @@ class Crawling:
 
 if __name__ == "__main__":
 
-    print("0")
     ## 삭제할꺼임(8/21) #############
-    # runner = AITestRunner()
-    # runner.run()
+    runner = AITestRunner()
+    runner.run()
 
     # crawling = Crawling()
     # crawling.setup_logging()
