@@ -54,6 +54,8 @@ class ai_service:
             self.logger.debug(f"Data merged for AI processing: request_amount={request.amount}")
 
             self.logger.info("Sending data to AI for recommendation generation")
+
+            #############################gpt-5##############################
             result = self.gpt.create_response(content=merged_data, model="gpt-5")
             self.logger.info("AI recommendation generation completed successfully")
             

@@ -230,7 +230,7 @@ class Crawling:
             # self.productRepository.delete_all_product()
             # self.logger.info("===== 기존 상품 데이터 삭제 완료 (테스트용) =====")
 
-            self.month_task()
+            # self.month_task()
 
             ################### 자동화 코드입니다. 주석을 풀면 됩니다.########################
             # self.logger.info("===== 스케줄러 시작 - 매일 02:00에 실행 =====")
