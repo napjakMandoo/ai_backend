@@ -92,12 +92,8 @@ class Crawling:
         #         before_preprocessed_products.append(i)
         #
         elif bank_name == "SC_JEIL":
-            SCBankCleanCrawler(base_url=BankLink.SC_BANK_LINK.value,
-                               detail_url_base=BankLink.SC_BANK_BASE_LINK.value).start()
-            data = self.read_json("SC_JEIL")
-            for i in data:
-                before_preprocessed_products.append(i)
-        #
+            before_preprocessed_products.extend(SCBankCleanCrawler(base_url=BankLink.SC_BANK_LINK.value,detail_url_base=BankLink.SC_BANK_BASE_LINK.value).start())
+
         # elif bank_name == "GWANGJU":
         #     KJBankCompleteCrawler(base_url=BankLink.GWANGJU_BANK_LINK.value,
         #                           deposit_list_url=BankLink.GWANGJU_BANK_DEPOSIT_LINK.value).start()
