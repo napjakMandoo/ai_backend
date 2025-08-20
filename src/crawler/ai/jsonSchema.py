@@ -6,7 +6,6 @@ class Preferential(BaseModel):
     product_basic_rate: float # 상품: 기본 금리
     product_max_rate: float #  상품: 최대 금리
     product_type: str # 상품: 적금(deposit), 예금(savings)
-    product_url_links: str # 상품: 통장 개설 URL
     product_info: list[str] # 상품: 상품 안내
     product_maximum_amount: int # 상품: 최대금액
     product_minimum_amount: int # 상품: 최소금액

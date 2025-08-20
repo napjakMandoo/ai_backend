@@ -102,7 +102,6 @@ class BusanBankUnifiedCrawler:
         return ""
 
     def extract_preferential_rate_info(self, detail_info):
-        """우대이율 정보를 광주은행 구조로 추출 - 실제 테이블 내용 파싱"""
         preferential_data = {
             'has_preferential': False,
             'text_info': [],
@@ -628,21 +627,6 @@ class BusanBankUnifiedCrawler:
         driver.quit()
         return products
 
-    def save_to_json(self, products, filename=None):
-        dotenv.load_dotenv()
-        directory_path = os.getenv("JSON_RESULT_PATH")
-
-        os.makedirs(directory_path, exist_ok=True)
-
-        if filename is None:
-            filename = f"BNK_BUSAN.json"
-
-        file_path = os.path.join(directory_path, filename)
-
-        with open(file_path, 'w', encoding='utf-8') as f:
-            json.dump(products, f, ensure_ascii=False, indent=2)
-
-        return file_path
 
     # def save_to_json(self, products, filename=None):
     #     dotenv.load_dotenv()
@@ -663,16 +647,10 @@ class BusanBankUnifiedCrawler:
         try:
             all_products = self.fetch_products_with_unified_structure(limit=999)
 
-            # 예금과 적금만 필터링
             products = self.filter_deposit_savings_only(all_products)
 
             self.logger.info(f"크롤링 완료! 전체 {len(all_products)}개 중 예금/적금 {len(products)}개 상품")
 
-            # 필터링된 결과만 저장
-            filename = self.save_to_json(products)
-            self.logger.info(f"결과 저장: {filename}")
-
-            # 결과 요약 출력
             self.logger.info("\n=== 결과 요약 ===")
             category_count = {}
 

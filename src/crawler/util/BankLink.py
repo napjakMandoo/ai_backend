@@ -9,8 +9,8 @@ class BankLink(Enum):
     SINHAN_BANK_LUMP_ROLL_LINK = "https://bank.shinhan.com/index.jsp#020105040000"
     POST_BANK_LINK = "https://mall.epostbank.go.kr/IPDGDL0000.do"
     KDB_LINK="https://www.kdb.co.kr/index.jsp"
+    JEONBUK="https://m.jbbank.co.kr:8543/JBbank.act?TRGT_URL=P_M_NMW_MAI_MAIN"
 
-    #####
     BUSAN_BANK_LINK="https://www.busanbank.co.kr/ib20/mnu/FPMDPO012009001"
     GWANGJU_BANK_LINK="https://www.kjbank.com"
     GWANGJU_BANK_DEPOSIT_LINK="https://www.kjbank.com/ib20/mnu/FPMDPTR030000"
@@ -18,7 +18,6 @@ class BankLink(Enum):
     SC_BANK_BASE_LINK="https://www.standardchartered.co.kr/np/kr/pl/se/SavingDetail.jsp"
     JEJU_BANK_BASE_LINK="https://www.jejubank.co.kr/hmpg/prdGdnc/sid/mndp.do"
 
-    #####
     NH_BANK_LINK="https://smartmarket.nonghyup.com/servlet/BFDCW1011R.view"
     WOORI_BANK_BASE_LINK="https://spot.wooribank.com/pot/Dream?withyou=PODEP0020"
     WOORI_BANK_DEPOSIT_LINK="https://spot.wooribank.com/pot/Dream?withyou=PODEP0020"
@@ -27,8 +26,6 @@ class BankLink(Enum):
     KB_BANK_LINK= "https://obank.kbstar.com/quics?page=C016613"
     KB_SAVINGS_LINK="https://obank.kbstar.com/quics?page=C016613#CP"
 
-
-    #####
     SH_BANK_LINK="https://www.suhyup-bank.com/ib20/mnu/FPD00124"
     IBK_BANK_LINK="https://mybank.ibk.co.kr"
     IBK_BANK_SAVINGS_LINK="/uib/jsp/guest/ntr/ntr70/ntr7010/PNTR701010_m.jsp?APLY_EFNC_MENU_ID=P0104020000&SCRE_ID=PNTR701010_m&MENU_DIV=GNB"

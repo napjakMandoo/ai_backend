@@ -199,11 +199,16 @@ class ProductRepository:
         product_name: str = product_data.product_name
         product_basic_rate: float = product_data.product_basic_rate
         product_max_rate: float = product_data.product_max_rate
+
+        if product_basic_rate <= 0 or product_max_rate <= 0:
+            self.logger.warning(
+                f"금리가 0 이하로 상품 삽입 건너뜀 - 상품명: {product_name}, 기본금리: {product_basic_rate}, 최대금리: {product_max_rate}")
+            return False
+
         product_type: str = product_data.product_type
-        product_url_links: str = product_data.product_url_links
+        product_url_links: str = BankRepository().get_url_by_bank_name(bank_name=bank_name)
         product_info: str = "\\".join(product_data.product_info) if isinstance(product_data.product_info,
                                                                                list) else str(product_data.product_info)
-
         self.logger.info("=== INFO 필드 데이터 로깅 ===")
         self.logger.info(f"원본 product_info 타입: {type(product_data.product_info)}")
         self.logger.info(f"원본 product_info 값: {product_data.product_info}")
