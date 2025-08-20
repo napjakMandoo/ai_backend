@@ -1,8 +1,11 @@
+import time
 from datetime import datetime
 import logging
 import json
 import os
 from logging.handlers import RotatingFileHandler
+
+from src.app.service.ai_service import ai_service
 from src.crawler.ai.LlmUtil import LlmUtil
 from src.crawler.bank_crawler.post.PostBankCrawler import PostBankCrawler
 from src.crawler.bank_crawler.sc.sc_bank_crawler import SCBankCleanCrawler
@@ -12,6 +15,8 @@ from src.crawler.bank_crawler.kyongnam.KyongNamBankCrawler import KyongNamBankCr
 from src.shared.db.bank.BankRepository import BankRepository
 from src.shared.db.product.productRepository import ProductRepository
 from src.shared.db.util.MysqlUtil import MysqlUtil
+from test.ai_server_test.get_data_test import run_case, AITestRunner
+
 
 class Crawling:
     def __init__(self):
@@ -245,6 +250,12 @@ class Crawling:
             raise
 
 if __name__ == "__main__":
-    crawling = Crawling()
-    crawling.setup_logging()
-    crawling.start()
+
+    print("0")
+    ## 삭제할꺼임(8/21) #############
+    # runner = AITestRunner()
+    # runner.run()
+
+    # crawling = Crawling()
+    # crawling.setup_logging()
+    # crawling.start()
