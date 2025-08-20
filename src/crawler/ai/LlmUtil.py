@@ -12,6 +12,8 @@ import random
 import logging
 from typing import Optional, Union  # Union 추가
 
+from src.crawler.ai.preprocessPrompt import SYS_RULE
+
 logging.basicConfig(level=logging.INFO, format='%(asctime)s | %(levelname)s | %(name)s | %(message)s')
 RETRYABLE_STATUS = {429, 500, 502, 503, 504}
 
@@ -19,6 +21,7 @@ RETRYABLE_STATUS = {429, 500, 502, 503, 504}
 class LlmUtil:
 
     def __init__(self):
+        self.SYS_RULE = SYS_RULE
         self.logger = logging.getLogger(__name__)
         load_dotenv()
         api_key = os.getenv("GENAI_API_KEY")
