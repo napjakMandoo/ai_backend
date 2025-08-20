@@ -77,7 +77,7 @@ class ai_for_recommend:
                 continue
 
         #self.logger.info("Parsing AI response")
-        # self.logger.info(f"AI Raw Response: {response.text}")  # AI 원본 응답 출력
+        self.logger.info(f"AI Raw Response: {response.text}")  # AI 원본 응답 출력
         try:
             if hasattr(response, 'text') and response.text:
                 self.logger.info(f"AI Raw Response (text): {response.text}")

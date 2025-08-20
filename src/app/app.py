@@ -77,10 +77,8 @@ def ai_recommend():
                 result_dict = result
                 logger.debug("Result used as-is (already dict)")
 
-        #logger.info(f"Returning successful response with {len(result_dict.get('combination', []))} combinations")
         combination_count = len(result_dict.get('combination', [])) if result_dict else 0
-        
-        
+
         logger.info(f"Returning successful response with {combination_count} combinations")
         return jsonify({
             "status": "success",

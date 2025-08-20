@@ -26,11 +26,11 @@ class BankRepository:
         elif bank_name == "GWANGJU":
             return BankLink.BankLink.GWANGJU_BANK_LINK.value
         elif bank_name == "JEJU":
-            return BankLink.BankLink.JEJU_BANK_BASE_LINK
+            return BankLink.BankLink.JEJU_BANK_BASE_LINK.value
         elif bank_name == "JEONBUK":
             return BankLink.BankLink.JEONBUK.value
         elif bank_name == "POST_OFFICE":
-            return BankLink.BankLink.POST_BANK_LINK
+            return BankLink.BankLink.POST_BANK_LINK.value
         elif bank_name == "BNK_GYEONGNAM":
             return BankLink.BankLink.KYONGNAM_BANK_DEPOSIT_LINK.value
         elif bank_name == "SHINHAN":
