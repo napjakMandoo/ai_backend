@@ -119,17 +119,17 @@ class LlmUtil:
                 break
 
         if response is None:
-            self.logger.warning("gemini-2.5-flash 실패, gemini-pro로 전환")
+            self.logger.warning("gemini-2.5-flash 실패, gemini-pro 전환")
             try:
                 response = self.client.models.generate_content(
-                    model="gemini-2.5-flash",
+                    model="gemini-2.5-pro",
                     contents=prompt,
                     config=config,
                 )
                 self.logger.info("gemini-pro 성공")
 
             except Exception as e:
-                self.logger.error(f"gemini-pro도 실패: {e}")
+                self.logger.error(f"gemini-pro 실패: {e}")
                 raise RuntimeError(f"모든 모델 실패. gemini-pro 에러: {e}") from e
 
         if response is None:
