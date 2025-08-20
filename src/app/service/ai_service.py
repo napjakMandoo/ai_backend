@@ -14,7 +14,7 @@ class ai_service:
         self.gpt = ai_gpt()
         self.logger.info("AI service initialized")
 
-    def get_data(self, request: request_combo_dto):
+    def get_data(self, request: request_combo_dto, ai:str):
         self.logger.info(f"Starting AI recommendation process for amount: {request.amount}, period: {request.period}")
         
         connection = self.mysqlUtil.get_connection()
@@ -55,8 +55,13 @@ class ai_service:
 
             self.logger.info("Sending data to AI for recommendation generation")
 
-            #############################gpt-5##############################
-            result = self.gpt.create_response(content=merged_data, model="gpt-5")
+            #############################ai##############################
+            result=""
+
+            if ai == "gemini":
+                result = self.gemini.create_response(content=merged_data)
+            elif ai == "gpt":
+                result = self.gpt.create_response(content=merged_data, model="gpt-5")
             self.logger.info("AI recommendation generation completed successfully")
             
             return result

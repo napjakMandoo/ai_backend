@@ -39,8 +39,63 @@ def setup_logging():
     return root_logger
 
 
+@app.route("/recommendations/gemini", methods=["GET"])
+def ai_recommend_gemini():
+    logger = logging.getLogger(__name__)
+    logger.info("AI recommendation request received")
+
+    try:
+        # GET 요청에서 쿼리 파라미터 읽기
+        amount = request.args.get('amount', type=int)
+        period = request.args.get('period')
+
+        request_data = {
+            'amount': amount,
+            'period': period
+        }
+        logger.info(f"Request data parsed successfully: {request_data}")
+        # 수정 GET 메소드 맞게
+
+        request_dto = request_combo_dto(**request_data)
+        logger.info(f"Request DTO created: amount={request_dto.amount}, period={request_dto.period}")
+
+        logger.info("Initializing AI service")
+        ai_service_instance = ai_service()
+
+        logger.info("Calling AI service to get recommendations")
+        result = ai_service_instance.get_data(request_dto, ai="gemini")
+        logger.info("AI service returned result successfully")
+
+        try:
+            result_dict = result.model_dump()
+            logger.debug("Result converted using model_dump()")
+        except AttributeError:
+            try:
+                result_dict = result.dict()
+                logger.debug("Result converted using dict()")
+            except AttributeError:
+                result_dict = result
+                logger.debug("Result used as-is (already dict)")
+
+        combination_count = len(result_dict.get('combination', [])) if result_dict else 0
+
+        logger.info(f"Returning successful response with {combination_count} combinations")
+        return jsonify({
+            "status": "success",
+            "data": result_dict
+        }), 200
+
+    except ValidationError as e:
+        logger.error(f"Validation error: {e.errors()}")
+        return jsonify({"error": e.errors()}), 400
+    except Exception as e:
+        logger.exception("Unexpected error in ai_recommend")
+        if app.debug:
+            return jsonify({"error": "internal_error", "detail": str(e)}), 500
+        return jsonify({"error": "internal_error"}), 500
+
 @app.route("/recommendations", methods=["GET"])
-def ai_recommend():
+def ai_recommend_gpt():
     logger = logging.getLogger(__name__)
     logger.info("AI recommendation request received")
     
@@ -63,7 +118,7 @@ def ai_recommend():
         ai_service_instance = ai_service()
 
         logger.info("Calling AI service to get recommendations")
-        result = ai_service_instance.get_data(request_dto)
+        result = ai_service_instance.get_data(request_dto, ai="gpt")
         logger.info("AI service returned result successfully")
 
         try:

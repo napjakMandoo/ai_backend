@@ -154,9 +154,9 @@ class App:
             bank_repository.save_bank()
             self.logger.info("===== 은행 데이터 저장 완료 =====")
 
-            self.logger.info("===== 기존 상품 데이터 삭제 시작 (테스트용) =====")
-            self.productRepository.delete_all_product()
-            self.logger.info("===== 기존 상품 데이터 삭제 완료 (테스트용) =====")
+            # self.logger.info("===== 기존 상품 데이터 삭제 시작 (테스트용) =====")
+            # self.productRepository.delete_all_product()
+            # self.logger.info("===== 기존 상품 데이터 삭제 완료 (테스트용) =====")
 
             self.month_task()
 
