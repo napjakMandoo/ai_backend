@@ -142,21 +142,11 @@ if __name__ == "__main__":
 
     # ✅ 테스트 케이스 모음 (Enum 대문자 사용)
     cases = [
-        # ("Basic-Short-1000만원", {"amount": 10_000_000, "period": "SHORT"}),
-        # ("Basic-Short-5000만원", {"amount": 50_000_000, "period": "SHORT"}),
-        # ("Basic-Short-1억", {"amount": 100_000_000, "period": "SHORT"}),
-        # ("Basic-Mid-1000만원", {"amount": 10_000_000, "period": "MID"}),
-        # ("Basic-Mid-5000만원", {"amount": 50_000_000, "period": "MID"}),
-        # ("Basic-Mid-1억", {"amount": 100_000_000, "period": "MID"}),
-        # ("Basic-Long-1000만원", {"amount": 10_000_000, "period": "LONG"}),
-        # ("Basic-Long-5000만원", {"amount": 50_000_000, "period": "LONG"}),
-        # ("Basic-Long-1억", {"amount": 100_000_000, "period": "LONG"}),
-        # ("Basic-Mid-1억", {"amount": 100_000_000, "period": "MID"}),
-        # ("Basic-Mid-3억", {"amount": 300_000_000, "period": "MID"}),
-        # ("Basic-Mid-5억", {"amount": 500_000_000, "period": "MID"}),
-        # ("Basic-Long-10억", {"amount": 1_000_000_000, "period": "LONG"}),
-        # ("Basic-Long-30억", {"amount": 3_000_000_000, "period": "LONG"}),
-        ("Basic-Long-50억", {"amount": 5_000_000_000, "period": "LONG"}),
+        ("Basic-Short-1000만원", {"amount": 10_000_000, "period": "SHORT"}),
+        ("Basic-Short-1000만원", {"amount": 10_000_000, "period": "SHORT"}),
+        ("Basic-Short-1000만원", {"amount": 10_000_000, "period": "SHORT"}),
+        ("Basic-Short-1000만원", {"amount": 10_000_000, "period": "SHORT"}),
+        ("Basic-Short-1000만원", {"amount": 10_000_000, "period": "SHORT"}),
     ]
 
     for name, payload in cases:

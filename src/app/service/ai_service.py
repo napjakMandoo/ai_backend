@@ -1,6 +1,7 @@
 import logging
 
-from src.app.ai.ai_for_recommend import ai_for_recommend
+from src.app.ai.ai_gemini import ai_gemini
+from src.app.ai.ai_gpt import ai_gpt
 from src.app.dto.request.request_front_dto import request_combo_dto
 from src.shared.db.product.productRepository import ProductRepository
 from src.shared.db.util.MysqlUtil import MysqlUtil
@@ -9,7 +10,8 @@ class ai_service:
     def __init__(self):
         self.mysqlUtil = MysqlUtil()
         self.logger = logging.getLogger(__name__)
-        self.ai = ai_for_recommend()
+        self.gemini = ai_gemini()
+        self.gpt = ai_gpt()
         self.logger.info("AI service initialized")
 
     def get_data(self, request: request_combo_dto):
@@ -52,7 +54,7 @@ class ai_service:
             self.logger.debug(f"Data merged for AI processing: request_amount={request.amount}")
 
             self.logger.info("Sending data to AI for recommendation generation")
-            result = self.ai.create_preferential_json(content=merged_data)
+            result = self.gpt.create_response(content=merged_data, model="gpt-5")
             self.logger.info("AI recommendation generation completed successfully")
             
             return result

@@ -13,7 +13,7 @@ from src.app.ai.prompt_eng import PROMPT_ENG
 from src.app.dto.response.response_ai_dto import response_ai_dto
 
 
-class ai_for_recommend:
+class ai_gemini:
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
@@ -28,7 +28,7 @@ class ai_for_recommend:
         self.client = genai.Client(api_key=api_key)
         self.logger.info("GenAI client initialized successfully")
 
-    def create_preferential_json(self, content: dict) -> response_ai_dto | ValueError:
+    def create_response(self, content: dict) -> response_ai_dto | ValueError:
         self.logger.info("Starting AI recommendation generation")
 
         content_json = json.dumps(content, ensure_ascii=False)
@@ -76,7 +76,6 @@ class ai_for_recommend:
                     raise
                 continue
 
-        #self.logger.info("Parsing AI response")
         self.logger.info(f"AI Raw Response: {response.text}")  # AI 원본 응답 출력
         try:
             if hasattr(response, 'text') and response.text:
