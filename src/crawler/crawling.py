@@ -67,7 +67,6 @@ class Crawling:
     def crawling(self, bank_name: str = ""):
         before_preprocessed_products = []
 
-        ######################## 정기주
         if bank_name == "BNK_GYEONGNAM":
             before_preprocessed_products.extend(
                 KyongNamBankCrawler(base_url=BankLink.KYONGNAM_BANK_DEPOSIT_LINK.value).start())
@@ -83,7 +82,6 @@ class Crawling:
         # elif bank_name == "KDB":
         #     before_preprocessed_products.extend(KdbCrawler(base_url=BankLink.KDB_LINK.value).start())
         #
-        # ############################# 은주연
         # elif bank_name == "BNK_BUSAN":
         #     BusanBankUnifiedCrawler(base_url=BankLink.BUSAN_BANK_LINK.value).start()
         #     data = self.read_json("BNK_BUSAN")
@@ -110,7 +108,6 @@ class Crawling:
         #     for i in data:
         #         before_preprocessed_products.append(i)
         #
-        # ########################### 이수민
         # elif bank_name == "HANA":
         #     HanaBankCrawler().start()
         #     data = self.read_json("HANA")
@@ -137,7 +134,6 @@ class Crawling:
         #     for i in data:
         #         before_preprocessed_products.append(i)
         #
-        # ############################ 박연제
         # elif bank_name == "IBK":  # 안됨
         #     IBKFullCrawler().start()
         #
@@ -198,13 +194,10 @@ class Crawling:
         start_time = datetime.now()
         bank_repository = BankRepository()
         bank_data = bank_repository.get_bank_data()
-        bank_name_list = []
-        for bank in bank_data:
-            bank_name_list.append(bank[0])
 
         self.logger.info(f"월 마다 진행 시작: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
-        for bank_name in bank_name_list:
+        for bank_name in bank_data:
             self.logger.info("=====크롤링 시작=====")
             before_preprocessed_products = self.crawling(bank_name=bank_name)
             self.logger.info("=====크롤링 끝=====")
