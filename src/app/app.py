@@ -118,7 +118,7 @@ def ai_recommend_gpt():
         ai_service_instance = ai_service()
 
         logger.info("Calling AI service to get recommendations")
-        result = ai_service_instance.get_data(request=request_dto, model="gpt-5")
+        result = ai_service_instance.get_data(request=request_dto, model="gpt-5-mini")
         logger.info("AI service returned result successfully")
 
         try:
