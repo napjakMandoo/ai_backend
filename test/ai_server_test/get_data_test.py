@@ -1,5 +1,7 @@
 import time
 import logging
+import sys
+import os
 from datetime import datetime
 from pydantic import ValidationError
 
@@ -11,46 +13,122 @@ class AITestRunner:
     DEFAULT_CASES = [
         ("낮은가격-Short-3000만원-1", {"amount": 30_000_000, "period": "SHORT"}),
         ("낮은가격-Short-3000만원-2", {"amount": 30_000_000, "period": "SHORT"}),
-        # ("낮은가격-Mid-3000만원-1", {"amount": 30_000_000, "period": "MID"}),
-        # ("낮은가격-Mid-3000만원-2", {"amount": 30_000_000, "period": "MID"}),
-        # ("낮은가격-Long-3000만원-1", {"amount": 30_000_000, "period": "LONG"}),
-        # ("낮은가격-Long-3000만원-2", {"amount": 30_000_000, "period": "LONG"}),
-        #
-        # ("적당한가격-Short-30000만원-1", {"amount": 300_000_000, "period": "SHORT"}),
-        # ("적당한가격-Short-30000만원-2", {"amount": 300_000_000, "period": "SHORT"}),
-        # ("적당한가격-Mid-30000만원-1", {"amount": 300_000_000, "period": "MID"}),
-        # ("적당한가격-Mid-30000만원-2", {"amount": 300_000_000, "period": "MID"}),
-        # ("적당한가격-Long-30000만원-1", {"amount": 300_000_000, "period": "LONG"}),
-        # ("적당한가격-Long-30000만원-2", {"amount": 300_000_000, "period": "LONG"}),
-        #
-        # ("많은 가격-Short-1500000만원-1", {"amount": 1_500_000_000, "period": "SHORT"}),
-        # ("많은 가격-Short-1500000만원-2", {"amount": 1_500_000_000, "period": "SHORT"}),
-        # ("많은 가격-Mid-1500000만원-1", {"amount": 1_500_000_000, "period": "MID"}),
-        # ("많은 가격-Mid-1500000만원-2", {"amount": 1_500_000_000, "period": "MID"}),
-        # ("많은 가격-Long-1500000만원-1", {"amount": 1_500_000_000, "period": "LONG"}),
-        # ("많은 가격-Long-1500000만원-2", {"amount": 1_500_000_000, "period": "LONG"}),
+        ("낮은가격-Mid-3000만원-1", {"amount": 30_000_000, "period": "MID"}),
+        ("낮은가격-Mid-3000만원-2", {"amount": 30_000_000, "period": "MID"}),
+        ("낮은가격-Long-3000만원-1", {"amount": 30_000_000, "period": "LONG"}),
+        ("낮은가격-Long-3000만원-2", {"amount": 30_000_000, "period": "LONG"}),
+
+        ("적당한가격-Short-30000만원-1", {"amount": 300_000_000, "period": "SHORT"}),
+        ("적당한가격-Short-30000만원-2", {"amount": 300_000_000, "period": "SHORT"}),
+        ("적당한가격-Mid-30000만원-1", {"amount": 300_000_000, "period": "MID"}),
+        ("적당한가격-Mid-30000만원-2", {"amount": 300_000_000, "period": "MID"}),
+        ("적당한가격-Long-30000만원-1", {"amount": 300_000_000, "period": "LONG"}),
+        ("적당한가격-Long-30000만원-2", {"amount": 300_000_000, "period": "LONG"}),
+        ("많은 가격-Short-1500000만원-1", {"amount": 1_500_000_000, "period": "SHORT"}),
+        ("많은 가격-Short-1500000만원-2", {"amount": 1_500_000_000, "period": "SHORT"}),
+        ("많은 가격-Mid-1500000만원-1", {"amount": 1_500_000_000, "period": "MID"}),
+        ("많은 가격-Mid-1500000만원-2", {"amount": 1_500_000_000, "period": "MID"}),
+        ("많은 가격-Long-1500000만원-1", {"amount": 1_500_000_000, "period": "LONG"}),
+        ("많은 가격-Long-1500000만원-2", {"amount": 1_500_000_000, "period": "LONG"}),
     ]
-    DEFAULT_MODELS = ["gemini-2.5-flash", "gpt-5-mini"]
+    # DEFAULT_MODELS = ["gemini-2.5-flash", "gpt-5-mini"]
+    DEFAULT_MODELS = ["gpt-5-mini", "gpt-5-nano"]
+
     # , "gpt-5"
 
-    def __init__(self, cases: list[tuple[str, dict]] = None, models: list[str] = None):
+    def __init__(self, cases: list[tuple[str, dict]] = None, models: list[str] = None, log_level: str = "INFO",
+                 log_to_file: bool = True, log_dir: str = "logs"):
         self.test_cases = cases if cases is not None else self.DEFAULT_CASES
         self.ai_models = models if models is not None else self.DEFAULT_MODELS
+        self.log_level = getattr(logging, log_level.upper())
+        self.log_to_file = log_to_file
+        self.log_dir = log_dir
 
-        self.logger = self._setup_logger()
+        # 로그 파일 경로 설정 (실행 시작 시간 기준)
+        self.start_datetime = datetime.now()
+        if self.log_to_file:
+            self.log_file_path = self._setup_log_file()
 
+        # 전역 로깅 설정
+        self._setup_global_logging()
+
+        self.logger = self._setup_runner_logger()
         self.service = self._initialize_service()
 
-    def _setup_logger(self) -> logging.Logger:
+    def _setup_log_file(self) -> str:
+        """로그 파일 경로를 설정하고 디렉토리를 생성합니다."""
+        # 로그 디렉토리 생성
+        os.makedirs(self.log_dir, exist_ok=True)
+
+        # 로그 파일명: ai_test_YYYYMMDD_HHMMSS.log
+        timestamp = self.start_datetime.strftime('%Y%m%d_%H%M%S')
+        log_filename = f"ai_test_{timestamp}.log"
+        log_file_path = os.path.join(self.log_dir, log_filename)
+
+        return log_file_path
+
+    def _setup_global_logging(self):
+        """전체 애플리케이션의 로깅을 설정합니다."""
+        # 루트 로거 설정
+        root_logger = logging.getLogger()
+        root_logger.setLevel(self.log_level)
+
+        # 기존 핸들러 제거 (중복 방지)
+        for handler in root_logger.handlers[:]:
+            root_logger.removeHandler(handler)
+
+        # 포맷터 설정 - 모듈 이름도 포함
+        formatter = logging.Formatter(
+            '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+            datefmt='%H:%M:%S'
+        )
+
+        # 콘솔 핸들러 설정
+        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler.setLevel(self.log_level)
+        console_handler.setFormatter(formatter)
+        root_logger.addHandler(console_handler)
+
+        # 파일 핸들러 설정 (옵션)
+        if self.log_to_file:
+            file_handler = logging.FileHandler(self.log_file_path, encoding='utf-8')
+            file_handler.setLevel(self.log_level)
+            file_handler.setFormatter(formatter)
+            root_logger.addHandler(file_handler)
+
+            # 파일 로깅 시작 메시지
+            print(f"📄 로그 파일: {self.log_file_path}")
+
+        # 특정 모듈들의 로그 레벨 설정 (필요에 따라 조정)
+        module_loggers = [
+            'src.app.service.ai_service',
+            'src.app.dto.request.request_front_dto',
+            'src.app',  # src.app 하위 모든 모듈
+            'httpx',  # HTTP 클라이언트 로그 (AI API 호출 시)
+            'openai',  # OpenAI 클라이언트 로그
+            'google',  # Google AI 클라이언트 로그
+        ]
+
+        for module_name in module_loggers:
+            logger = logging.getLogger(module_name)
+            logger.setLevel(self.log_level)
+            logger.propagate = True  # 부모 로거로 전파
+
+        # 너무 상세한 로그는 WARNING 레벨로 제한 (선택사항)
+        noisy_modules = [
+            'httpcore',
+            'urllib3.connectionpool',
+            'requests.packages.urllib3.connectionpool',
+        ]
+
+        for module_name in noisy_modules:
+            logging.getLogger(module_name).setLevel(logging.WARNING)
+
+    def _setup_runner_logger(self) -> logging.Logger:
+        """테스트 러너용 로거를 설정합니다."""
         logger = logging.getLogger(f"AITestRunner_{id(self)}")
-        logger.setLevel(logging.INFO)
-
-        if not logger.handlers:
-            handler = logging.StreamHandler()
-            formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-            handler.setFormatter(formatter)
-            logger.addHandler(handler)
-
+        logger.setLevel(self.log_level)
+        # 전역 설정을 사용하므로 별도 핸들러는 추가하지 않음
         return logger
 
     def _initialize_service(self) -> 'ai_service':
@@ -64,6 +142,61 @@ class AITestRunner:
     @staticmethod
     def format_currency(amount: int) -> str:
         return f"{amount:,}원"
+
+    def calculate_correct_active_count(self, month: int, products) -> int:
+        """
+        CORRECTED: active_product_count 계산 로직
+        현금흐름 기준으로 실제 납입이 발생하는 상품 수를 계산
+        """
+        count = 0
+        for product in products:
+            if product.type == "deposit":
+                # 예금: 시작 월(0-based)에만 카운트
+                if month == (product.start_month - 1):
+                    count += 1
+            elif product.type == "savings":
+                # 적금: 전체 납입 기간 동안 카운트
+                if (product.start_month - 1) <= month <= (product.end_month - 1):
+                    count += 1
+        return count
+
+    def validate_timeline_active_count(self, combo, timeline_errors: list):
+        """Timeline의 active_product_count 검증"""
+        if not hasattr(combo, 'timeline') or not combo.timeline:
+            return
+
+        for t in combo.timeline:
+            # 수정된 로직으로 계산
+            correct_active_count = self.calculate_correct_active_count(t.month, combo.product)
+
+            if correct_active_count != t.active_product_count:
+                # 상세한 오류 메시지 생성
+                error_detail = f"월 {t.month}: active_product_count 오류"
+                error_detail += f"\n      예상: {correct_active_count}개 (현금흐름 기준)"
+                error_detail += f"\n      실제: {t.active_product_count}개"
+                error_detail += f"\n      상세 분석:"
+
+                for prod_idx, product in enumerate(combo.product, 1):
+                    should_be_active = False
+                    reason = ""
+
+                    if product.type == "deposit":
+                        if t.month == (product.start_month - 1):
+                            should_be_active = True
+                            reason = "예금 시작월(납입)"
+                        else:
+                            reason = "예금 비납입월"
+                    elif product.type == "savings":
+                        if (product.start_month - 1) <= t.month <= (product.end_month - 1):
+                            should_be_active = True
+                            reason = "적금 납입기간"
+                        else:
+                            reason = "적금 비납입기간"
+
+                    status = "활성" if should_be_active else "비활성"
+                    error_detail += f"\n        상품{prod_idx}({product.type}): {status} - {reason}"
+
+                timeline_errors.append(error_detail)
 
     def print_formatted_result(self, data):
         self.logger.info("=" * 80)
@@ -144,15 +277,11 @@ class AITestRunner:
                     if t.cumulative_interest < prev_cumulative_interest:
                         timeline_errors.append(f"월 {t.month}: 누적 이자 감소")
 
-                    # 3. 활성 상품 수 검증
-                    active_count = sum(1 for p in combo.product
-                                       if p.start_month <= t.month + 1 <= p.end_month)
-                    if active_count != t.active_product_count:
-                        timeline_errors.append(
-                            f"월 {t.month}: 활성 상품 수 불일치 (계산={active_count}, 응답={t.active_product_count})")
-
                     prev_cumulative_payment = t.cumulative_payment
                     prev_cumulative_interest = t.cumulative_interest
+
+                # 수정된 active_product_count 검증
+                self.validate_timeline_active_count(combo, timeline_errors)
 
                 self.logger.info("   " + "─" * 60)
 
@@ -173,7 +302,9 @@ class AITestRunner:
                 if timeline_errors:
                     self.logger.warning("   ⚠️ Timeline 검증 오류:")
                     for error in timeline_errors:
-                        self.logger.warning(f"      - {error}")
+                        # 멀티라인 에러 메시지 처리
+                        for line in error.split('\n'):
+                            self.logger.warning(f"      {line}" if line.strip() else "")
                 else:
                     self.logger.info("   ✅ Timeline 검증 통과")
 
@@ -204,27 +335,27 @@ class AITestRunner:
 
             self.logger.info("─" * 80 + "\n")
 
-            self.logger.info("🔍 전체 검증 요약")
-            self.logger.info("=" * 80)
+        self.logger.info("🔍 전체 검증 요약")
+        self.logger.info("=" * 80)
 
-            all_uuids = []
-            for combo in data.combination:
-                for product in combo.product:
-                    all_uuids.append(product.uuid)
+        all_uuids = []
+        for combo in data.combination:
+            for product in combo.product:
+                all_uuids.append(product.uuid)
 
-            if len(all_uuids) != len(set(all_uuids)):
-                duplicate_global = [uuid for uuid in set(all_uuids) if all_uuids.count(uuid) > 1]
-                self.logger.error(f"❌ 전체 조합에서 UUID 중복: {duplicate_global}")
-            else:
-                self.logger.info(f"✅ 모든 조합에서 UUID 중복 없음 (총 {len(all_uuids)}개 상품)")
+        if len(all_uuids) != len(set(all_uuids)):
+            duplicate_global = [uuid for uuid in set(all_uuids) if all_uuids.count(uuid) > 1]
+            self.logger.error(f"❌ 전체 조합에서 UUID 중복: {duplicate_global}")
+        else:
+            self.logger.info(f"✅ 모든 조합에서 UUID 중복 없음 (총 {len(all_uuids)}개 상품)")
 
-            max_combo_payment = max((sum(sum(p.payment or 0 for p in prod.monthly_plan or [])
-                                         for prod in combo.product) for combo in data.combination), default=0)
-            if max_combo_payment > data.total_payment:
-                self.logger.warning(
-                    f"⚠️ 조합 납입액({self.format_currency(max_combo_payment)}) > 총 투자금액({self.format_currency(data.total_payment)})")
+        max_combo_payment = max((sum(sum(p.payment or 0 for p in prod.monthly_plan or [])
+                                     for prod in combo.product) for combo in data.combination), default=0)
+        if max_combo_payment > data.total_payment:
+            self.logger.warning(
+                f"⚠️ 조합 납입액({self.format_currency(max_combo_payment)}) > 총 투자금액({self.format_currency(data.total_payment)})")
 
-            self.logger.info("=" * 80)
+        self.logger.info("=" * 80)
 
     def _run_single_case(self, case_name: str, payload: dict, model: str):
         """단일 테스트 케이스를 실행하고 결과를 로깅합니다."""
@@ -234,15 +365,19 @@ class AITestRunner:
         self.logger.info(f"입력: {payload}")
 
         try:
+            self.logger.info("📝 DTO 생성 시작...")
             dto_start = time.time()
             request_dto = request_combo_dto(**payload)
-            self.logger.info(f"DTO 생성 시간: {time.time() - dto_start:.3f}초")
+            dto_end = time.time()
+            self.logger.info(f"✅ DTO 생성 완료. 소요 시간: {dto_end - dto_start:.3f}초")
 
+            self.logger.info(f"🤖 AI 서비스 호출 시작... (모델: {model})")
             ai_start = time.time()
             data = self.service.get_data(request=request_dto, model=model)
-            self.logger.info(f"AI 처리 시간: {time.time() - ai_start:.3f}초")
+            ai_end = time.time()
+            self.logger.info(f"✅ AI 처리 완료. 소요 시간: {ai_end - ai_start:.3f}초")
 
-            self.logger.info(f"✅ 응답 검증 요약:")
+            self.logger.info(f"📋 응답 검증 요약:")
             self.logger.info(f"   - 조합 개수: {len(data.combination)}")
             self.logger.info(f"   - 총 투자금액: {self.format_currency(data.total_payment)}")
             try:
@@ -254,15 +389,23 @@ class AITestRunner:
             self.print_formatted_result(data)
 
         except ValidationError as ve:
-            self.logger.error(f"❌ ValidationError 발생 (입력 자체 불량)\n{ve}")
-        except Exception:
-            self.logger.exception("❌ 실행 중 예외 발생")
+            self.logger.error(f"❌ ValidationError 발생 (입력 자체 불량)")
+            self.logger.error(f"상세 오류: {ve}")
+        except Exception as e:
+            self.logger.error(f"❌ 실행 중 예외 발생: {type(e).__name__}: {str(e)}")
+            self.logger.exception("상세 스택 트레이스:")
 
     def run(self):
         total_start_time = time.time()
-        start_datetime = datetime.now()
-        self.logger.info(f"전체 테스트 시작: {start_datetime.strftime('%Y-%m-%d %H:%M:%S')}")
-        self.logger.info("=" * 50)
+        self.logger.info(f"🚀 전체 테스트 시작: {self.start_datetime.strftime('%Y-%m-%d %H:%M:%S')}")
+        if self.log_to_file:
+            self.logger.info(f"📄 로그 파일: {self.log_file_path}")
+        self.logger.info(f"📊 테스트 설정:")
+        self.logger.info(f"   - 테스트 케이스: {len(self.test_cases)}개")
+        self.logger.info(f"   - AI 모델: {self.ai_models}")
+        self.logger.info(f"   - 로그 레벨: {logging.getLevelName(self.log_level)}")
+        self.logger.info(f"   - 파일 저장: {'예' if self.log_to_file else '아니오'}")
+        self.logger.info("=" * 80)
 
         for model in self.ai_models:
             self.logger.info(f"\n{'=' * 20} 모델: {model} 테스트 시작 {'=' * 20}")
@@ -270,12 +413,31 @@ class AITestRunner:
                 self._run_single_case(name, payload, model)
 
         total_end_time = time.time()
-        self.logger.info("\n" + "=" * 50)
-        self.logger.info("모든 테스트 완료.")
-        self.logger.info(f"총 실행 시간: {total_end_time - total_start_time:.3f}초")
-        self.logger.info("=" * 50)
+        self.logger.info("\n" + "=" * 80)
+        self.logger.info("🎉 모든 테스트 완료.")
+        self.logger.info(f"⏱️ 총 실행 시간: {total_end_time - total_start_time:.3f}초")
+        if self.log_to_file:
+            self.logger.info(f"📄 로그 저장 위치: {os.path.abspath(self.log_file_path)}")
+        self.logger.info("=" * 80)
 
 
 if __name__ == "__main__":
-    runner = AITestRunner()
+    # 사용법 예시들:
+
+    # 1) 기본 설정 - 로그 파일에 저장 + INFO 레벨
+    # runner = AITestRunner()
+
+    # 2) DEBUG 레벨로 상세 로그 + 파일 저장
+    # runner = AITestRunner(log_level="DEBUG")
+
+    # 3) 콘솔 출력만 하고 파일 저장 안함
+    # runner = AITestRunner(log_to_file=False)
+
+    # 4) 커스텀 로그 디렉토리 지정
+    # runner = AITestRunner(log_dir="test_results")
+
+    # 5) WARNING 레벨로 중요한 것만 + 특정 디렉토리
+    # runner = AITestRunner(log_level="WARNING", log_dir="logs/warnings")
+
+    runner = AITestRunner(log_level="DEBUG", log_dir="test_logs")
     runner.run()
