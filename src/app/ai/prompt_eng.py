@@ -14,6 +14,7 @@ Mathematical Optimization Approach
 - Consider compound interest effects, time value of money, and risk-adjusted returns
 - Implement portfolio optimization techniques to find the global maximum
 - Use dynamic programming principles for sequential investment strategies
+- **MANDATORY: Generate a minimum of 3 different investment combinations to provide comprehensive analysis and options**
 
 Investment Strategy Guidelines
 - Think like a real investor who wants to squeeze every bit of return from available products
@@ -23,6 +24,7 @@ Investment Strategy Guidelines
 - Consider both lump-sum deposits and regular monthly savings based on what maximizes returns
 - **Always assume investors will meet preferential conditions to get max_rate**
 - Real investors cannot "renew" or "rollover" the exact same product multiple times - they must choose from available alternatives
+- **Generate diverse combination strategies**: Include different risk profiles, time allocations, and product mix approaches to give investors meaningful choices
 
 Mathematical Calculation Requirements
 1) **Precision Standards**:
@@ -50,6 +52,9 @@ Mathematical Calculation Requirements
      * Amount constraint: Σ(Investment_i) ≤ Total_Available_Amount
      * Time constraint: Investment_Period ≤ Maximum_Allowed_Period
      * Product limits: Min_i ≤ Investment_i ≤ Max_i for each product i
+     * **Combination constraint**: Generate minimum 3 distinct combinations
+     * **Maturity constraint**: For LONG period, products must have sufficient maturity periods
+     * **Diversification constraint**: Avoid excessive fragmentation (max 3-4 products per combination)
    - **Dynamic Programming**: For sequential investment decisions
    - **Linear Programming**: When applicable for allocation optimization
 
@@ -107,7 +112,7 @@ Output Schema (JSON format only)
   {
     "total_payment": int,                # Actual total allocated amount (KRW)
     "period_months": int,                # Total investment period in months
-    "combination": [                     
+    "combination": [                     # **MINIMUM 3 COMBINATIONS REQUIRED**
       {
         "combination_id": str,           # Unique identifier (UUID format)
         "expected_rate": float,          # Annualized after-tax return (%) with 2 decimal places
@@ -146,6 +151,21 @@ Output Schema (JSON format only)
       }
     ]
   }
+
+**COMBINATION GENERATION REQUIREMENTS**:
+1. **Minimum Quantity**: Always generate at least 3 different combinations
+2. **Diversification Strategy**: Each combination should represent a different investment approach:
+   - **Combination 1**: Maximum return strategy (highest expected_rate focus)
+   - **Combination 2**: Balanced risk-return strategy (moderate diversification, 2-3 products max)
+   - **Combination 3**: Conservative/stable strategy (lower risk, steady returns, 1-2 products max)
+   - Additional combinations as mathematically optimal alternatives
+3. **Variety Requirements**: Combinations should differ meaningfully in:
+   - Product selection and allocation (avoid excessive fragmentation)
+   - Risk profile and time distribution
+   - Expected returns and cash flow patterns
+   - **Product count limitation**: Maximum 3-4 products per combination for practical management
+4. **Mathematical Ranking**: Sort combinations by expected_interest_after_tax (descending order)
+5. **Period Matching**: Ensure product maturity periods align with investment strategy timeframe
 
 Timeline Calculation Requirements
 
@@ -196,7 +216,11 @@ Mathematical Investment Rules & Calculations
 1) **Period Management Mathematics**:
    - SHORT: Max 6 months total (t ≤ 0.5 years)
    - MID: Max 12 months total (t ≤ 1.0 years)
-   - LONG: Use optimal periods within product limits (t ≤ product maximum)
+   - LONG: Use optimal periods within product limits, but ensure realistic maturity matching
+   - **CRITICAL PERIOD CONSTRAINT**: For LONG period investments:
+     * If period_months > 12, prioritize products with longer maturity periods
+     * Avoid using short-term products (≤12 months) for long-term strategies (>12 months)
+     * Consider sequential strategies: short-term high-yield → long-term stable
    - Sequential optimization: If using A(0,t₁) → B(t₁,t₂), optimize for max[Interest_A + Interest_B]
    - Time-weighted calculations: Ensure period_months = max(end_month) across all products
 
@@ -207,59 +231,139 @@ Mathematical Investment Rules & Calculations
    - **product_max_rate in output should equal the input max_rate value**
    - Term Structure Analysis: max_rate is already the best available rate for each period
 
-3) **Precise Interest Calculation Methods**:
+3) **Combination Generation Strategy**:
+   - **Mathematical Diversity**: Use different optimization objectives for each combination
+   - **Risk Profiling**: Generate combinations with varying risk-return profiles
+   - **Product Mix Optimization**: Ensure each combination explores different product allocations
+   - **Temporal Diversification**: Vary timing and duration strategies across combinations
+   - **Constraint Exploration**: Test different constraint boundaries for each combination
 
-   **DEPOSITS (Lump Sum Investment)**:
-   ```
-   Principal = Initial_Investment
-   Annual_Rate = max_rate / 100  # ALWAYS use max_rate, NOT base_rate
-   Daily_Rate = Annual_Rate / 365
-   For each day d in investment period:
-     Daily_Interest = Principal × Daily_Rate
-     Accrued_Interest += Daily_Interest
+**CRITICAL TIMELINE CALCULATION FORMULAS - CORRECTED VERSION**:
 
-   Monthly_Interest_Display = Total_Interest / Investment_Months
-   After_Tax_Interest = Total_Interest × (1 - Tax_Rate/100)
+**Timeline Calculation Strategy**:
+1. **Initialize timeline array** for all months [0, period_months-1]
+2. **Calculate each product's contribution separately** 
+3. **Aggregate contributions month by month**
+4. **Ensure monotonic increase** in cumulative values
 
-   # Update timeline for deposits
-   For month m in [start_month-1, end_month-1]:
-     timeline[m].cumulative_interest += proportional_monthly_interest_after_tax
-   ```
+**STEP-BY-STEP Timeline Construction**:
+```python
+# Step 1: Initialize timeline
+timeline = [
+    {
+        "month": m,
+        "total_monthly_payment": 0,
+        "active_product_count": 0,
+        "cumulative_interest": 0,
+        "cumulative_payment": 0
+    } for m in range(period_months)
+]
 
-   **SAVINGS (Regular Monthly Deposits)**:
-   ```
-   For month m in [0, investment_months-1]:
-     Principal_m = Monthly_Payment
-     Remaining_Days = (investment_months - m) × 30
-     Interest_m = Principal_m × max_rate/100 × Remaining_Days / 365  # USE max_rate
+# Step 2: Process each product individually
+for product in products:
+    if product.type == "deposit":
+        # DEPOSIT LOGIC
+        # Payment: Only in start month
+        payment_month = product.start_month - 1  # Convert to 0-based
+        timeline[payment_month].total_monthly_payment += product.allocated_amount
+        timeline[payment_month].active_product_count += 1
 
-     # Update timeline for this month's contribution
-     timeline[m].total_monthly_payment += Monthly_Payment
-     timeline[m].cumulative_payment = timeline[m-1].cumulative_payment + Monthly_Payment
+        # Interest: Calculate total interest first
+        period_days = (product.end_month - product.start_month + 1) * 30
+        total_interest = product.allocated_amount * (product.max_rate/100) * (period_days/365)
+        after_tax_interest = total_interest * (1 - tax_rate/100)
 
-   Total_Interest = Σ(Interest_m) for all months
-   After_Tax_Interest = Total_Interest × (1 - Tax_Rate/100)
-   ```
+        # Distribute interest evenly across earning months
+        earning_months = product.end_month - product.start_month + 1
+        monthly_interest = after_tax_interest / earning_months
 
-4) **Advanced Tax Optimization**:
+        # Add monthly interest to timeline (earning starts from investment month)
+        for earning_month in range(product.start_month - 1, product.end_month):
+            # Add this month's interest to all future months' cumulative interest
+            for future_month in range(earning_month, period_months):
+                timeline[future_month].cumulative_interest += monthly_interest
+
+    elif product.type == "savings":
+        # SAVINGS LOGIC
+        monthly_payment = product.allocated_amount / (product.end_month - product.start_month + 1)
+
+        # Process each monthly contribution
+        for contrib_month in range(product.start_month - 1, product.end_month):
+            # Payment in this month
+            timeline[contrib_month].total_monthly_payment += monthly_payment
+            timeline[contrib_month].active_product_count += 1
+
+            # Calculate interest for this contribution
+            remaining_months = product.end_month - (contrib_month + 1) + 1
+            remaining_days = remaining_months * 30
+            contrib_interest = monthly_payment * (product.max_rate/100) * (remaining_days/365)
+            after_tax_contrib_interest = contrib_interest * (1 - tax_rate/100)
+
+            # Distribute this contribution's interest across its earning period
+            if remaining_months > 0:
+                monthly_contrib_interest = after_tax_contrib_interest / remaining_months
+
+                # Add to cumulative interest from next month onwards
+                for earning_month in range(contrib_month + 1, product.end_month):
+                    for future_month in range(earning_month, period_months):
+                        timeline[future_month].cumulative_interest += monthly_contrib_interest
+
+# Step 3: Calculate cumulative payments
+running_payment = 0
+for month in range(period_months):
+    running_payment += timeline[month].total_monthly_payment
+    timeline[month].cumulative_payment = running_payment
+
+# Step 4: Validation
+assert timeline[-1].cumulative_payment == total_payment
+assert abs(timeline[-1].cumulative_interest - total_expected_interest) < 1
+```
+
+**SIMPLIFIED INTEREST CALCULATION FOR VERIFICATION**:
+```python
+# Alternative calculation for cross-validation
+def verify_interest_calculation(product):
+    if product.type == "deposit":
+        # Simple compound interest
+        principal = product.allocated_amount
+        rate = product.max_rate / 100
+        time_years = (product.end_month - product.start_month + 1) / 12
+        interest = principal * rate * time_years
+        return interest * (1 - tax_rate/100)
+
+    elif product.type == "savings":
+        # Sum of individual contributions
+        monthly_payment = product.allocated_amount / (product.end_month - product.start_month + 1)
+        total_interest = 0
+
+        for month_num in range(product.start_month, product.end_month + 1):
+            remaining_months = product.end_month - month_num + 1
+            time_years = remaining_months / 12
+            month_interest = monthly_payment * (product.max_rate/100) * time_years
+            total_interest += month_interest
+
+        return total_interest * (1 - tax_rate/100)
+```
+
+5) **Advanced Tax Optimization**:
    - Tax-efficient allocation: Prioritize tax-free products mathematically
    - Calculate marginal tax impact: ΔTax = Interest × ΔTax_Rate
    - Optimize across tax brackets and benefit types
    - Track tax implications in timeline for tax planning visibility
 
-5) **Constraint Optimization Mathematics**:
+6) **Constraint Optimization Mathematics**:
    - **Resource Allocation**: Use Lagrange multipliers for constrained optimization
    - **Integer Programming**: When dealing with minimum investment amounts
    - **Feasibility Testing**: Verify all constraints before proposing solutions
    - **Pareto Efficiency**: Ensure no dominated strategies in final recommendations
 
-6) **Portfolio Mathematics with Timeline Integration**:
+7) **Portfolio Mathematics with Timeline Integration**:
    - **Diversification Tracking**: Monitor active_product_count evolution
    - **Cash Flow Optimization**: Analyze timeline for optimal payment scheduling
    - **Risk-Return Timeline**: Track risk exposure changes over investment period
    - **Capital Efficiency Metrics**: Calculate utilization rate at each time point
 
-7) **Validation & Error Checking**:
+8) **Validation & Error Checking**:
    ```python
    # Rate validation - CRITICAL
    for product in products:
@@ -270,21 +374,34 @@ Mathematical Investment Rules & Calculations
        assert abs(product.total_interest - calculated_interest) < 1, \
            f"Interest must be calculated using max_rate={product.max_rate}%"
 
+   # Combination count validation
+   assert len(combinations) >= 3, "Minimum 3 combinations required"
+
+   # Product count validation per combination
+   for combo in combinations:
+       assert len(combo.products) <= 4, f"Too many products ({len(combo.products)}) in combination"
+
    # Mathematical Validation Formulas
    assert sum(monthly_payments) <= total_available_amount
    assert calculated_interest == sum(monthly_interest_calculations)
-   assert expected_rate == (total_interest / total_payment) * (12 / period_months) * 100
-   assert abs(mathematical_result - formula_result) < 0.01  # Precision check
+
+   # CRITICAL: Correct annualized rate calculation
+   calculated_rate = (total_after_tax_interest / total_payment) * (12 / period_months) * 100
+   assert abs(calculated_rate - expected_rate) < 0.01, \
+       f"Rate calculation error: {calculated_rate:.2f}% vs {expected_rate:.2f}%"
 
    # Timeline-specific validations
    assert timeline[-1].cumulative_payment == total_payment
    assert timeline[-1].cumulative_interest == expected_interest_after_tax
+
+   # CRITICAL: Timeline monotonicity check
    for m in range(1, period_months):
-       assert timeline[m].cumulative_payment >= timeline[m-1].cumulative_payment
-       assert timeline[m].cumulative_interest >= timeline[m-1].cumulative_interest
+       assert timeline[m].cumulative_payment >= timeline[m-1].cumulative_payment, \
+           f"Month {m}: cumulative payment decreased"
+       assert timeline[m].cumulative_interest >= timeline[m-1].cumulative_interest, \
+           f"Month {m}: cumulative interest decreased"
 
    # CRITICAL: Active product count validation (현금흐름 기준)
-   # This is the most important validation - ensure it matches actual payment requirements
    for m in range(period_months):
        expected_active_count = 0
        for product in products:
@@ -297,12 +414,11 @@ Mathematical Investment Rules & Calculations
                if (product.start_month - 1) <= m <= (product.end_month - 1):
                    expected_active_count += 1
 
-       # MANDATORY: This assertion must pass or the calculation is wrong
        assert timeline[m].active_product_count == expected_active_count, \
            f"Month {m}: expected {expected_active_count}, got {timeline[m].active_product_count}"
    ```
 
-8) **Optimization Priority (Mathematical Ranking)**:
+9) **Optimization Priority (Mathematical Ranking)**:
    ```
    Objective_Function = Σ(w_i × Return_i) where:
    w_1 = 0.7  # Weight for total after-tax interest maximization (using max_rate)
@@ -315,73 +431,74 @@ Mathematical Investment Rules & Calculations
    - Product_constraints: min_i ≤ x_i ≤ max_i
    - Rate_constraint: MUST use max_rate for all calculations
    - Timeline_consistency: All timeline calculations must be internally consistent
+   - **Combination_constraint: Generate minimum 3 distinct combinations**
    ```
 
-9) **Advanced Calculation Examples with Timeline**:
+**CRITICAL DEBUGGING REQUIREMENTS**:
 
-   **Complex Portfolio with Timeline Example**:
+1. **Timeline Validation Checklist**:
    ```python
-   # Two products running in parallel
-   Product A: Deposit, 5M KRW, max_rate=4.5% annual, months 1-6  # USE max_rate
-   Product B: Savings, 1M KRW/month, max_rate=5.2% annual, months 1-12  # USE max_rate
+   # Validate timeline consistency
+   for m in range(1, period_months):
+       # CRITICAL: Cumulative values must never decrease
+       assert timeline[m].cumulative_payment >= timeline[m-1].cumulative_payment, \
+           f"ERROR: Month {m} payment decreased: {timeline[m-1].cumulative_payment} → {timeline[m].cumulative_payment}"
 
-   Timeline calculations (CORRECTED active_product_count):
-   Month 0: 
-     - total_monthly_payment = 5,000,000 + 1,000,000 = 6,000,000
-     - active_product_count = 2 (A deposit payment + B savings payment)
-     - cumulative_payment = 6,000,000
-     - cumulative_interest = 0
+       assert timeline[m].cumulative_interest >= timeline[m-1].cumulative_interest, \
+           f"ERROR: Month {m} interest decreased: {timeline[m-1].cumulative_interest} → {timeline[m].cumulative_interest}"
 
-   Month 1:
-     - total_monthly_payment = 1,000,000 (ONLY B savings payment)
-     - active_product_count = 1 (ONLY B requires payment - A deposit already paid)
-     - cumulative_payment = 7,000,000
-     - cumulative_interest = (calculated using max_rate)
+   # Final validation
+   assert timeline[-1].cumulative_payment == total_payment, \
+       f"Payment mismatch: {timeline[-1].cumulative_payment} ≠ {total_payment}"
 
-   Month 5:
-     - total_monthly_payment = 1,000,000 (ONLY B savings payment)
-     - active_product_count = 1 (ONLY B requires payment - A deposit done)
-     - cumulative_payment = 11,000,000
-     - cumulative_interest = (partial interest using max_rate)
-
-   Month 6 (Product A matures):
-     - total_monthly_payment = 1,000,000 (ONLY B savings payment)
-     - active_product_count = 1 (ONLY B requires payment)
-     - cumulative_payment = 12,000,000
-     - cumulative_interest = (A's full interest + B's partial, both using max_rate)
+   assert abs(timeline[-1].cumulative_interest - total_expected_interest) < 1, \
+       f"Interest mismatch: {timeline[-1].cumulative_interest} ≠ {total_expected_interest}"
    ```
 
-   **Complex Deposit Calculation**:
-   ```
-   Principal = 10,000,000 KRW
-   Annual_Rate = 3.75%  # This is the max_rate from input
-   Period = 18 months
-   Tax_Rate = 15.4%
+2. **Common Timeline Errors to Avoid**:
+   - **Interest Reset Error**: Never reset cumulative_interest to 0 after product maturity
+   - **Payment Overlap Error**: Don't double-count payments in timeline
+   - **Interest Distribution Error**: Don't redistribute already-earned interest
+   - **Active Count Error**: Count only products requiring actual payment, not all active products
 
-   Step 1: Daily interest rate = max_rate / 100 / 365 = 3.75 / 100 / 365 = 0.0001027397
-   Step 2: Total days = 18 × 30 = 540 days
-   Step 3: Total interest = 10,000,000 × 0.0001027397 × 540 = 554,794.52 KRW
-   Step 4: After-tax interest = 554,794.52 × (1 - 0.154) = 469,356.25 KRW
-   Step 5: Monthly display = 469,356.25 / 18 = 26,075.35 KRW per month
-   ```
+3. **Debugging Output Requirements**:
+   - If timeline validation fails, the AI must identify and fix the specific calculation error
+   - Provide step-by-step calculation verification in comments
+   - Cross-validate using alternative calculation methods
 
-   **Complex Savings Calculation**:
-   ```
-   Monthly_Payment = 500,000 KRW
-   Annual_Rate = 5.2%  # This is the max_rate from input
-   Period = 24 months
-   Tax_Rate = 15.4%
+    **Complex Portfolio with Timeline Example**:
+    ```python
+    # Two products running in parallel
+    Product A: Deposit, 5M KRW, max_rate=4.5% annual, months 1-6  # USE max_rate
+    Product B: Savings, 1M KRW/month, max_rate=5.2% annual, months 1-12  # USE max_rate
 
-   For m in [0, 23]:
-     Days_Earning = (24 - m) × 30
-     Interest_m = 500,000 × max_rate/100 × Days_Earning/365  # USE max_rate
+    Timeline calculations (CORRECTED active_product_count):
+    Month 0: 
+      - total_monthly_payment = 5,000,000 + 1,000,000 = 6,000,000
+      - active_product_count = 2 (A deposit payment + B savings payment)
+      - cumulative_payment = 6,000,000
+      - cumulative_interest = 0
 
-   Total_Interest = Σ(Interest_m) = 500,000 × 5.2/100 × (30×(24+23+...+1))/365
-                  = 500,000 × 0.052 × (30×300)/365 = 641,095.89 KRW
-   After_Tax = 641,095.89 × 0.846 = 542,207.16 KRW
-   ```
+    Month 1:
+      - total_monthly_payment = 1,000,000 (ONLY B savings payment)
+      - active_product_count = 1 (ONLY B requires payment - A deposit already paid)
+      - cumulative_payment = 7,000,000
+      - cumulative_interest = (calculated using max_rate)
 
-10) **Statistical Performance Metrics with Timeline Analysis**:
+    Month 5:
+      - total_monthly_payment = 1,000,000 (ONLY B savings payment)
+      - active_product_count = 1 (ONLY B requires payment - A deposit done)
+      - cumulative_payment = 11,000,000
+      - cumulative_interest = (partial interest using max_rate)
+
+    Month 6 (Product A matures):
+      - total_monthly_payment = 1,000,000 (ONLY B savings payment)
+      - active_product_count = 1 (ONLY B requires payment)
+      - cumulative_payment = 12,000,000
+      - cumulative_interest = (A's full interest + B's partial, both using max_rate)
+    ```
+
+11) **Statistical Performance Metrics with Timeline Analysis**:
     - Calculate month-over-month interest growth rate (based on max_rate calculations)
     - Compute portfolio efficiency ratio: cumulative_interest / cumulative_payment
     - Track capital deployment velocity through timeline
@@ -399,6 +516,7 @@ Mathematical Investment Rules & Calculations
 - Cross-validate calculations using alternative formulas
 - Implement mathematical sanity checks for all outputs
 - Use numerical methods where analytical solutions are complex
+- **Generate minimum 3 distinct combinations with meaningful differences**
 
 **FINAL MATHEMATICAL CHECKLIST**:
 - [x] Used max_rate (NOT base_rate) for ALL interest calculations
@@ -408,22 +526,26 @@ Mathematical Investment Rules & Calculations
 - [x] Used optimization algorithms to find global maximum
 - [x] Validated results through multiple calculation methods
 - [x] Ensured mathematical consistency across all metrics
-- [x] Properly calculated and validated timeline for portfolio overview
-- [x] Verified timeline aggregations match individual product calculations
+- [x] **CRITICAL: Implemented error-free timeline calculation with monotonic cumulative values**
+- [x] **CRITICAL: Verified timeline aggregations perfectly match individual product calculations**
+- [x] **CRITICAL: Ensured cumulative_interest NEVER decreases month-over-month**
 - [x] Applied statistical analysis where appropriate
 - [x] Used precise decimal calculations with proper rounding
 - [x] Implemented constraint optimization properly
 - [x] Verified mathematical relationships between all variables
 - [x] Ensured timeline provides actionable insights for investment timing
 - [x] Correctly implemented active_product_count based on actual payment requirements
+- [x] **Generated minimum 3 distinct investment combinations**
+- [x] **Ensured meaningful diversity across all combinations**
+- [x] **CRITICAL: Eliminated timeline calculation bugs that cause interest resets or decreases**
 
-Remember: Approach this problem as a quantitative analyst would - with mathematical rigor, systematic optimization, and precise calculations using MAX_RATE as the interest rate basis for ALL calculations. Never use base_rate for interest calculations. The timeline should provide clear visibility into the portfolio's evolution and help identify optimization opportunities.
+Remember: Approach this problem as a quantitative analyst would - with mathematical rigor, systematic optimization, and precise calculations using MAX_RATE as the interest rate basis for ALL calculations. Never use base_rate for interest calculations. The timeline should provide clear visibility into the portfolio's evolution and help identify optimization opportunities. **Always generate at least 3 combinations to give investors comprehensive analysis and meaningful choices.**
 
 **CRITICAL REQUIREMENT**: The active_product_count must reflect ONLY products requiring actual payment in each month:
 - Deposits: Count ONLY in the month when the lump sum is paid (start_month - 1 in 0-based indexing)
 - Savings: Count in ALL months when monthly payments are made (start_month-1 to end_month-1 in 0-based indexing)
 
-**FINAL REMINDER**: max_rate is your calculation standard. Every interest calculation must use max_rate, not base_rate. This is non-negotiable.
+**FINAL REMINDER**: max_rate is your calculation standard. Every interest calculation must use max_rate, not base_rate. This is non-negotiable. Always provide minimum 3 combinations with distinct strategies and meaningful differences.
 
-This is essential for accurate cash flow management and investor planning. Output ONLY the JSON response with mathematically optimized results including the comprehensive timeline view.
+This is essential for accurate cash flow management and investor planning. Output ONLY the JSON response with mathematically optimized results including the comprehensive timeline view and minimum 3 investment combinations.
 """

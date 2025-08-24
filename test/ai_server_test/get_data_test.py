@@ -11,25 +11,26 @@ from src.app.service.ai_service import ai_service
 
 class AITestRunner:
     DEFAULT_CASES = [
-        ("낮은가격-Short-3000만원-1", {"amount": 30_000_000, "period": "SHORT"}),
-        ("낮은가격-Short-3000만원-2", {"amount": 30_000_000, "period": "SHORT"}),
-        ("낮은가격-Mid-3000만원-1", {"amount": 30_000_000, "period": "MID"}),
-        ("낮은가격-Mid-3000만원-2", {"amount": 30_000_000, "period": "MID"}),
+        # ("낮은가격-Short-3000만원-1", {"amount": 30_000_000, "period": "SHORT"}),
+        # ("낮은가격-Short-3000만원-2", {"amount": 30_000_000, "period": "SHORT"}),
+        # ("낮은가격-Mid-3000만원-1", {"amount": 30_000_000, "period": "MID"}),
+        # ("낮은가격-Mid-3000만원-2", {"amount": 30_000_000, "period": "MID"}),
         ("낮은가격-Long-3000만원-1", {"amount": 30_000_000, "period": "LONG"}),
         ("낮은가격-Long-3000만원-2", {"amount": 30_000_000, "period": "LONG"}),
 
-        ("적당한가격-Short-30000만원-1", {"amount": 300_000_000, "period": "SHORT"}),
-        ("적당한가격-Short-30000만원-2", {"amount": 300_000_000, "period": "SHORT"}),
+        # ("적당한가격-Short-30000만원-1", {"amount": 300_000_000, "period": "SHORT"}),
+        # ("적당한가격-Short-30000만원-2", {"amount": 300_000_000, "period": "SHORT"}),
         ("적당한가격-Mid-30000만원-1", {"amount": 300_000_000, "period": "MID"}),
         ("적당한가격-Mid-30000만원-2", {"amount": 300_000_000, "period": "MID"}),
-        ("적당한가격-Long-30000만원-1", {"amount": 300_000_000, "period": "LONG"}),
-        ("적당한가격-Long-30000만원-2", {"amount": 300_000_000, "period": "LONG"}),
-        ("많은 가격-Short-1500000만원-1", {"amount": 1_500_000_000, "period": "SHORT"}),
-        ("많은 가격-Short-1500000만원-2", {"amount": 1_500_000_000, "period": "SHORT"}),
-        ("많은 가격-Mid-1500000만원-1", {"amount": 1_500_000_000, "period": "MID"}),
-        ("많은 가격-Mid-1500000만원-2", {"amount": 1_500_000_000, "period": "MID"}),
-        ("많은 가격-Long-1500000만원-1", {"amount": 1_500_000_000, "period": "LONG"}),
-        ("많은 가격-Long-1500000만원-2", {"amount": 1_500_000_000, "period": "LONG"}),
+        # ("적당한가격-Long-30000만원-1", {"amount": 300_000_000, "period": "LONG"}),
+        # ("적당한가격-Long-30000만원-2", {"amount": 300_000_000, "period": "LONG"}),
+
+        # ("많은 가격-Short-1500000만원-1", {"amount": 1_500_000_000, "period": "SHORT"}),
+        # ("많은 가격-Short-1500000만원-2", {"amount": 1_500_000_000, "period": "SHORT"}),
+        # ("많은 가격-Mid-1500000만원-1", {"amount": 1_500_000_000, "period": "MID"}),
+        # ("많은 가격-Mid-1500000만원-2", {"amount": 1_500_000_000, "period": "MID"}),
+        # ("많은 가격-Long-1500000만원-1", {"amount": 1_500_000_000, "period": "LONG"}),
+        # ("많은 가격-Long-1500000만원-2", {"amount": 1_500_000_000, "period": "LONG"}),
     ]
     # DEFAULT_MODELS = ["gemini-2.5-flash", "gpt-5-mini"]
     DEFAULT_MODELS = ["gpt-5-mini", "gpt-5-nano"]
@@ -68,16 +69,16 @@ class AITestRunner:
         return log_file_path
 
     def _setup_global_logging(self):
-        """전체 애플리케이션의 로깅을 설정합니다."""
-        # 루트 로거 설정
+        """AITestRunner의 로그만 출력되도록 설정합니다."""
+        # 루트 로거 설정 - 높은 레벨로 설정하여 다른 모듈 로그 차단
         root_logger = logging.getLogger()
-        root_logger.setLevel(self.log_level)
+        root_logger.setLevel(logging.CRITICAL)  # 다른 모듈들은 CRITICAL만 출력
 
         # 기존 핸들러 제거 (중복 방지)
         for handler in root_logger.handlers[:]:
             root_logger.removeHandler(handler)
 
-        # 포맷터 설정 - 모듈 이름도 포함
+        # 포맷터 설정
         formatter = logging.Formatter(
             '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
             datefmt='%H:%M:%S'
@@ -85,50 +86,58 @@ class AITestRunner:
 
         # 콘솔 핸들러 설정
         console_handler = logging.StreamHandler(sys.stdout)
-        console_handler.setLevel(self.log_level)
+        console_handler.setLevel(logging.DEBUG)  # 핸들러는 모든 레벨 허용
         console_handler.setFormatter(formatter)
         root_logger.addHandler(console_handler)
 
         # 파일 핸들러 설정 (옵션)
         if self.log_to_file:
             file_handler = logging.FileHandler(self.log_file_path, encoding='utf-8')
-            file_handler.setLevel(self.log_level)
+            file_handler.setLevel(logging.DEBUG)  # 핸들러는 모든 레벨 허용
             file_handler.setFormatter(formatter)
             root_logger.addHandler(file_handler)
 
             # 파일 로깅 시작 메시지
             print(f"📄 로그 파일: {self.log_file_path}")
 
-        # 특정 모듈들의 로그 레벨 설정 (필요에 따라 조정)
-        module_loggers = [
+        # 다른 모듈들의 로그를 억제 - CRITICAL 레벨로 설정
+        modules_to_suppress = [
             'src.app.service.ai_service',
             'src.app.dto.request.request_front_dto',
             'src.app',  # src.app 하위 모든 모듈
-            'httpx',  # HTTP 클라이언트 로그 (AI API 호출 시)
+            'httpx',  # HTTP 클라이언트 로그
             'openai',  # OpenAI 클라이언트 로그
             'google',  # Google AI 클라이언트 로그
-        ]
-
-        for module_name in module_loggers:
-            logger = logging.getLogger(module_name)
-            logger.setLevel(self.log_level)
-            logger.propagate = True  # 부모 로거로 전파
-
-        # 너무 상세한 로그는 WARNING 레벨로 제한 (선택사항)
-        noisy_modules = [
             'httpcore',
             'urllib3.connectionpool',
             'requests.packages.urllib3.connectionpool',
+            'pydantic',  # Pydantic 검증 로그
+            'asyncio',  # 비동기 관련 로그
         ]
 
-        for module_name in noisy_modules:
-            logging.getLogger(module_name).setLevel(logging.WARNING)
+        for module_name in modules_to_suppress:
+            logger = logging.getLogger(module_name)
+            logger.setLevel(logging.CRITICAL)  # CRITICAL만 출력
+            logger.propagate = True
+
+        # 완전히 비활성화하고 싶은 모듈들 (로그 출력 안함)
+        modules_to_disable = [
+            'httpcore.http11',
+            'httpcore.connection',
+            'urllib3.util.retry',
+            'charset_normalizer',
+        ]
+
+        for module_name in modules_to_disable:
+            logger = logging.getLogger(module_name)
+            logger.disabled = True
 
     def _setup_runner_logger(self) -> logging.Logger:
         """테스트 러너용 로거를 설정합니다."""
-        logger = logging.getLogger(f"AITestRunner_{id(self)}")
-        logger.setLevel(self.log_level)
-        # 전역 설정을 사용하므로 별도 핸들러는 추가하지 않음
+        logger_name = f"AITestRunner_{id(self)}"
+        logger = logging.getLogger(logger_name)
+        logger.setLevel(self.log_level)  # 사용자가 설정한 레벨 사용
+        # 전역 설정의 핸들러를 사용하므로 별도 핸들러는 추가하지 않음
         return logger
 
     def _initialize_service(self) -> 'ai_service':
