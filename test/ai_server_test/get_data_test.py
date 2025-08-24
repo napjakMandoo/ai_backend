@@ -20,10 +20,10 @@ class AITestRunner:
 
         # ("적당한가격-Short-30000만원-1", {"amount": 300_000_000, "period": "SHORT"}),
         # ("적당한가격-Short-30000만원-2", {"amount": 300_000_000, "period": "SHORT"}),
-        ("적당한가격-Mid-30000만원-1", {"amount": 300_000_000, "period": "MID"}),
-        ("적당한가격-Mid-30000만원-2", {"amount": 300_000_000, "period": "MID"}),
-        # ("적당한가격-Long-30000만원-1", {"amount": 300_000_000, "period": "LONG"}),
-        # ("적당한가격-Long-30000만원-2", {"amount": 300_000_000, "period": "LONG"}),
+        # ("적당한가격-Mid-30000만원-1", {"amount": 300_000_000, "period": "MID"}),
+        # ("적당한가격-Mid-30000만원-2", {"amount": 300_000_000, "period": "MID"}),
+        ("적당한가격-Long-30000만원-1", {"amount": 300_000_000, "period": "LONG"}),
+        ("적당한가격-Long-30000만원-2", {"amount": 300_000_000, "period": "LONG"}),
 
         # ("많은 가격-Short-1500000만원-1", {"amount": 1_500_000_000, "period": "SHORT"}),
         # ("많은 가격-Short-1500000만원-2", {"amount": 1_500_000_000, "period": "SHORT"}),
@@ -32,8 +32,9 @@ class AITestRunner:
         # ("많은 가격-Long-1500000만원-1", {"amount": 1_500_000_000, "period": "LONG"}),
         # ("많은 가격-Long-1500000만원-2", {"amount": 1_500_000_000, "period": "LONG"}),
     ]
-    # DEFAULT_MODELS = ["gemini-2.5-flash", "gpt-5-mini"]
-    DEFAULT_MODELS = ["gpt-5-mini", "gpt-5-nano"]
+    DEFAULT_MODELS = ["gemini-2.5-flash"]
+    # DEFAULT_MODELS = ["gpt-5-mini"]
+    # DEFAULT_MODELS = ["gpt-5"]
 
     # , "gpt-5"
 

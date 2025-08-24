@@ -28,11 +28,11 @@ class ai_service:
             self.logger.info(f"Period extracted: {period_str}")
 
             if period_str == "SHORT":
-                top_n = 20
+                top_n = 10
             elif period_str == "MID":
-                top_n = 40
+                top_n = 20
             elif period_str == "LONG":
-                top_n = 60
+                top_n = 30
             else:
                 self.logger.error(f"Invalid period value: {period_str}")
                 raise ValueError(f"Invalid period: {period_str}")
