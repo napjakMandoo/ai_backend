@@ -35,8 +35,20 @@ class ai_gpt:
                         {"role": "user", "content": content_json},
                     ],
                     text_format=response_ai_dto,
-                    max_output_tokens=2000
+                    temperature=0
                 )
+
+                # ✅ 응답 로그 찍기
+                self.logger.info(f"Raw output text: {getattr(responses_parse, 'output_text', None)}")
+                self.logger.info(f"Parsed output: {responses_parse.output_parsed}")
+                self.logger.info(f"Tokens used - input: {responses_parse.usage.input_tokens}, "
+                                 f"output: {responses_parse.usage.output_tokens}, "
+                                 f"total: {responses_parse.usage.total_tokens}")
+                self.logger.info(f"Raw response: {responses_parse}")
+                self.logger.info(f"Raw output list: {responses_parse.output}")
+                if hasattr(responses_parse, "output_text"):
+                    self.logger.info(f"Output text: {responses_parse.output_text}")
+
                 return responses_parse.output_parsed
 
             except RateLimitError as e:
