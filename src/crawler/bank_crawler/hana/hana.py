@@ -563,20 +563,7 @@ class HanaBankCrawler:
         except Exception as e:
             self.logger.info(f"상세정보 수집 오류: {str(e)}")
     
-    # JSON 파일로 저장
-    def save_data(self, filename="HANA.json"):
-        dotenv.load_dotenv()
-        directory_path = os.getenv("JSON_RESULT_PATH")
 
-        os.makedirs(directory_path, exist_ok=True)
-        full_path = os.path.join(directory_path, filename)
-
-        try:
-            with open(full_path, 'w', encoding='utf-8') as f:
-                json.dump(self.all_products, f, ensure_ascii=False, indent=2)
-            self.logger.info(f"JSON 데이터가 {filename}에 저장되었습니다.")
-        except Exception as e:
-            self.logger.info(f"JSON 저장 오류: {str(e)}")
     
     # 수집 결과 요약 출력
     def print_summary(self):
@@ -638,8 +625,7 @@ class HanaBankCrawler:
             
             self.print_summary()
             
-            self.save_data()
-            
+
             return {
                 'timestamp': start_time.strftime('%Y-%m-%d %H:%M:%S'),
                 'duration_seconds': duration,
@@ -669,12 +655,11 @@ class HanaBankCrawler:
         self.logger.info("7개 필수 항목 구조화 추출")
 
         result = self.run()
-
         if result:
             self.logger.info("크롤링 성공")
-            self.logger.info(f"파일: hana_bank_products.json")
             self.logger.info(
                 f"정기예금 {result['deposit_count']}개 + 적금 {result['savings_count']}개 + 입출금 {result['checking_count']}개 = 총 {result['total_products']}개")
+            return self.all_products
         else:
             self.logger.info("크롤링 실패")
-
+            return []

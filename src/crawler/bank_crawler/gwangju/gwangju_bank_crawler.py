@@ -1085,24 +1085,8 @@ class KJBankCompleteCrawler:
             # 3. 예금과 적금만 필터링
             filtered_products = self.filter_deposit_savings_only(all_products)
             
-            # 4. 결과 저장
-            dotenv.load_dotenv()
-            directory = os.getenv("JSON_RESULT_PATH")
-            os.makedirs(directory, exist_ok=True)
-
-            f_name = f"GWANGJU.json"
-            filename = os.path.join(directory, f_name)
-
-            with open(filename, 'w', encoding='utf-8') as f:
-                json.dump(filtered_products, f, ensure_ascii=False, indent=2)
-            
-            # 5. 최종 결과 요약
-            success_count = len([p for p in filtered_products if 'error' not in p])
-            error_count = len([p for p in filtered_products if 'error' in p])
-            
             self.logger.info(f"크롤링 완료! 전체 {len(all_products)}개 중 예금/적금 {len(filtered_products)}개 상품")
-            self.logger.info(f"결과 저장: {filename}")
-            
+
             return filtered_products
             
         except Exception as e:
@@ -1121,7 +1105,7 @@ class KJBankCompleteCrawler:
             products = self.crawl_all_products(limit=None)
 
             self.logger.info("\n크롤링 완료!")
-
+            return products
         except KeyboardInterrupt:
             self.logger.info("\n사용자에 의해 중단됨")
         except Exception as e:

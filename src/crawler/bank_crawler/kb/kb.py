@@ -1709,35 +1709,7 @@ class KBProductCrawler:
         except:
             pass
     
-    # JSON 파일 저장
-    def save_data(self, filename="KB.json"):
-        dotenv.load_dotenv()
-        directory_path = os.getenv("JSON_RESULT_PATH")
-        os.makedirs(directory_path, exist_ok=True)
-        full_path = os.path.join(directory_path, filename)
 
-        try:
-            clean_products = []
-            for product in self.all_products:
-                clean_product = {}
-                for key, value in product.items():
-                    if key != 'button_element' and value:
-                        if key == 'detail_info' and isinstance(value, dict):
-                            clean_detail = {k: v for k, v in value.items() if v and str(v).strip()}
-                            if clean_detail:
-                                clean_product[key] = clean_detail
-                        else:
-                            clean_product[key] = value
-                        
-                if clean_product:
-                    clean_products.append(clean_product)
-            
-            with open(full_path, 'w', encoding='utf-8') as f:
-                json.dump(clean_products, f, ensure_ascii=False, indent=2)
-            self.logger.info(f"JSON 데이터가 {filename}에 저장되었습니다.")
-            
-        except Exception as e:
-            self.logger.info(f"JSON 저장 오류: {e}")
     
     # 수집 결과 요약 출력
     def print_summary(self):
@@ -1796,8 +1768,7 @@ class KBProductCrawler:
             
             self.print_summary()
             
-            self.save_data()
-            
+
             return {
                 'timestamp': start_time.strftime('%Y-%m-%d %H:%M:%S'),
                 'duration_seconds': duration,
@@ -1818,11 +1789,11 @@ class KBProductCrawler:
         self.logger.info("7개 필수 항목 구조화 추출")
 
         result = self.run()
-
         if result:
             self.logger.info("크롤링 성공")
             self.logger.info(f"파일: kb_products.json")
             self.logger.info(f"예금 {result['deposit_count']}개 + 적금 {result['savings_count']}개 = 총 {result['total_products']}개")
+            return result
         else:
             self.logger.info("크롤링 실패")
 

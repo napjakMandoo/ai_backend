@@ -1118,26 +1118,7 @@ class IMBankCompleteCrawler:
         self.logger.info(f"🎯 기간별 금리 병합 완료: {merge_success_count}/{len(period_rates_data)}개 성공")
         return merge_success_count
     
-    def save_to_csv(self, products, filename):
-        """CSV 파일로 저장"""
-        if not products:
-            self.logger.info("저장할 데이터가 없습니다.")
-            return
-        
-        try:
-            df = pd.DataFrame(products)
-            
-            for column in df.columns:
-                df[column] = df[column].apply(
-                    lambda x: json.dumps(x, ensure_ascii=False) if isinstance(x, (list, dict)) else x
-                )
-            
-            df.to_csv(filename, index=False, encoding='utf-8-sig')
-            self.logger.info(f"💾 CSV 파일 저장: {filename}")
-            
-        except Exception as e:
-            self.logger.info(f"❌ CSV 저장 실패: {e}")
-    
+
     def crawl_all_complete(self):
         """완전한 3단계 크롤링 실행"""
         self.logger.info("🚀 === 아이엠뱅크 완전 크롤링 시작 (기간별 금리 포함) ===")
@@ -1225,28 +1206,7 @@ class IMBankCompleteCrawler:
                 
                 self.logger.info(f"📝 상세 정보 추출 성공률: {round((detail_success_count / len(self.products)) * 100)}% ({detail_success_count}/{len(self.products)})")
                 self.logger.info(f"📊 기간별 금리 추출 성공률: {round((period_rate_success_count / len(self.products)) * 100)}% ({period_rate_success_count}/{len(self.products)})")
-            
-            # CSV 파일 저장
-            # IM_BANK
-            # timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-            # csv_filename = f"아이엠뱅크_완전크롤링_기간별금리포함_{timestamp}.csv"
-            csv_filename = f"IM_BANK.csv"
-            # self.save_to_csv(self.products, csv_filename)
 
-            dotenv.load_dotenv()
-            directory_path = os.getenv("JSON_RESULT_PATH")
-            os.makedirs(directory_path, exist_ok=True)
-            # JSON 파일 저장
-
-            # json_filename = f"아이엠뱅크_완전크롤링결과_{timestamp}.json"
-            json_filename = f"IM_BANK.json"
-            file_path = os.path.join(directory_path, json_filename)
-
-            with open(file_path, 'w', encoding='utf-8') as f:
-                json.dump(result, f, ensure_ascii=False, indent=2)
-            self.logger.info(f"💾 JSON 파일 저장: {json_filename}")
-            
-            # self.logger.info(f"\n💾 CSV 파일 다운로드: {csv_filename}")
             self.logger.info("📋 결과가 완전히 저장되었습니다")
             
             return result
@@ -1264,8 +1224,22 @@ class IMBankCompleteCrawler:
         self.logger.info("🎯 IM은행 완전 크롤러 - 3단계 포함 최종 버전")
         self.logger.info("JavaScript 콘솔 코드와 정확히 동일한 3단계 플로우를 구현합니다")
 
-        result = self.crawl_all_complete()
-        if result:
-            self.logger.info(f"🎉 완전 크롤링 성공! 총 {result['총상품수']}개 상품 수집")
-            self.logger.info(f"🔢 기간별 금리 병합: {result['기간별금리병합']['총병합수']}개 상품")
+        try:
+            result = self.crawl_all_complete()
+            if result and isinstance(result, dict) and 'products' in result:
+                self.logger.info(f"🎉 완전 크롤링 성공! 총 {result['총상품수']}개 상품 수집")
+                self.logger.info(f"🔢 기간별 금리 병합: {result['기간별금리병합']['총병합수']}개 상품")
 
+                # 상품 리스트 반환 (리스트인지 확인)
+                products = result.get('products', [])
+                if isinstance(products, list):
+                    return products
+                else:
+                    self.logger.error(f"❌ products가 리스트가 아님: {type(products)}")
+                    return []
+            else:
+                self.logger.error(f"❌ 크롤링 결과가 유효하지 않음: {type(result)}")
+                return []
+        except Exception as e:
+            self.logger.error(f"❌ start() 메서드에서 예외 발생: {e}")
+            return []

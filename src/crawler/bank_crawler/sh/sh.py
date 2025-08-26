@@ -857,63 +857,6 @@ class SuhyupBankCategoryCrawler:
             self.logger.error(f"❌ 크롤링 중 오류: {e}")
             return self.all_products
     
-    def save_to_json(self, filename: Optional[str] = None) -> str:
-        """결과를 JSON 파일로 저장"""
-
-        try:
-            dotenv.load_dotenv()
-            directory_path = os.getenv("JSON_RESULT_PATH")
-            os.makedirs(directory_path, exist_ok=True)
-
-            if not filename:
-                # timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                # filename = f"suhyup_category_products_{timestamp}.json"
-                filename = f"SH_SUHYUP.json"
-            file_path = os.path.join(directory_path, filename)
-
-            # 중복 제거
-            unique_products = {}
-            for product in self.all_products:
-                product_name = product.get('상품명', '')
-                if product_name not in unique_products:
-                    unique_products[product_name] = product
-            
-            final_products = list(unique_products.values())
-            
-            # 통계 계산
-            success_count = sum(1 for p in final_products if '기본금리' in p)
-            
-            category_stats = {}
-            for product in final_products:
-                category = product.get('상품카테고리', '알 수 없음')
-                category_stats[category] = category_stats.get(category, 0) + 1
-            
-            result_data = {
-                'crawl_info': {
-                    'bank_name': '수협은행',
-                    'crawl_date': datetime.now().isoformat(),
-                    'crawl_method': '카테고리별 크롤링',
-                    'target_categories': [cat['name'] for cat in self.categories],
-                    'total_products': len(final_products),
-                    'success_count': success_count,
-                    'category_stats': category_stats
-                },
-                'products': final_products
-            }
-            
-            with open(file_path, 'w', encoding='utf-8') as f:
-                json.dump(result_data, f, ensure_ascii=False, indent=2)
-            
-            self.logger.info(f"✅ JSON 파일 저장 완료: {filename}")
-            self.logger.info(f"📊 총 {len(final_products)}개 상품")
-            self.logger.info(f"📂 카테고리별 통계: {category_stats}")
-            
-            return filename
-            
-        except Exception as e:
-            self.logger.error(f"❌ JSON 파일 저장 실패: {e}")
-            return ""
-    
     def close(self):
         """드라이버 종료"""
         if self.driver:
@@ -925,10 +868,8 @@ class SuhyupBankCategoryCrawler:
             self.navigate_to_deposits_page()
 
             products = self.crawl_all_categories()
-            saved_file = self.save_to_json()
 
             self.logger.info(f"\n🎉 크롤링 완료!")
-            self.logger.info(f"📁 저장된 파일: {saved_file}")
             self.logger.info(f"📊 수집된 상품 수: {len(products)}개")
 
             if products:
@@ -937,7 +878,8 @@ class SuhyupBankCategoryCrawler:
                 self.logger.info(f"상품카테고리: {products[0].get('상품카테고리')}")
                 self.logger.info(f"기본금리: {products[0].get('기본금리')}")
                 self.logger.info(f"최대금리: {products[0].get('최대금리')}")
-
+                return self.all_products
+            return []
         except Exception as e:
             self.logger.error(f"❌ 실행 중 오류: {e}")
 

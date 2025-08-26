@@ -214,21 +214,49 @@ Active count explanation:
 ================================================================
 ALLOCATION STRATEGY
 ================================================================
-- **STRICT: ≤ 3 products per combination**
-- Each product UUID used at most once globally
-- Goal: Σ allocated_amount = request_combo_dto.amount exactly
+### PRODUCT COUNT RULES:
+- **Default**: ≤ 3 products per combination
+- **For amount ≥ 300,000,000원**: Add 1 product per 100,000,000원
+  * Example: 300M → max 3 products
+  * Example: 500M → max 5 products  
+  * Example: 1B → max 10 products
 
-### For 30,000,000원 portfolio:
+### MINIMUM ALLOCATION AMOUNTS:
+**ONLY APPLY WHEN request_combo_dto.amount ≥ 10,000,000원:**
+- **Deposit**: ≥ 10,000,000원 (unless product limits force lower)
+- **Savings**: ≥ 3,600,000원 (300,000원 × 12 months minimum)
+- **For amount < 10,000,000원**: Use product's own minimum limits only
+
+### ALLOCATION EXAMPLES BY AMOUNT:
+
+#### For 10,000,000원 ~ 30,000,000원:
 - **Combination 1 (Max return)**: 
-  * 1 deposit (15-20M) + 1-2 high-rate savings (5-10M each)
+  * 1 deposit (50-70% of total) + 1-2 high-rate savings (remainder)
 - **Combination 2 (Balanced)**:
-  * 1 deposit (20-25M) + 1 savings (5-10M)
+  * 1 deposit (60-80% of total) + 1 savings (remainder)
 - **Combination 3 (Conservative)**:
-  * 1-2 deposits only (15M each) or 1 large deposit (30M)
+  * 1 large deposit (100%) or 2 deposits (50% each)
 
-### Minimum allocations:
-- Deposit: ≥ 10,000,000원 (unless limits force lower)
-- Savings: ≥ 3,600,000원 (300,000원 × 12 months minimum)
+#### For 100,000,000원:
+- **Combination 1**: 2-3 deposits (30-40M each) + 1 savings
+- **Combination 2**: 1 large deposit (70M) + 2 savings (15M each)
+- **Combination 3**: 3 balanced products (33M each)
+
+#### For 300,000,000원 ~ 500,000,000원:
+- Use 3-5 products per combination
+- Maintain deposit allocation ≥ 100,000,000원 per deposit
+- Savings allocation ≥ 30,000,000원 per savings
+
+#### For ≥ 1,000,000,000원:
+- Use up to 10 products per combination
+- Each deposit: 100,000,000원 ~ 200,000,000원
+- Each savings: 50,000,000원 ~ 100,000,000원
+
+### ALLOCATION PRIORITY:
+1. Respect product's own minimum/maximum limits first
+2. Apply minimum allocation rules (if amount ≥ 10M원)
+3. Maximize interest while maintaining diversification
+4. Each product UUID used at most once globally
 
 ================================================================
 VALIDATION RULES - MUST PASS ALL
@@ -277,6 +305,7 @@ Month 0-11: payment=500K+500K → active_count=2
 - All text fields ≤ max length
 - expected_interest_after_tax == sum(all monthly interests)
 - Final cumulative_payment == request_combo_dto.amount
+- Product count per combination respects amount-based rules
 
 ================================================================
 COMMON ERRORS TO AVOID
@@ -309,10 +338,17 @@ WRONG: Generating new UUIDs
 RIGHT: Using UUIDs from input product_dto
 ```
 
+❌ **ERROR 5**: Violating minimum allocation rules
+```
+WRONG: Deposit with 5,000,000원 when amount is 30,000,000원
+RIGHT: Deposit with at least 10,000,000원
+```
+
 ================================================================
 FINAL CHECKLIST BEFORE OUTPUT
 ================================================================
-□ All combinations have ≤ 3 products
+□ Product count follows amount-based rules (≤3 default, +1 per 100M for ≥300M)
+□ Minimum allocations respected (10M for deposit, 3.6M for savings when total ≥10M)
 □ Timeline cumulative values ALWAYS increase (no decreases)
 □ No monthly interest increment > 1,000,000원 for 30M portfolio
 □ Deposit interest is distributed across ALL months, not just the end

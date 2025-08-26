@@ -741,25 +741,7 @@ class NHBankCrawler:
             self.logger.info(f"상품명 수집 오류: {str(e)}")
             return []
 
-    # JSON 파일로 저장
-    def save_to_json(self, filename="NH.json"):
-        dotenv.load_dotenv()
-        directory_path = os.getenv("JSON_RESULT_PATH")
 
-        # 디렉토리 없으면 생성
-        os.makedirs(directory_path, exist_ok=True)
-
-        # 전체 경로 구성
-        full_path = os.path.join(directory_path, filename)
-
-        try:
-            with open(full_path, 'w', encoding='utf-8') as f:
-                json.dump(self.all_products, f, ensure_ascii=False, indent=2)
-            self.logger.info(f"JSON 데이터가 {full_path}에 저장되었습니다.")
-            return full_path
-        except Exception as e:
-            self.logger.info(f"JSON 저장 오류: {str(e)}")
-            return None
 
     # 수집 결과 요약 출력
     def print_summary(self):
@@ -822,7 +804,6 @@ class NHBankCrawler:
 
             self.print_summary()
 
-            self.save_to_json()
 
             return {
                 'timestamp': start_time.strftime('%Y-%m-%d %H:%M:%S'),
@@ -849,6 +830,7 @@ class NHBankCrawler:
             self.logger.info("크롤링 성공")
             self.logger.info(f"파일: nh_bank_products.json")
             self.logger.info(f"예금 {result['deposit_count']}개 + 적금 {result['savings_count']}개 = 총 {result['total_products']}개")
+            return self.all_products
         else:
             self.logger.info("크롤링 실패")
 

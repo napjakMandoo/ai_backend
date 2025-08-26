@@ -689,24 +689,6 @@ class JejuBankDepositSavingsOnlyCrawler:
 
         return products
 
-    def save_to_json(self, products, filename=None):
-        dotenv.load_dotenv()
-        directory_path = os.getenv("JSON_RESULT_PATH")
-
-        os.makedirs(directory_path, exist_ok=True)
-        """결과를 JSON 파일로 저장"""
-        if filename is None:
-            filename = f"JEJU.json"
-
-        file_path = os.path.join(directory_path, filename)
-
-        with open(file_path, 'w', encoding='utf-8') as f:
-            json.dump(products, f, ensure_ascii=False, indent=2)
-        
-        self.logger.info(f"결과 저장: {filename}")
-        return filename
-
-
     def start(self):
         try:
             # 예금/적금만 크롤링 (각각 5개씩 테스트)
@@ -714,8 +696,6 @@ class JejuBankDepositSavingsOnlyCrawler:
 
             self.logger.info(f"크롤링 완료! 총 {len(products)}개 상품")
 
-            # JSON으로 저장
-            filename = self.save_to_json(products)
 
             return products
 

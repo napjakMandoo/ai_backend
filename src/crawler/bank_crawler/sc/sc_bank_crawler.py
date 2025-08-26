@@ -714,23 +714,6 @@ class SCBankCleanCrawler:
         
         return all_products
     
-    def save_to_json(self, data: List[Dict], filename: str = None) -> str:
-
-        dotenv.load_dotenv()
-        directory_path = os.getenv("JSON_RESULT_PATH")
-
-        os.makedirs(directory_path, exist_ok=True)
-
-        if filename is None:
-            filename = f"SC_JEIL.json"
-            file_path = os.path.join(directory_path, filename)
-
-        with open(file_path, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-        
-        self.logger.info(f"결과 저장: {filename}")
-        return filename
-    
     def close(self):
         """드라이버 종료"""
         if self.driver:
@@ -753,9 +736,6 @@ class SCBankCleanCrawler:
             deposit_count = sum(1 for p in all_products if p.get('type') == '예금')
             savings_count = sum(1 for p in all_products if p.get('type') == '적금')
             self.logger.info(f"예금: {deposit_count}개, 적금: {savings_count}개")
-
-            # JSON 저장
-            filename = self.save_to_json(all_products)
 
             return all_products
 

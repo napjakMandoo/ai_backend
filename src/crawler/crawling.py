@@ -7,9 +7,20 @@ from logging.handlers import RotatingFileHandler
 
 from src.app.service.ai_service import ai_service
 from src.crawler.ai.LlmUtil import LlmUtil
+from src.crawler.bank_crawler.busan.busan_bank_crawler import BusanBankUnifiedCrawler
+from src.crawler.bank_crawler.gwangju.gwangju_bank_crawler import KJBankCompleteCrawler
+from src.crawler.bank_crawler.hana.hana import HanaBankCrawler
+from src.crawler.bank_crawler.ibk.ibk_bank import IBKFullCrawler
+from src.crawler.bank_crawler.im.IM import IMBankCompleteCrawler
+from src.crawler.bank_crawler.jeju.jeju_bank_crawler import JejuBankDepositSavingsOnlyCrawler
+from src.crawler.bank_crawler.kb.kb import KBProductCrawler
+from src.crawler.bank_crawler.kdb.KdbCrawler import KdbCrawler
+from src.crawler.bank_crawler.nh.nh import NHBankCrawler
 from src.crawler.bank_crawler.post.PostBankCrawler import PostBankCrawler
 from src.crawler.bank_crawler.sc.sc_bank_crawler import SCBankCleanCrawler
+from src.crawler.bank_crawler.sh.sh import SuhyupBankCategoryCrawler
 from src.crawler.bank_crawler.sinhan.SinHanBankCrawler import SinHanBankCrawler
+from src.crawler.bank_crawler.woori.woori import WooriBankCrawler
 from src.crawler.util.BankLink import BankLink
 from src.crawler.bank_crawler.kyongnam.KyongNamBankCrawler import KyongNamBankCrawler
 from src.shared.db.bank.BankRepository import BankRepository
@@ -62,101 +73,68 @@ class Crawling:
 
         return logger
 
-    # def read_json(self, file_name):
-    #     directory = os.getenv("JSON_RESULT_PATH")
-    #
-    #     file_path = directory + "/" + file_name + ".json"
-    #
-    #     with open(file_path, "r", encoding="utf-8") as f:
-    #         data = json.load(f)
-    #
-    #     return data
-
     def crawling(self, bank_name: str = ""):
         before_preprocessed_products = []
 
-        if bank_name == "BNK_GYEONGNAM":
-            before_preprocessed_products.extend(
-                KyongNamBankCrawler(base_url=BankLink.KYONGNAM_BANK_DEPOSIT_LINK.value).start())
-        elif bank_name == "POST_OFFICE":
-            before_preprocessed_products.extend(PostBankCrawler(base_url=BankLink.POST_BANK_LINK.value).start())
-        elif bank_name == "SHINHAN":
-            before_preprocessed_products.extend(
-                SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_ONLINE_LINK.value).start())
-            before_preprocessed_products.extend(
-                SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_LUMP_LINK.value).start())
-            before_preprocessed_products.extend(
-                SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_LUMP_ROLL_LINK.value).start())
-        # elif bank_name == "KDB":
+        # 통과한 것
+        # 우체국
+        # 경남은행
+        # 부산
+        # 신한
+
+
+        # if bank_name == "BNK_GYEONGNAM":
+        #     before_preprocessed_products.extend(
+        #         KyongNamBankCrawler(base_url=BankLink.KYONGNAM_BANK_DEPOSIT_LINK.value).start())
+        # if bank_name == "POST_OFFICE":
+        #     before_preprocessed_products.extend(PostBankCrawler(base_url=BankLink.POST_BANK_LINK.value).start())
+        # if bank_name == "SHINHAN":
+        #     before_preprocessed_products.extend(
+        #         SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_ONLINE_LINK.value).start())
+        #     before_preprocessed_products.extend(
+        #         SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_LUMP_LINK.value).start())
+        #     before_preprocessed_products.extend(
+        #         SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_LUMP_ROLL_LINK.value).start())
+        #
+        # if bank_name == "KDB":
         #     before_preprocessed_products.extend(KdbCrawler(base_url=BankLink.KDB_LINK.value).start())
+        #
+        # if bank_name == "BNK_BUSAN":
+        #     before_preprocessed_products.extend(BusanBankUnifiedCrawler(base_url=BankLink.BUSAN_BANK_LINK.value).start())
+        #
+        # if bank_name == "SC_JEIL":
+        #     before_preprocessed_products.extend(SCBankCleanCrawler(base_url=BankLink.SC_BANK_LINK.value,detail_url_base=BankLink.SC_BANK_BASE_LINK.value).start())
 
-        # elif bank_name == "BNK_BUSAN":
-        #     BusanBankUnifiedCrawler(base_url=BankLink.BUSAN_BANK_LINK.value).start()
-        #     data = self.read_json("BNK_BUSAN")
-        #     for i in data:
-        #         before_preprocessed_products.append(i)
+        # if bank_name == "GWANGJU":
+        #     before_preprocessed_products.extend(KJBankCompleteCrawler(base_url=BankLink.GWANGJU_BANK_LINK.value,deposit_list_url=BankLink.GWANGJU_BANK_DEPOSIT_LINK.value).start())
         #
-        elif bank_name == "SC_JEIL":
-            before_preprocessed_products.extend(SCBankCleanCrawler(base_url=BankLink.SC_BANK_LINK.value,detail_url_base=BankLink.SC_BANK_BASE_LINK.value).start())
+        if bank_name == "JEJU":
+            before_preprocessed_products.extend(JejuBankDepositSavingsOnlyCrawler(base_url=BankLink.JEJU_BANK_BASE_LINK.value).start())
 
-        # elif bank_name == "GWANGJU":
-        #     KJBankCompleteCrawler(base_url=BankLink.GWANGJU_BANK_LINK.value,
-        #                           deposit_list_url=BankLink.GWANGJU_BANK_DEPOSIT_LINK.value).start()
-        #     data = self.read_json("GWANGJU")
-        #     for i in data:
-        #         before_preprocessed_products.append(i)
+        if bank_name == "HANA":
+            before_preprocessed_products.extend(HanaBankCrawler().start())
         #
-        # elif bank_name == "JEJU":
-        #     JejuBankDepositSavingsOnlyCrawler(base_url=BankLink.JEJU_BANK_BASE_LINK.value).start()
-        #     data = self.read_json("JEJU")
-        #     for i in data:
-        #         before_preprocessed_products.append(i)
+
+        if bank_name == "KB":
+            before_preprocessed_products.extend(KBProductCrawler().start())
+
+
+        if bank_name == "NH":
+            before_preprocessed_products.extend(NHBankCrawler().start())
+
+        if bank_name == "WOORI":
+            before_preprocessed_products.extend(WooriBankCrawler().start())
+
+        # if bank_name == "IBK":  # 안됨
+        #     before_preprocessed_products.extend(IBKFullCrawler().start())
         #
-        # elif bank_name == "HANA":
-        #     HanaBankCrawler().start()
-        #     data = self.read_json("HANA")
-        #     for i in data:
-        #         before_preprocessed_products.append(i)
-        #
-        #
-        # elif bank_name == "KB":
-        #     KBProductCrawler().start()
-        #     data = self.read_json("KB")
-        #     for i in data:
-        #         before_preprocessed_products.append(i)
-        #
-        #
-        # elif bank_name == "NH":
-        #     NHBankCrawler().start()
-        #     data = self.read_json("NH")
-        #     for i in data:
-        #         before_preprocessed_products.append(i)
-        #
-        # elif bank_name == "WOORI":
-        #     WooriBankCrawler().start()
-        #     data = self.read_json("WOORI")
-        #     for i in data:
-        #         before_preprocessed_products.append(i)
-        #
-        # elif bank_name == "IBK":  # 안됨
-        #     IBKFullCrawler().start()
-        #
-        #     data = self.read_json("IBK")
-        #     for i in data["products"]:
-        #         before_preprocessed_products.append(i)
-        #
-        # elif bank_name == "SH_SUHYUP":
-        #     SuhyupBankCategoryCrawler().start()
-        #     data = self.read_json("SH_SUHYUP")
-        #     for i in data:
-        #         before_preprocessed_products.append(i)
-        #
-        # elif bank_name == "IM_BANK":
-        #     IMBankCompleteCrawler().start()
-        #
-        #     data = self.read_json("IM_BANK")
-        #     for i in data["products"]:
-        #         before_preprocessed_products.append(i)
+
+        if bank_name == "SH_SUHYUP":
+            before_preprocessed_products.extend(SuhyupBankCategoryCrawler().start())
+
+        if bank_name == "IM_BANK": # 55개 => 잘됨(저장도 해둠)
+            before_preprocessed_products.extend(IMBankCompleteCrawler().start())
+
 
         # 데이터 리턴
         return before_preprocessed_products
@@ -235,7 +213,7 @@ class Crawling:
             # self.productRepository.delete_all_product()
             # self.logger.info("===== 기존 상품 데이터 삭제 완료 (테스트용) =====")
 
-            # self.month_task()
+            self.month_task()
 
             ################### 자동화 코드입니다. 주석을 풀면 됩니다.########################
             # self.logger.info("===== 스케줄러 시작 - 매일 02:00에 실행 =====")
@@ -250,11 +228,6 @@ class Crawling:
             raise
 
 if __name__ == "__main__":
-
-    ## 삭제할꺼임(8/21) #############
-    runner = AITestRunner()
-    runner.run()
-
-    # crawling = Crawling()
-    # crawling.setup_logging()
-    # crawling.start()
+    crawling = Crawling()
+    crawling.setup_logging()
+    crawling.start()

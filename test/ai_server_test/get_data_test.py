@@ -16,14 +16,14 @@ class AITestRunner:
         # ("낮은가격-Mid-3000만원-1", {"amount": 30_000_000, "period": "MID"}),
         # ("낮은가격-Mid-3000만원-2", {"amount": 30_000_000, "period": "MID"}),
         ("낮은가격-Long-3000만원-1", {"amount": 30_000_000, "period": "LONG"}),
-        ("낮은가격-Long-3000만원-2", {"amount": 30_000_000, "period": "LONG"}),
+        # ("낮은가격-Long-3000만원-2", {"amount": 30_000_000, "period": "LONG"}),
 
         # ("적당한가격-Short-30000만원-1", {"amount": 300_000_000, "period": "SHORT"}),
         # ("적당한가격-Short-30000만원-2", {"amount": 300_000_000, "period": "SHORT"}),
         # ("적당한가격-Mid-30000만원-1", {"amount": 300_000_000, "period": "MID"}),
         # ("적당한가격-Mid-30000만원-2", {"amount": 300_000_000, "period": "MID"}),
-        ("적당한가격-Long-30000만원-1", {"amount": 300_000_000, "period": "LONG"}),
-        ("적당한가격-Long-30000만원-2", {"amount": 300_000_000, "period": "LONG"}),
+        # ("적당한가격-Long-30000만원-1", {"amount": 300_000_000, "period": "LONG"}),
+        # ("적당한가격-Long-30000만원-2", {"amount": 300_000_000, "period": "LONG"}),
 
         # ("많은 가격-Short-1500000만원-1", {"amount": 1_500_000_000, "period": "SHORT"}),
         # ("많은 가격-Short-1500000만원-2", {"amount": 1_500_000_000, "period": "SHORT"}),
@@ -32,19 +32,19 @@ class AITestRunner:
         # ("많은 가격-Long-1500000만원-1", {"amount": 1_500_000_000, "period": "LONG"}),
         # ("많은 가격-Long-1500000만원-2", {"amount": 1_500_000_000, "period": "LONG"}),
     ]
-    DEFAULT_MODELS = ["gemini-2.5-flash"]
-    # DEFAULT_MODELS = ["gpt-5-mini"]
+    # DEFAULT_MODELS = ["gemini-2.5-flash"]
+    DEFAULT_MODELS = ["gpt-5-mini"]
+
     # DEFAULT_MODELS = ["gpt-5"]
 
-    # , "gpt-5"
-
     def __init__(self, cases: list[tuple[str, dict]] = None, models: list[str] = None, log_level: str = "INFO",
-                 log_to_file: bool = True, log_dir: str = "logs"):
+                 log_to_file: bool = True, log_dir: str = "logs", verbose: bool = False):
         self.test_cases = cases if cases is not None else self.DEFAULT_CASES
         self.ai_models = models if models is not None else self.DEFAULT_MODELS
         self.log_level = getattr(logging, log_level.upper())
         self.log_to_file = log_to_file
         self.log_dir = log_dir
+        self.verbose = verbose  # 모든 로그를 표시할지 여부
 
         # 로그 파일 경로 설정 (실행 시작 시간 기준)
         self.start_datetime = datetime.now()
@@ -70,75 +70,105 @@ class AITestRunner:
         return log_file_path
 
     def _setup_global_logging(self):
-        """AITestRunner의 로그만 출력되도록 설정합니다."""
-        # 루트 로거 설정 - 높은 레벨로 설정하여 다른 모듈 로그 차단
+        """로깅 설정 - verbose 모드에 따라 다르게 설정"""
+        # 루트 로거 설정
         root_logger = logging.getLogger()
-        root_logger.setLevel(logging.CRITICAL)  # 다른 모듈들은 CRITICAL만 출력
+
+        if self.verbose:
+            # VERBOSE 모드: 모든 로그를 보여줌
+            root_logger.setLevel(logging.DEBUG)
+        else:
+            # 기본 모드: 다른 모듈 로그 억제
+            root_logger.setLevel(logging.CRITICAL)
 
         # 기존 핸들러 제거 (중복 방지)
         for handler in root_logger.handlers[:]:
             root_logger.removeHandler(handler)
 
         # 포맷터 설정
-        formatter = logging.Formatter(
-            '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-            datefmt='%H:%M:%S'
-        )
+        if self.verbose:
+            # 더 상세한 포맷 (모듈명 포함)
+            formatter = logging.Formatter(
+                '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                datefmt='%H:%M:%S'
+            )
+        else:
+            # 기본 포맷
+            formatter = logging.Formatter(
+                '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                datefmt='%H:%M:%S'
+            )
 
         # 콘솔 핸들러 설정
         console_handler = logging.StreamHandler(sys.stdout)
-        console_handler.setLevel(logging.DEBUG)  # 핸들러는 모든 레벨 허용
+        console_handler.setLevel(logging.DEBUG if self.verbose else self.log_level)
         console_handler.setFormatter(formatter)
         root_logger.addHandler(console_handler)
 
         # 파일 핸들러 설정 (옵션)
         if self.log_to_file:
             file_handler = logging.FileHandler(self.log_file_path, encoding='utf-8')
-            file_handler.setLevel(logging.DEBUG)  # 핸들러는 모든 레벨 허용
+            file_handler.setLevel(logging.DEBUG)  # 파일에는 항상 모든 레벨 기록
             file_handler.setFormatter(formatter)
             root_logger.addHandler(file_handler)
 
             # 파일 로깅 시작 메시지
             print(f"📄 로그 파일: {self.log_file_path}")
 
-        # 다른 모듈들의 로그를 억제 - CRITICAL 레벨로 설정
-        modules_to_suppress = [
-            'src.app.service.ai_service',
-            'src.app.dto.request.request_front_dto',
-            'src.app',  # src.app 하위 모든 모듈
-            'httpx',  # HTTP 클라이언트 로그
-            'openai',  # OpenAI 클라이언트 로그
-            'google',  # Google AI 클라이언트 로그
-            'httpcore',
-            'urllib3.connectionpool',
-            'requests.packages.urllib3.connectionpool',
-            'pydantic',  # Pydantic 검증 로그
-            'asyncio',  # 비동기 관련 로그
-        ]
+        if not self.verbose:
+            # 기본 모드에서만 로그 억제 적용
+            # 다른 모듈들의 로그를 억제 - CRITICAL 레벨로 설정
+            modules_to_suppress = [
+                'src.app.service.ai_service',
+                'src.app.dto.request.request_front_dto',
+                'src.app',  # src.app 하위 모든 모듈
+                'httpx',  # HTTP 클라이언트 로그
+                'openai',  # OpenAI 클라이언트 로그
+                'google',  # Google AI 클라이언트 로그
+                'httpcore',
+                'urllib3.connectionpool',
+                'requests.packages.urllib3.connectionpool',
+                'pydantic',  # Pydantic 검증 로그
+                'asyncio',  # 비동기 관련 로그
+            ]
 
-        for module_name in modules_to_suppress:
-            logger = logging.getLogger(module_name)
-            logger.setLevel(logging.CRITICAL)  # CRITICAL만 출력
-            logger.propagate = True
+            for module_name in modules_to_suppress:
+                logger = logging.getLogger(module_name)
+                logger.setLevel(logging.CRITICAL)  # CRITICAL만 출력
+                logger.propagate = True
 
-        # 완전히 비활성화하고 싶은 모듈들 (로그 출력 안함)
-        modules_to_disable = [
-            'httpcore.http11',
-            'httpcore.connection',
-            'urllib3.util.retry',
-            'charset_normalizer',
-        ]
+            # 완전히 비활성화하고 싶은 모듈들 (로그 출력 안함)
+            modules_to_disable = [
+                'httpcore.http11',
+                'httpcore.connection',
+                'urllib3.util.retry',
+                'charset_normalizer',
+            ]
 
-        for module_name in modules_to_disable:
-            logger = logging.getLogger(module_name)
-            logger.disabled = True
+            for module_name in modules_to_disable:
+                logger = logging.getLogger(module_name)
+                logger.disabled = True
+        else:
+            # VERBOSE 모드에서는 모든 모듈의 로그 레벨을 DEBUG로 설정
+            important_modules = [
+                'src.app.service.ai_service',
+                'src.app.dto.request.request_front_dto',
+                'src.app',
+                'openai',
+                'google',
+                'httpx',
+            ]
+
+            for module_name in important_modules:
+                logger = logging.getLogger(module_name)
+                logger.setLevel(logging.DEBUG)
+                logger.propagate = True
 
     def _setup_runner_logger(self) -> logging.Logger:
         """테스트 러너용 로거를 설정합니다."""
         logger_name = f"AITestRunner_{id(self)}"
         logger = logging.getLogger(logger_name)
-        logger.setLevel(self.log_level)  # 사용자가 설정한 레벨 사용
-        # 전역 설정의 핸들러를 사용하므로 별도 핸들러는 추가하지 않음
+        logger.setLevel(self.log_level)
         return logger
 
     def _initialize_service(self) -> 'ai_service':
@@ -387,20 +417,52 @@ class AITestRunner:
             ai_end = time.time()
             self.logger.info(f"✅ AI 처리 완료. 소요 시간: {ai_end - ai_start:.3f}초")
 
+            # None 체크 및 데이터 구조 검증
+            if data is None:
+                self.logger.error("❌ AI 서비스에서 None을 반환했습니다.")
+                self.logger.error("   원인 가능성:")
+                self.logger.error("   1. AI 모델 API 호출 실패")
+                self.logger.error("   2. 응답 파싱 오류")
+                self.logger.error("   3. 내부 서비스 로직 오류")
+                self.logger.error("   4. 타임아웃 또는 네트워크 문제")
+                return
+
+            if not hasattr(data, 'combination'):
+                self.logger.error("❌ 응답 데이터에 'combination' 속성이 없습니다.")
+                self.logger.error(f"   실제 데이터 타입: {type(data)}")
+                if hasattr(data, '__dict__'):
+                    self.logger.error(f"   사용 가능한 속성들: {list(data.__dict__.keys())}")
+                return
+
             self.logger.info(f"📋 응답 검증 요약:")
-            self.logger.info(f"   - 조합 개수: {len(data.combination)}")
-            self.logger.info(f"   - 총 투자금액: {self.format_currency(data.total_payment)}")
-            try:
-                ratio = data.total_payment / int(payload["amount"]) * 100
-                self.logger.info(f"   - 요청 금액 대비: {ratio:.1f}%")
-            except (KeyError, ZeroDivisionError):
-                pass
+            self.logger.info(f"   - 조합 개수: {len(data.combination) if data.combination else 0}")
+
+            if hasattr(data, 'total_payment'):
+                self.logger.info(f"   - 총 투자금액: {self.format_currency(data.total_payment)}")
+                try:
+                    ratio = data.total_payment / int(payload["amount"]) * 100
+                    self.logger.info(f"   - 요청 금액 대비: {ratio:.1f}%")
+                except (KeyError, ZeroDivisionError):
+                    pass
+            else:
+                self.logger.warning("   - total_payment 속성이 없습니다.")
+
+            if not data.combination:
+                self.logger.warning("⚠️ 추천 조합이 비어있습니다.")
+                return
 
             self.print_formatted_result(data)
 
         except ValidationError as ve:
             self.logger.error(f"❌ ValidationError 발생 (입력 자체 불량)")
             self.logger.error(f"상세 오류: {ve}")
+        except AttributeError as ae:
+            self.logger.error(f"❌ AttributeError 발생: {str(ae)}")
+            self.logger.error("   데이터 구조가 예상과 다릅니다.")
+            if 'data' in locals():
+                self.logger.error(f"   데이터 타입: {type(data)}")
+                if hasattr(data, '__dict__'):
+                    self.logger.error(f"   속성들: {list(data.__dict__.keys())}")
         except Exception as e:
             self.logger.error(f"❌ 실행 중 예외 발생: {type(e).__name__}: {str(e)}")
             self.logger.exception("상세 스택 트레이스:")
@@ -414,6 +476,7 @@ class AITestRunner:
         self.logger.info(f"   - 테스트 케이스: {len(self.test_cases)}개")
         self.logger.info(f"   - AI 모델: {self.ai_models}")
         self.logger.info(f"   - 로그 레벨: {logging.getLevelName(self.log_level)}")
+        self.logger.info(f"   - Verbose 모드: {'활성화' if self.verbose else '비활성화'}")
         self.logger.info(f"   - 파일 저장: {'예' if self.log_to_file else '아니오'}")
         self.logger.info("=" * 80)
 
@@ -432,22 +495,23 @@ class AITestRunner:
 
 
 if __name__ == "__main__":
+    # ✅ 모든 로그를 보고 싶다면 verbose=True 설정
     # 사용법 예시들:
 
-    # 1) 기본 설정 - 로그 파일에 저장 + INFO 레벨
+    # 1) 기본 설정 - 테스트 러너 로그만
     # runner = AITestRunner()
 
-    # 2) DEBUG 레벨로 상세 로그 + 파일 저장
-    # runner = AITestRunner(log_level="DEBUG")
+    # 2) 모든 로그 표시 - AI 서비스, HTTP 요청, 응답 등 모든 로그를 볼 수 있음
+    runner = AITestRunner(log_level="DEBUG", verbose=True)
 
-    # 3) 콘솔 출력만 하고 파일 저장 안함
-    # runner = AITestRunner(log_to_file=False)
+    # 3) 파일에만 모든 로그 저장, 콘솔에는 기본 로그만
+    # runner = AITestRunner(log_level="DEBUG", log_to_file=True, verbose=False)
 
-    # 4) 커스텀 로그 디렉토리 지정
-    # runner = AITestRunner(log_dir="test_results")
+    # 4) 모든 로그 + 커스텀 로그 디렉토리
+    # runner = AITestRunner(log_level="DEBUG", verbose=True, log_dir="verbose_logs")
 
-    # 5) WARNING 레벨로 중요한 것만 + 특정 디렉토리
-    # runner = AITestRunner(log_level="WARNING", log_dir="logs/warnings")
+    # 5) 특정 케이스만 테스트 + 모든 로그
+    # custom_cases = [("테스트-1", {"amount": 50_000_000, "period": "LONG"})]
+    # runner = AITestRunner(cases=custom_cases, log_level="DEBUG", verbose=True)
 
-    runner = AITestRunner(log_level="DEBUG", log_dir="test_logs")
     runner.run()
