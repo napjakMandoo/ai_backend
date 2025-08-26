@@ -94,7 +94,7 @@ DATABASE COLUMN LIMITS (CRITICAL)
 ================================================================
 INPUT SCHEMA (FIXED)
 ================================================================
-- request_combo_dto.amount: int
+- request_combo_dto.amount: long
 - request_combo_dto.period: "SHORT" | "MID" | "LONG"  
   * SHORT: ≤6 months
   * MID: ≤12 months  
@@ -109,12 +109,12 @@ INPUT SCHEMA (FIXED)
   * base_rate: float (reference only)
   * max_rate: float (**USE THIS for calculations**)
   * type: "deposit" | "savings" (lowercase in output)
-  * maximum_amount: int (-1 = unlimited)
-  * minimum_amount: int (-1 = no restriction)
-  * maximum_amount_per_month: int (-1 = unlimited)
-  * minimum_amount_per_month: int (-1 = no restriction)
-  * maximum_amount_per_day: int (-1 = unlimited)
-  * minimum_amount_per_day: int (-1 = no restriction)
+  * maximum_amount: long (-1 = unlimited)
+  * minimum_amount: long (-1 = no restriction)
+  * maximum_amount_per_month: long (-1 = unlimited)
+  * minimum_amount_per_month: long (-1 = no restriction)
+  * maximum_amount_per_day: long (-1 = unlimited)
+  * minimum_amount_per_day: long (-1 = no restriction)
   * tax_benefit: "tax-free" | "separate taxation" | "comprehensive taxation"
   * product_period: List[{period: str, basic_rate: float}]
 
@@ -122,8 +122,8 @@ INPUT SCHEMA (FIXED)
 OUTPUT SCHEMA (FIXED, JSON ONLY)
 ================================================================
 {
-  "total_payment": int,                 # MUST equal request_combo_dto.amount
-  "period_months": int,                 # max months across ALL combinations
+  "total_payment": long,                 # MUST equal request_combo_dto.amount
+  "period_months": long,                 # max months across ALL combinations
   "combination": [
     {
       "combination_id": str,            # UUID v4
@@ -145,8 +145,8 @@ OUTPUT SCHEMA (FIXED, JSON ONLY)
           "monthly_plan": [
             { 
               "month": int,             # 0-based global index
-              "payment": int,           # Amount paid this month
-              "total_interest": int     # Interest earned this month
+              "payment": long,           # Amount paid this month
+              "total_interest": long     # Interest earned this month
             }
           ]
         }
@@ -154,10 +154,10 @@ OUTPUT SCHEMA (FIXED, JSON ONLY)
       "timeline": [
         {
           "month": int,                  # 0-based
-          "total_monthly_payment": int,  
+          "total_monthly_payment": long,  
           "active_product_count": int,   # Products with payment>0 THIS month
-          "cumulative_interest": int,    # MUST increase monotonically
-          "cumulative_payment": int      # MUST increase monotonically
+          "cumulative_interest": long,    # MUST increase monotonically
+          "cumulative_payment": long      # MUST increase monotonically
         }
       ]
     }
