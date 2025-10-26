@@ -163,10 +163,6 @@ class Crawling:
             connection.close()
 
     def month_task_distributed(self):
-        """
-        매달 첫째 주(1~7일)에 16개 은행을 7일 동안 분할 실행.
-        1일(3개) / 2~6일(2개씩) / 7일(3개)
-        """
         today = datetime.now()
         day = today.day
 
@@ -179,11 +175,11 @@ class Crawling:
 
         # 16개 은행 기준 분배
         distribution = {
-            1: (0, 3),
-            2: (3, 5),
-            3: (5, 7),
-            4: (7, 9),
-            5: (9, 11),
+            1: (0, 2),
+            2: (2, 4),
+            3: (4, 6),
+            4: (6, 8),
+            5: (8, 10),
             6: (11, 13),
             7: (13, 16)
         }
@@ -225,8 +221,7 @@ class Crawling:
             self.logger.info("===== 은행 데이터 저장 완료 =====")
 
 
-            ################## 자동화 코드입니다. 주석을 풀면 됩니다.########################
-            self.logger.info("===== 스케줄러 시작 - 매일 02:00 (1~7일만 실행) =====")
+            self.logger.info("===== 스케줄러 시작 - 매 달 첫 째주  02:00 (1~7일만 실행) =====")
             schedule.every().day.at("02:00").do(self.month_task_distributed)
 
             while True:
