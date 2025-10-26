@@ -1,6 +1,7 @@
 import time
 from datetime import datetime
 import logging
+import schedule
 import json
 import os
 from logging.handlers import RotatingFileHandler
@@ -12,6 +13,7 @@ from src.crawler.bank_crawler.gwangju.gwangju_bank_crawler import KJBankComplete
 from src.crawler.bank_crawler.hana.hana import HanaBankCrawler
 from src.crawler.bank_crawler.ibk.ibk_bank import IBKFullCrawler
 from src.crawler.bank_crawler.im.IM import IMBankCompleteCrawler
+from src.crawler.bank_crawler.jb.JBBankCrawler import JBBankCrawler
 from src.crawler.bank_crawler.jeju.jeju_bank_crawler import JejuBankDepositSavingsOnlyCrawler
 from src.crawler.bank_crawler.kb.kb import KBProductCrawler
 from src.crawler.bank_crawler.kdb.KdbCrawler import KdbCrawler
@@ -26,7 +28,6 @@ from src.crawler.bank_crawler.kyongnam.KyongNamBankCrawler import KyongNamBankCr
 from src.shared.db.bank.BankRepository import BankRepository
 from src.shared.db.product.productRepository import ProductRepository
 from src.shared.db.util.MysqlUtil import MysqlUtil
-from test.ai_server_test.get_data_test import AITestRunner
 
 
 class Crawling:
@@ -38,7 +39,6 @@ class Crawling:
         self.bankRepository = BankRepository()
 
     def setup_logging(self):
-        """로깅 설정 - 파일과 콘솔 동시 출력"""
         log_dir = "logs"
         os.makedirs(log_dir, exist_ok=True)
 
@@ -76,48 +76,42 @@ class Crawling:
     def crawling(self, bank_name: str = ""):
         before_preprocessed_products = []
 
-        # 통과한 것
-        # 우체국
-        # 경남은행
-        # 부산
-        # 신한
+        if bank_name == "BNK_GYEONGNAM":
+            before_preprocessed_products.extend(
+                KyongNamBankCrawler(base_url=BankLink.KYONGNAM_BANK_DEPOSIT_LINK.value).start())
+        if bank_name == "POST_OFFICE":
+            before_preprocessed_products.extend(PostBankCrawler(base_url=BankLink.POST_BANK_LINK.value).start())
+        if bank_name == "SHINHAN":
+            before_preprocessed_products.extend(
+                SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_ONLINE_LINK.value).start())
+            before_preprocessed_products.extend(
+                SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_LUMP_LINK.value).start())
+            before_preprocessed_products.extend(
+                SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_LUMP_ROLL_LINK.value).start())
 
+        if bank_name == "KDB":
+            before_preprocessed_products.extend(KdbCrawler(base_url=BankLink.KDB_LINK.value).start())
 
-        # if bank_name == "BNK_GYEONGNAM":
-        #     before_preprocessed_products.extend(
-        #         KyongNamBankCrawler(base_url=BankLink.KYONGNAM_BANK_DEPOSIT_LINK.value).start())
-        # if bank_name == "POST_OFFICE":
-        #     before_preprocessed_products.extend(PostBankCrawler(base_url=BankLink.POST_BANK_LINK.value).start())
-        # if bank_name == "SHINHAN":
-        #     before_preprocessed_products.extend(
-        #         SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_ONLINE_LINK.value).start())
-        #     before_preprocessed_products.extend(
-        #         SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_LUMP_LINK.value).start())
-        #     before_preprocessed_products.extend(
-        #         SinHanBankCrawler(base_url=BankLink.SINHAN_BANK_LUMP_ROLL_LINK.value).start())
-        #
-        # if bank_name == "KDB":
-        #     before_preprocessed_products.extend(KdbCrawler(base_url=BankLink.KDB_LINK.value).start())
-        #
-        # if bank_name == "BNK_BUSAN":
-        #     before_preprocessed_products.extend(BusanBankUnifiedCrawler(base_url=BankLink.BUSAN_BANK_LINK.value).start())
-        #
-        # if bank_name == "SC_JEIL":
-        #     before_preprocessed_products.extend(SCBankCleanCrawler(base_url=BankLink.SC_BANK_LINK.value,detail_url_base=BankLink.SC_BANK_BASE_LINK.value).start())
+        if bank_name == "BNK_BUSAN":
+            before_preprocessed_products.extend(BusanBankUnifiedCrawler(base_url=BankLink.BUSAN_BANK_LINK.value).start())
 
-        # if bank_name == "GWANGJU":
-        #     before_preprocessed_products.extend(KJBankCompleteCrawler(base_url=BankLink.GWANGJU_BANK_LINK.value,deposit_list_url=BankLink.GWANGJU_BANK_DEPOSIT_LINK.value).start())
-        #
+        if bank_name == "SC_JEIL":
+            before_preprocessed_products.extend(SCBankCleanCrawler(base_url=BankLink.SC_BANK_LINK.value,detail_url_base=BankLink.SC_BANK_BASE_LINK.value).start())
+
+        if bank_name == "GWANGJU":
+            before_preprocessed_products.extend(KJBankCompleteCrawler(base_url=BankLink.GWANGJU_BANK_LINK.value,deposit_list_url=BankLink.GWANGJU_BANK_DEPOSIT_LINK.value).start())
+
         if bank_name == "JEJU":
             before_preprocessed_products.extend(JejuBankDepositSavingsOnlyCrawler(base_url=BankLink.JEJU_BANK_BASE_LINK.value).start())
 
         if bank_name == "HANA":
             before_preprocessed_products.extend(HanaBankCrawler().start())
-        #
+
+        if bank_name == "JEONBUK":
+            before_preprocessed_products.extend(JBBankCrawler(headless=True, timeout=10, base_url=BankLink.JB_BANK_LINK.value).start())
 
         if bank_name == "KB":
             before_preprocessed_products.extend(KBProductCrawler().start())
-
 
         if bank_name == "NH":
             before_preprocessed_products.extend(NHBankCrawler().start())
@@ -125,17 +119,14 @@ class Crawling:
         if bank_name == "WOORI":
             before_preprocessed_products.extend(WooriBankCrawler().start())
 
-        # if bank_name == "IBK":  # 안됨
-        #     before_preprocessed_products.extend(IBKFullCrawler().start())
+        if bank_name == "IBK":  # 안됨
+            before_preprocessed_products.extend(IBKFullCrawler().start())
         #
-
         if bank_name == "SH_SUHYUP":
             before_preprocessed_products.extend(SuhyupBankCategoryCrawler().start())
 
-        if bank_name == "IM_BANK": # 55개 => 잘됨(저장도 해둠)
+        if bank_name == "IM_BANK":
             before_preprocessed_products.extend(IMBankCompleteCrawler().start())
-
-
         # 데이터 리턴
         return before_preprocessed_products
 
@@ -163,8 +154,7 @@ class Crawling:
             for product in after_preprocessed_products:
                 products_name_set.add(product.product_name)
 
-            self.productRepository.check_is_deleted(bank_name=bank_name, new_products_name=products_name_set,
-                                                    connection=connection)
+            self.productRepository.check_is_deleted(bank_name=bank_name, new_products_name=products_name_set,connection=connection)
             connection.commit()
         except Exception as e:
             self.logger.error(f"mysql 데이터 삽입 에러: {e}")
@@ -172,32 +162,58 @@ class Crawling:
         finally:
             connection.close()
 
-    def month_task(self):
-        start_time = datetime.now()
-        bank_repository = BankRepository()
-        bank_data = bank_repository.get_bank_data()
+    def month_task_distributed(self):
+        """
+        매달 첫째 주(1~7일)에 16개 은행을 7일 동안 분할 실행.
+        1일(3개) / 2~6일(2개씩) / 7일(3개)
+        """
+        today = datetime.now()
+        day = today.day
 
-        self.logger.info(f"월 마다 진행 시작: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
+        if day > 7:
+            self.logger.info(f"[SKIP] {today.strftime('%Y-%m-%d')} - 첫째 주 아님, 스킵")
+            return
 
-        for bank_name in bank_data:
-            self.logger.info("=====크롤링 시작=====")
-            before_preprocessed_products = self.crawling(bank_name=bank_name)
-            self.logger.info("=====크롤링 끝=====")
+        bank_list = list(self.bankRepository.get_bank_data())
+        total_banks = len(bank_list)
 
-            #######
-            self.logger.info("=====전처리 시작=====")
-            after_preprocessed_products = self.preprocessed(before_preprocessed_products)
-            self.logger.info("=====전처리 끝=====")
+        # 16개 은행 기준 분배
+        distribution = {
+            1: (0, 3),
+            2: (3, 5),
+            3: (5, 7),
+            4: (7, 9),
+            5: (9, 11),
+            6: (11, 13),
+            7: (13, 16)
+        }
 
-            #######
-            self.logger.info("=====DB에 저장 시작=====")
-            self.save_to_db(after_preprocessed_products, bank_name=bank_name)
-            self.logger.info("=====DB에 끝=====")
+        if day not in distribution:
+            self.logger.info(f"[SKIP] {day}일 - 분배 설정 없음")
+            return
 
-        end_time = datetime.now()
-        elapsed_time = end_time - start_time
-        self.logger.info(f"월 마다 진행 완료: {end_time.strftime('%Y-%m-%d %H:%M:%S')}")
-        self.logger.info(f"총 소요 시간: {elapsed_time}")
+        start_idx, end_idx = distribution[day]
+        today_banks = bank_list[start_idx:end_idx]
+
+        self.logger.info(f"===== [{today.strftime('%Y-%m-%d')}] 실행 은행 {len(today_banks)}개 =====")
+        self.logger.info(f"대상 은행 목록: {today_banks}")
+
+        for bank_name in today_banks:
+            try:
+                self.logger.info(f"===== [{bank_name}] 크롤링 시작 =====")
+                before_preprocessed_products = self.crawling(bank_name=bank_name)
+
+                if not before_preprocessed_products:
+                    self.logger.info(f"[{bank_name}] 결과 없음, 건너뜀")
+                    continue
+
+                after_preprocessed_products = self.preprocessed(before_preprocessed_products)
+                self.save_to_db(after_preprocessed_products, bank_name=bank_name)
+                self.logger.info(f"===== [{bank_name}] 완료 =====")
+            except Exception as e:
+                self.logger.error(f"[{bank_name}] 처리 중 오류: {e}")
+
+        self.logger.info("===== 오늘자 분할 크롤링 완료 =====")
 
     def start(self):
         self.logger.info("===== 상품 데이터 크롤링, 전처리, 삽입 시작 =====")
@@ -208,20 +224,14 @@ class Crawling:
             bank_repository.save_bank()
             self.logger.info("===== 은행 데이터 저장 완료 =====")
 
-            # 아래 두 줄은 테스트를 위함
-            # self.logger.info("===== 기존 상품 데이터 삭제 시작 (테스트용) =====")
-            # self.productRepository.delete_all_product()
-            # self.logger.info("===== 기존 상품 데이터 삭제 완료 (테스트용) =====")
 
-            self.month_task()
+            ################## 자동화 코드입니다. 주석을 풀면 됩니다.########################
+            self.logger.info("===== 스케줄러 시작 - 매일 02:00 (1~7일만 실행) =====")
+            schedule.every().day.at("02:00").do(self.month_task_distributed)
 
-            ################### 자동화 코드입니다. 주석을 풀면 됩니다.########################
-            # self.logger.info("===== 스케줄러 시작 - 매일 02:00에 실행 =====")
-            # schedule.every().day.at("02:00").do(self.month_task)
-            #
-            # while True:
-            #     schedule.run_pending()
-            #     time.sleep(3600)
+            while True:
+                schedule.run_pending()
+                time.sleep(3600)
 
         except Exception as e:
             self.logger.error(f"상품 데이터 크롤링, 전처리, 삽입 오류 발생: {e}")

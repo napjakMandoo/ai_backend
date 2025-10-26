@@ -31,8 +31,5 @@ class BankLink(Enum):
     IBK_BANK_SAVINGS_LINK="/uib/jsp/guest/ntr/ntr70/ntr7010/PNTR701010_m.jsp?APLY_EFNC_MENU_ID=P0104020000&SCRE_ID=PNTR701010_m&MENU_DIV=GNB"
     IBK_BANK_DEPOSIT_LINK="/uib/jsp/guest/ntr/ntr70/ntr7010/PNTR701015_m.jsp?APLY_EFNC_MENU_ID=P0104030000&SCRE_ID=PNTR701015_m&MENU_DIV=GNB"
 
+    JB_BANK_LINK="https://m.jbbank.co.kr/JBN/P_M_IOMN_MALL"
 
-    ###
-    # 1. SH
-    # 2. im
-    # 3. SC

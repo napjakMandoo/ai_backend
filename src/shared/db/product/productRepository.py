@@ -7,7 +7,9 @@ from src.shared.db.bank.BankRepository import BankRepository
 from src.shared.db.util.MysqlUtil import MysqlUtil
 from typing import List, Dict
 from pymysql.cursors import DictCursor
-
+import re
+import ast
+import datetime
 
 class ProductRepository:
 
@@ -148,9 +150,7 @@ class ProductRepository:
         self.logger.info("상품 관련 데이터 삭제 끝")
 
     def check_is_deleted(self, bank_name: str, new_products_name: set, connection):
-
         self.logger.info("=====삭제 작업 시작=====")
-
         cursor = connection.cursor()
         try:
             bank_uuid = self.BankRepository.get_uuid_by_bank_name(bank_name=bank_name)
@@ -159,17 +159,27 @@ class ProductRepository:
                 return
 
             bank_uuid_bytes = bank_uuid.bytes
-            existing_products_name = set()
 
-            cursor.execute("select name from bank_product where bank_uuid=%s", (bank_uuid_bytes,))
-            for row in cursor.fetchall():
-                existing_products_name.add(row[0])
+            cursor.execute("SELECT name FROM bank_product WHERE bank_uuid = %s", (bank_uuid_bytes,))
+            existing_products_name = {row[0] for row in cursor.fetchall()}
+            for name in existing_products_name:
+                print(name)
 
             deleted_target_set = existing_products_name.difference(new_products_name)
-            self.logger.info(f"중복된 상품 수 : {len(deleted_target_set)}")
+            self.logger.info(f"삭제 대상 상품 수: {len(deleted_target_set)}")
+
             if deleted_target_set:
-                cursor.execute("update bank_product set deleted_at = %s where name in %s",
-                               (datetime.datetime.now(), tuple(deleted_target_set)))
+                placeholders = ', '.join(['%s'] * len(deleted_target_set))
+                query = f"UPDATE bank_product SET deleted_at = %s WHERE name IN ({placeholders})"
+                cursor.execute(query, (datetime.datetime.now(), *deleted_target_set))
+                connection.commit()
+                self.logger.info("삭제 상태 업데이트 완료")
+            else:
+                self.logger.info("삭제 대상 없음, 업데이트 생략")
+
+        except Exception as e:
+            connection.rollback()
+            self.logger.exception("삭제 처리 중 오류 발생, 롤백 수행")
         finally:
             cursor.close()
             self.logger.info("=====삭제 작업 끝=====")
@@ -350,24 +360,69 @@ class ProductRepository:
         finally:
             cursor.close()
 
+    def _normalize_period_data(self, period_data) -> list[str]:
+
+        if not period_data:
+            return []
+
+        # 단일 문자열을 리스트로 통일
+        if isinstance(period_data, str):
+            period_data = [period_data]
+
+        normalized = []
+        for raw_period in period_data:
+            text = str(raw_period).strip()
+
+            if text.startswith('"') and text.endswith('"'):
+                text = text[1:-1].strip()
+
+            if re.fullmatch(r'\[\s*-?\d+\s*,\s*-?\d+\s*\]', text):
+                fixed = re.sub(r'-1', '-', text)  # -1 → -
+                normalized.append(fixed)
+                continue
+
+            if re.fullmatch(r'\d+\s*,\s*-?\d+', text):
+                parts = [p.strip().replace('-1', '-') for p in text.split(',')]
+                normalized.append(f"[{parts[0]}, {parts[1]}]")
+                continue
+
+            if text.startswith('[') and text.endswith(']'):
+                try:
+                    parsed = ast.literal_eval(text)
+                    if isinstance(parsed, list) and len(parsed) == 2:
+                        left = str(parsed[0]).strip().replace('-1', '-')
+                        right = str(parsed[1]).strip().replace('-1', '-')
+                        if re.fullmatch(r'[\d-]+', left) and re.fullmatch(r'[\d-]+', right):
+                            normalized.append(f"[{left}, {right}]")
+                            continue
+                except Exception:
+                    pass  # eval 실패 → 무시
+
+            if re.fullmatch(r'\d+', text):
+                normalized.append(f"[{text}, {text}]")
+                continue
+
+            self.logger.warning(f"⚠️ 잘못된 period 형식 감지: {text} → 건너뜀")
+            continue
+
+        return normalized
+
     def _validate_product_data_safe(self, product_data) -> dict:
+        """
+        product_data의 안전 검증 수행 (유연하게 스킵 가능)
+        period 부분에 _normalize_period_data()를 적용해 형식 통일
+        """
+
         self.logger.info("상품 데이터 안전 검증 시작")
 
         result = {
             'valid': True,
             'reason': '',
-            'safe_preferential': {
-                'header': [],
-                'detail': [],
-                'rate': [],
-                'keyword': []
-            },
-            'safe_period': {
-                'period': [],
-                'rate': []
-            }
+            'safe_preferential': {'header': [], 'detail': [], 'rate': [], 'keyword': []},
+            'safe_period': {'period': [], 'rate': []}
         }
 
+        # 1️⃣ 필수 필드 검증
         required_fields = ['product_name', 'product_basic_rate', 'product_max_rate', 'product_type']
         for field in required_fields:
             if not hasattr(product_data, field) or getattr(product_data, field) is None:
@@ -375,6 +430,7 @@ class ProductRepository:
                 result['reason'] = f"필수 필드 누락: {field}"
                 return result
 
+        # 2️⃣ 우대조건 검증
         pref_arrays = {
             'header': getattr(product_data, 'preferential_conditions_detail_header', []) or [],
             'detail': getattr(product_data, 'preferential_conditions_detail_detail', []) or [],
@@ -383,17 +439,9 @@ class ProductRepository:
         }
 
         pref_lengths = [len(arr) for arr in pref_arrays.values()]
-
         if pref_lengths and not all(length == pref_lengths[0] for length in pref_lengths):
             self.logger.warning(f"우대조건 배열 길이 불일치로 건너뜀: {pref_lengths}")
-            self.logger.warning(f"header: {len(pref_arrays['header'])}, detail: {len(pref_arrays['detail'])}")
-            self.logger.warning(f"rate: {len(pref_arrays['rate'])}, keyword: {len(pref_arrays['keyword'])}")
-            result['safe_preferential'] = {
-                'header': [],
-                'detail': [],
-                'rate': [],
-                'keyword': []
-            }
+            result['safe_preferential'] = {'header': [], 'detail': [], 'rate': [], 'keyword': []}
         else:
             safe_details = []
             for detail in pref_arrays['detail']:
@@ -411,43 +459,35 @@ class ProductRepository:
                 'keyword': pref_arrays['keyword']
             }
 
+        # 3️⃣ 기간(period) 검증
         period_data = getattr(product_data, 'product_period_period', []) or []
         rate_data = getattr(product_data, 'product_period_base_rate', []) or []
 
         normalized_period = self._normalize_period_data(period_data)
-        period_length = len(normalized_period)
-        rate_length = len(rate_data) if rate_data else 0
+        valid_periods = []
 
-        has_korean_words = False
-        if normalized_period:
-            for i, period in enumerate(normalized_period):
-                if any(word in str(period) for word in ['미만', '이상', '이하', '개월', '년']):
-                    self.logger.warning(f"치명적인 period 형식 발견, 전체 기간 데이터를 건너뜀: index={i}, value='{period}'")
-                    has_korean_words = True
-                    break
+        for p in normalized_period:
+            # 한글 포함 → 무효 처리
+            if any(word in p for word in ['미만', '이상', '이하', '개월', '년']):
+                self.logger.warning(f"❌ 치명적인 period 형식 발견: {p} → 전체 무효 처리")
+                normalized_period = []
+                valid_periods = []
+                break
 
-        if has_korean_words:
-            result['safe_period'] = {
-                'period': [],
-                'rate': []
-            }
-            self.logger.warning("치명적인 period 형식으로 인해 기간 데이터 전체 건너뜀")
-        elif period_length != rate_length:
-            self.logger.warning(f"기간/금리 배열 길이 불일치로 건너뜀: period={period_length}, rate={rate_length}")
-            self.logger.warning(f"period_data: {normalized_period}")
-            self.logger.warning(f"rate_data: {rate_data}")
-            result['safe_period'] = {
-                'period': [],
-                'rate': []
-            }
+            # 정규식으로 최종 검증 ([숫자|-], [숫자|-])
+            if re.fullmatch(r'\[\s*(\d+|-)\s*,\s*(\d+|-)\s*\]', p):
+                valid_periods.append(p)
+            else:
+                self.logger.warning(f"❌ 비정상 period 필터링됨: {p}")
+
+        # 길이 불일치 시 rate도 동일하게 스킵
+        if len(valid_periods) != len(rate_data):
+            self.logger.warning(f"기간/금리 배열 길이 불일치 → 전체 무효화: period={len(valid_periods)}, rate={len(rate_data)}")
+            result['safe_period'] = {'period': [], 'rate': []}
         else:
-            # 정상적인 경우
-            result['safe_period'] = {
-                'period': normalized_period,
-                'rate': rate_data
-            }
+            result['safe_period'] = {'period': valid_periods, 'rate': rate_data}
 
-        # 4. 텍스트 길이 검증 (경고만)
+        # 4️⃣ 텍스트 길이 검증
         text_limits = {
             'product_name': 100,
             'product_sub_target': 300,
