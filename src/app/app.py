@@ -38,6 +38,10 @@ def setup_logging():
 
     return root_logger
 
+@app.route("/", methods=["GET"])
+def health_check():
+    return "connect"
+
 
 @app.route("/recommendations/gemini", methods=["GET"])
 def ai_recommend_gemini():
